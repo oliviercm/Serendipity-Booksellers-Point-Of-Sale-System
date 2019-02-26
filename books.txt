@@ -27,8 +27,8 @@
 <book>
 	<isbn>9780840700780</isbn>
 	<title>The Holy Bible (King James Edition)</title>
-	<publisher>Publisher</publisher>
-	<adddate>01/01/1970</adddate>
+	<publisher>Eden Publications</publisher>
+	<adddate>12/25/1970</adddate>
 	<quantity>1</quantity>
 	<wholesale>5.99</wholesale>
 	<retail>15.99</retail>
