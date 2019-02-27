@@ -14,7 +14,8 @@ Group 3:
 
 int main()
 {
+	cout << "Hello world!";
+	
 	std::cin.get();
-
 	return 0;
 }
