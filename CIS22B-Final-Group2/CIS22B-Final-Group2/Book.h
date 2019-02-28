@@ -15,5 +15,7 @@ public:
 	double retail;
 
 	Book();
+	Book(std::string is, std::string ti, std::string au, std::string pu, std::string ad, int qu, double wh, double re);
+
 	~Book();
 };
