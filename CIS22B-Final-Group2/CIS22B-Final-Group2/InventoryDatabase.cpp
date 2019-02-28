@@ -77,13 +77,13 @@ int InventoryDatabase::getBookCount()
 	std::string inventory = inventoryFileToString();
 	int count = 0;
 	size_t pos = 0;
-	const std::string delimiter = "<book>";
+	const std::string DELIMITER = "<book>";
 
-	pos = inventory.find(delimiter, pos);
+	pos = inventory.find(DELIMITER, pos);
 	while (pos != std::string::npos)
 	{
 		count++;
-		pos = inventory.find(delimiter, pos + delimiter.length());
+		pos = inventory.find(DELIMITER, pos + DELIMITER.length());
 	}
 
 	return count;
@@ -96,7 +96,7 @@ int InventoryDatabase::getBookCount()
  /**
   * createBookArray
   *
-  * @brief Sets inventoryFilePath to the passed path.
+  * @brief Deletes bookArray if it exists, then creates a new bookArray the size of the number of books in the inventory file.
   */
 
 void InventoryDatabase::createBookArray()
@@ -107,11 +107,6 @@ void InventoryDatabase::createBookArray()
 	}
 
 	bookArray = new Book[getBookCount()];
-
-	for (int i = 0; i < getBookCount(); i++)
-	{
-		bookArray[i].quantity = i + 1;
-	}
 
 	return;
 }
