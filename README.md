@@ -1,1 +1,2 @@
 
+delete ptr in createDatabase
