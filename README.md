@@ -3,6 +3,7 @@
 This is a point-of-sale software package that will function as a cash register and keep an inventory file.
 
 The software can perform the following tasks:
+
 * Calculate the total of a sale, including sales tax
 * When a book is purchased, subtract it from the inventory file
 * Add, change, delete, and look up books in the inventory file
