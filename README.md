@@ -1,6 +1,6 @@
 # Serendipity Booksellers POS (Point-Of-Sale) System 
 
-This is a point-of-sale software package that will function as a cash register and keep an inventory file.
+This is a point-of-sale software package that functions as a cash register and keeps an inventory file.
 
 The software can perform the following tasks:
 
