@@ -53,3 +53,7 @@ This program was written as a final group project for De Anza W19 CIS D022B 03Y,
 * **Natalia Coelho Mendonca**
 * **Samuel Ruiz Cervantes**
 * **Manasi Gowda**
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
