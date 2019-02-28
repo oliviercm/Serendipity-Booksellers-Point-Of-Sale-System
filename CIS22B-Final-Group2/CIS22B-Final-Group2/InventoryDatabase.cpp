@@ -2,6 +2,44 @@
 
 #include "InventoryDatabase.h"
 
+/****************************************
+ * INITALIZE STATIC MEMBERS
+ ****************************************/
+
+std::string InventoryDatabase::inventoryFilePath = std::string();
+Book* InventoryDatabase::bookArray = nullptr;
+
+/****************************************
+ * HELPER FUNCTIONS
+ ****************************************/
+
+/**
+ * parseString
+ *
+ * @brief Returns a substring of the passed string starting at the first instance of "<delimiter>" and ending at the first instance of "</delimiter>". The angle brackets and delimiter are removed from the substring.
+ *
+ * @detail Example: parseString("<txt>Foo</txt> <txt>Bar</txt>", "txt") will return "Foo".
+ *
+ * @param str The string to parse. The string should contain "<delimiter>" and "</delimiter>" tags.
+ *
+ * @param delimiter The string to act as a delimiter. This function adds angle brackets around the delimiter, so they should not be included in the passed delimiter.
+ *
+ * @return A substring of str starting from the first "<delimiter>" and ending at the first "</delimiter>", not including the delimiters and angle brackets.
+ */
+
+std::string InventoryDatabase::parseString(std::string str, std::string delimiter)
+{
+	return std::string();
+}
+
+/**
+ * inventoryFileToString
+ *
+ * @brief Returns the contents of the file located at inventoryFilePath as a string. If the file at inventoryFilePath doesn't exist, returns an empty string.
+ *
+ * @return The contents of the file from inventoryFilePath as a string. If the file at inventoryFilePath doesn't exist, returns an empty string.
+ */
+
 std::string InventoryDatabase::inventoryFileToString()
 {
 	std::ifstream in(inventoryFilePath);
@@ -26,6 +64,14 @@ std::string InventoryDatabase::inventoryFileToString()
 	}
 }
 
+/**
+ * getBookCount
+ *
+ * @brief Returns the number of books in the inventory file.
+ *
+ * @return Number of "<book>"s in the inventory file.
+ */
+
 int InventoryDatabase::getBookCount()
 {
 	std::string inventory = inventoryFileToString();
@@ -43,14 +89,23 @@ int InventoryDatabase::getBookCount()
 	return count;
 }
 
-void InventoryDatabase::setInventoryFilePath(std::string path)
-{
-	inventoryFilePath = path;
-	return;
-}
+/****************************************
+ * DATABASE FUNCTIONS
+ ****************************************/
+
+ /**
+  * createBookArray
+  *
+  * @brief Sets inventoryFilePath to the passed path.
+  */
 
 void InventoryDatabase::createBookArray()
 {
+	if (bookArray != nullptr)
+	{
+		deleteBookArray();
+	}
+
 	bookArray = new Book[getBookCount()];
 
 	for (int i = 0; i < getBookCount(); i++)
@@ -61,33 +116,77 @@ void InventoryDatabase::createBookArray()
 	return;
 }
 
+/**
+ * deleteBookArray
+ *
+ * @brief Deletes the dynamically allocated bookArray, if it exists.
+ */
+
 void InventoryDatabase::deleteBookArray()
 {
 	if (bookArray != nullptr)
 	{
 		delete[] bookArray;
+		bookArray = nullptr;
 	}
 
 	return;
 }
+
+/**
+ * setInventoryFilePath
+ *
+ * @brief Sets inventoryFilePath to the passed path.
+ *
+ * @param path The path to the database file. This should be a path to a .txt file. Partial paths are executed relative to the executable.
+ */
+
+void InventoryDatabase::setInventoryFilePath(std::string path)
+{
+	inventoryFilePath = path;
+	return;
+}
+
+/****************************************
+ * CONSTRUCTORS / DESTRUCTORS
+ ****************************************/
+
+ /**
+  * InventoryDatabase
+  *
+  * @brief Creates a new object of type InventoryDatabase. NOTE: setInventoryFilePath() and createBookArray() should be called before using InventoryDatabase for the first time!
+  */
+
+InventoryDatabase::InventoryDatabase()
+{
+	
+}
+
+/**
+ * ~InventoryDatabase
+ *
+ * @brief Called when InventoryDatabase leaves scope. Deletes the dynamically allocated bookArray if it exists.
+ */
+
+InventoryDatabase::~InventoryDatabase()
+{
+	deleteBookArray();
+}
+
+/****************************************
+ * DEBUG FUNCTION (REMOVE IN FINAL BUILD)
+ ****************************************/
+
+ /**
+  * debug
+  *
+  * @brief For debugging purposes only. Remove this function in the final build.
+  */
 
 void InventoryDatabase::debug()
 {
 	//std::cout << getBookCount() << std::endl;
-	createBookArray();
+	//createBookArray();
+	std::cout << InventoryDatabase::inventoryFilePath << std::endl;
 	return;
-}
-
-InventoryDatabase::InventoryDatabase()
-{
-	inventoryFilePath = "";
-	bookArray = nullptr;
-}
-
-InventoryDatabase::~InventoryDatabase()
-{
-	if (bookArray != nullptr)
-	{
-		delete[] bookArray;
-	}
 }

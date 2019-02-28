@@ -1,8 +1,7 @@
 #pragma once
 
-//Debugging
+//Debugging, remove in final build
 #include <iostream>
-//Debugging
 
 #include <string>
 #include <fstream>
@@ -12,18 +11,29 @@
 class InventoryDatabase
 {
 private:
-	std::string inventoryFilePath;
-	Book* bookArray;
+	//Static members
+	static std::string inventoryFilePath;
+	static Book* bookArray;
 
-	void createBookArray();
-	void deleteBookArray();
+	//Helper functions
+	std::string parseString(std::string str, std::string delimiter);
 	std::string inventoryFileToString();
 	int getBookCount();
-public:
-	void setInventoryFilePath(std::string path);
-	void debug();
 
+	//Database-related functions
+	void createBookArray();
+	void deleteBookArray();
+
+public:
+	//Database-related functions
+	void setInventoryFilePath(std::string path);
+
+	//Constuctors
 	InventoryDatabase();
 
+	//Destructors
 	~InventoryDatabase();
+
+	//Debugging function, remove in final build
+	void debug();
 };
