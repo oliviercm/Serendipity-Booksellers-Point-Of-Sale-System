@@ -45,6 +45,9 @@ The Report Module analyzes the information in the Inventory Database to produce 
 
 ## Authors
 
+All authors are students at De Anza College, Cupertino, California.
+This program was written as a final group project for De Anza W19 CIS D022B 03Y, 61Y Intermediate Programming Methods in C++, Professor Manish Goel, Fall Quarter 2019.
+
 * **Olivier Chan Sion Moy**
 * **Luis Guerrero**
 * **Natalia Coelho Mendonca**
