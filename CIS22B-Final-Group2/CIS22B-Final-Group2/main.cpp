@@ -20,11 +20,9 @@ int main()
 	const bool debug = true;
 	if (debug)
 	{
-		InventoryDatabase inventoryDatabase;
-		inventoryDatabase = InventoryDatabase("books.txt");
+		InventoryDatabase inventoryDatabase("books.txt");
 
 		inventoryDatabase.debug();
-		InventoryDatabase::buildInventory();
 	}
 	
 	std::cin.get();
