@@ -16,7 +16,7 @@ private:
 	static Book* bookArray;
 
 	//Helper functions
-	std::string parseString(std::string str, std::string delimiter);
+	std::string parseString(const std::string str, const std::string delimiter);
 	std::string inventoryFileToString();
 	int getBookCount();
 
@@ -26,7 +26,7 @@ private:
 
 public:
 	//Database-related functions
-	void setInventoryFilePath(std::string path);
+	void setInventoryFilePath(const std::string path);
 
 	//Constuctors
 	InventoryDatabase();

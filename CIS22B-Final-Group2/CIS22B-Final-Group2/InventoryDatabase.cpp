@@ -27,9 +27,17 @@ Book* InventoryDatabase::bookArray = nullptr;
  * @return A substring of str starting from the first "<delimiter>" and ending at the first "</delimiter>", not including the delimiters and angle brackets.
  */
 
-std::string InventoryDatabase::parseString(std::string str, std::string delimiter)
+std::string InventoryDatabase::parseString(const std::string str, const std::string delimiter)
 {
-	return std::string();
+	const std::string delimitBeg = "<" + delimiter + ">";
+	const std::string delimitEnd = "</" + delimiter + ">";
+	
+	const size_t delimitBegPos = str.find(delimitBeg);
+	const size_t delimitEndPos = str.find(delimitEnd);
+
+	const std::string substr = str.substr(delimitBegPos + delimitBeg.length(), delimitEndPos - delimitBegPos - delimitBeg.length());
+	
+	return substr;
 }
 
 /**
@@ -136,7 +144,7 @@ void InventoryDatabase::deleteBookArray()
  * @param path The path to the database file. This should be a path to a .txt file. Partial paths are executed relative to the executable.
  */
 
-void InventoryDatabase::setInventoryFilePath(std::string path)
+void InventoryDatabase::setInventoryFilePath(const std::string path)
 {
 	inventoryFilePath = path;
 	return;
@@ -182,6 +190,9 @@ void InventoryDatabase::debug()
 {
 	//std::cout << getBookCount() << std::endl;
 	//createBookArray();
-	std::cout << InventoryDatabase::inventoryFilePath << std::endl;
+	std::string books = inventoryFileToString();
+	std::string str1 = "abc <txt>Foo</txt> <txt>Bar</txt>";
+	std::string str2 = "abc <nop>Foo</nop> <nop>Bar</nop>";
+	std::cout << parseString(books, "book") << std::endl;
 	return;
 }
