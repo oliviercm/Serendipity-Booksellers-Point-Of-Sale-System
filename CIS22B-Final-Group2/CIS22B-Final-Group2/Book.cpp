@@ -4,11 +4,11 @@
 
 Book::Book()
 {
-	isbn = "0000000000000";
-	title = "Title";
-	author = "Author";
-	publisher = "Publisher";
-	addDate = "01/01/1970";
+	isbn = "";
+	title = "";
+	author = "";
+	publisher = "";
+	addDate = "";
 	quantity = 0;
 	wholesale = 0;
 	retail = 0;
