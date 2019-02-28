@@ -4,11 +4,11 @@
 
 Book::Book()
 {
-	isbn = "";
-	title = "";
-	author = "";
-	publisher = "";
-	addDate = "";
+	isbn = std::string();
+	title = std::string();
+	author = std::string();
+	publisher = std::string();
+	addDate = std::string();
 	quantity = 0;
 	wholesale = 0;
 	retail = 0;
