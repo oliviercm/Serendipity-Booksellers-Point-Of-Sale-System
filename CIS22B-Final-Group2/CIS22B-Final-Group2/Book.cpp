@@ -1,3 +1,15 @@
+/********************************************************************************
+************************************ Book ***************************************
+*********************************************************************************
+* The purpose of this class is to provide a simple and intuitive way to bundle
+* information about a book.
+*****************
+***** USAGE *****
+*****************
+* In order to use this class, create a book object.
+* Members are public so they can be accessed with the dot or arrow operator.
+*********************************************************************************/
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "Book.h"
