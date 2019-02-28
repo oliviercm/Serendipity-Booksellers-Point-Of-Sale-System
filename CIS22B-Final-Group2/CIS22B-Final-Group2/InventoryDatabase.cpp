@@ -49,13 +49,23 @@ void InventoryDatabase::setInventoryFilePath(std::string path)
 	return;
 }
 
-void InventoryDatabase::createInventoryArray()
+void InventoryDatabase::createBookArray()
 {
-	inventoryArray = new Book[getBookCount()];
+	bookArray = new Book[getBookCount()];
 
 	for (int i = 0; i < getBookCount(); i++)
 	{
-		inventoryArray[i].quantity = i + 1;
+		bookArray[i].quantity = i + 1;
+	}
+
+	return;
+}
+
+void InventoryDatabase::deleteBookArray()
+{
+	if (bookArray != nullptr)
+	{
+		delete[] bookArray;
 	}
 
 	return;
@@ -64,20 +74,20 @@ void InventoryDatabase::createInventoryArray()
 void InventoryDatabase::debug()
 {
 	//std::cout << getBookCount() << std::endl;
-	createInventoryArray();
+	createBookArray();
 	return;
 }
 
 InventoryDatabase::InventoryDatabase()
 {
 	inventoryFilePath = "";
-	inventoryArray = nullptr;
+	bookArray = nullptr;
 }
 
 InventoryDatabase::~InventoryDatabase()
 {
-	if (inventoryArray != nullptr)
+	if (bookArray != nullptr)
 	{
-		delete [] inventoryArray;
+		delete[] bookArray;
 	}
 }

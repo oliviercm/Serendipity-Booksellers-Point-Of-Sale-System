@@ -13,9 +13,10 @@ class InventoryDatabase
 {
 private:
 	std::string inventoryFilePath;
-	Book* inventoryArray;
+	Book* bookArray;
 
-	void createInventoryArray();
+	void createBookArray();
+	void deleteBookArray();
 	std::string inventoryFileToString();
 	int getBookCount();
 public:
