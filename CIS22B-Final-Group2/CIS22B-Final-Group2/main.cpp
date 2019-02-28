@@ -17,10 +17,15 @@ Group 2:
 
 int main()
 {
-	//InventoryDatabase inventoryDatabase;
-	//inventoryDatabase.setInventoryFilePath("books.txt");
+	const bool debug = true;
+	if (debug)
+	{
+		InventoryDatabase inventoryDatabase;
+		inventoryDatabase = InventoryDatabase("books.txt");
 
-	//inventoryDatabase.debug();
+		inventoryDatabase.debug();
+		InventoryDatabase::buildInventory();
+	}
 	
 	std::cin.get();
 	return 0;
