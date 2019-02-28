@@ -3,29 +3,29 @@
 #include "InventoryDatabase.h"
 
 /****************************************
- * INITALIZE STATIC MEMBERS
- ****************************************/
+* INITALIZE STATIC MEMBERS
+*****************************************/
 
 std::string InventoryDatabase::inventoryFilePath = std::string();
 Book* InventoryDatabase::bookArray = nullptr;
 
 /****************************************
- * HELPER FUNCTIONS
- ****************************************/
+* HELPER FUNCTIONS
+*****************************************/
 
 /**
- * parseString
- *
- * @brief Returns a substring of the passed string starting at the first instance of "<delimiter>" and ending at the first instance of "</delimiter>". The angle brackets and delimiter are removed from the substring.
- *
- * @detail Example: parseString("<txt>Foo</txt> <txt>Bar</txt>", "txt") will return "Foo".
- *
- * @param str The string to parse. The string should contain "<delimiter>" and "</delimiter>" tags.
- *
- * @param delimiter The string to act as a delimiter. This function adds angle brackets around the delimiter, so they should not be included in the passed delimiter.
- *
- * @return A substring of str starting from the first "<delimiter>" and ending at the first "</delimiter>", not including the delimiters and angle brackets.
- */
+* parseString
+*
+* @brief Returns a substring of the passed string starting at the first instance of "<delimiter>" and ending at the first instance of "</delimiter>". The angle brackets and delimiter are removed from the substring.
+*
+* @detail Example: parseString("<txt>Foo</txt> <txt>Bar</txt>", "txt") will return "Foo".
+*
+* @param str The string to parse. The string should contain "<delimiter>" and "</delimiter>" tags.
+*
+* @param delimiter The string to act as a delimiter. This function adds angle brackets around the delimiter, so they should not be included in the passed delimiter.
+*
+* @return A substring of str starting from the first "<delimiter>" and ending at the first "</delimiter>", not including the delimiters and angle brackets.
+*/
 
 std::string InventoryDatabase::parseString(const std::string str, const std::string delimiter)
 {
@@ -41,12 +41,12 @@ std::string InventoryDatabase::parseString(const std::string str, const std::str
 }
 
 /**
- * inventoryFileToString
- *
- * @brief Returns the contents of the file located at inventoryFilePath as a string. If the file at inventoryFilePath doesn't exist, returns an empty string.
- *
- * @return The contents of the file from inventoryFilePath as a string. If the file at inventoryFilePath doesn't exist, returns an empty string.
- */
+* inventoryFileToString
+*
+* @brief Returns the contents of the file located at inventoryFilePath as a string. If the file at inventoryFilePath doesn't exist, returns an empty string.
+*
+* @return The contents of the file from inventoryFilePath as a string. If the file at inventoryFilePath doesn't exist, returns an empty string.
+*/
 
 std::string InventoryDatabase::inventoryFileToString()
 {
@@ -73,12 +73,12 @@ std::string InventoryDatabase::inventoryFileToString()
 }
 
 /**
- * getBookCount
- *
- * @brief Returns the number of books in the inventory file.
- *
- * @return Number of "<book>"s in the inventory file.
- */
+* getBookCount
+*
+* @brief Returns the number of books in the inventory file.
+*
+* @return Number of "<book>"s in the inventory file.
+*/
 
 int InventoryDatabase::getBookCount()
 {
@@ -98,14 +98,14 @@ int InventoryDatabase::getBookCount()
 }
 
 /****************************************
- * DATABASE FUNCTIONS
- ****************************************/
+* DATABASE FUNCTIONS
+*****************************************/
 
- /**
-  * createBookArray
-  *
-  * @brief Deletes bookArray if it exists, then creates a new bookArray the size of the number of books in the inventory file.
-  */
+/**
+* createBookArray
+*
+* @brief Deletes bookArray if it exists, then creates a new bookArray the size of the number of books in the inventory file.
+*/
 
 void InventoryDatabase::createBookArray()
 {
@@ -114,16 +114,22 @@ void InventoryDatabase::createBookArray()
 		deleteBookArray();
 	}
 
-	bookArray = new Book[getBookCount()];
+	int bookCount = getBookCount();
+	bookArray = new Book[bookCount];
+
+	for (int i = 0; i < bookCount; i++)
+	{
+
+	}
 
 	return;
 }
 
 /**
- * deleteBookArray
- *
- * @brief Deletes the dynamically allocated bookArray, if it exists.
- */
+* deleteBookArray
+*
+* @brief Deletes the dynamically allocated bookArray, if it exists.
+*/
 
 void InventoryDatabase::deleteBookArray()
 {
@@ -137,28 +143,43 @@ void InventoryDatabase::deleteBookArray()
 }
 
 /**
- * setInventoryFilePath
- *
- * @brief Sets inventoryFilePath to the passed path.
- *
- * @param path The path to the database file. This should be a path to a .txt file. Partial paths are executed relative to the executable.
- */
+* buildInventory
+*
+* @brief 
+*
+* @return
+*/
 
-void InventoryDatabase::setInventoryFilePath(const std::string path)
+bool InventoryDatabase::buildInventory()
+{
+	return true;
+}
+
+/**
+* buildInventory
+*
+* @brief
+*
+* @param
+*
+* @return
+*/
+
+bool InventoryDatabase::buildInventory(const std::string path)
 {
 	inventoryFilePath = path;
-	return;
+	return true;
 }
 
 /****************************************
- * CONSTRUCTORS / DESTRUCTORS
- ****************************************/
+* CONSTRUCTORS / DESTRUCTORS
+*****************************************/
 
- /**
-  * InventoryDatabase
-  *
-  * @brief Creates a new object of type InventoryDatabase. NOTE: setInventoryFilePath() and createBookArray() should be called before using InventoryDatabase for the first time!
-  */
+/**
+* InventoryDatabase
+*
+* @brief Creates a new object of type InventoryDatabase.
+*/
 
 InventoryDatabase::InventoryDatabase()
 {
@@ -166,10 +187,21 @@ InventoryDatabase::InventoryDatabase()
 }
 
 /**
- * ~InventoryDatabase
- *
- * @brief Called when InventoryDatabase leaves scope. Deletes the dynamically allocated bookArray if it exists.
- */
+* InventoryDatabase
+*
+* @brief Creates a new object of type InventoryDatabase, and sets inventoryFilePath to the passed string.
+*/
+
+InventoryDatabase::InventoryDatabase(std::string path)
+{
+	InventoryDatabase::inventoryFilePath = path;
+}
+
+/**
+* ~InventoryDatabase
+*
+* @brief Called when InventoryDatabase leaves scope. Deletes the dynamically allocated bookArray if it exists.
+*/
 
 InventoryDatabase::~InventoryDatabase()
 {
@@ -177,22 +209,22 @@ InventoryDatabase::~InventoryDatabase()
 }
 
 /****************************************
- * DEBUG FUNCTION (REMOVE IN FINAL BUILD)
- ****************************************/
+* DEBUG FUNCTION (REMOVE IN FINAL BUILD)
+*****************************************/
 
- /**
-  * debug
-  *
-  * @brief For debugging purposes only. Remove this function in the final build.
-  */
+/**
+* debug
+*
+* @brief For debugging purposes only. Remove this function in the final build.
+*/
 
 void InventoryDatabase::debug()
 {
-	//std::cout << getBookCount() << std::endl;
+	std::cout << getBookCount() << std::endl;
 	//createBookArray();
-	std::string books = inventoryFileToString();
-	std::string str1 = "abc <txt>Foo</txt> <txt>Bar</txt>";
-	std::string str2 = "abc <nop>Foo</nop> <nop>Bar</nop>";
-	std::cout << parseString(books, "book") << std::endl;
+	//std::string books = inventoryFileToString();
+	//std::string str1 = "abc <txt>Foo</txt> <txt>Bar</txt>";
+	//std::string str2 = "abc <nop>Foo</nop> <nop>Bar</nop>";
+	//std::cout << parseString(books, "book") << std::endl;
 	return;
 }

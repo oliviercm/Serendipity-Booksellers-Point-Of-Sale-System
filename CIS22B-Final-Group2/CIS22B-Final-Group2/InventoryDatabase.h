@@ -26,10 +26,12 @@ private:
 
 public:
 	//Database-related functions
-	void setInventoryFilePath(const std::string path);
+	bool buildInventory();
+	bool buildInventory(const std::string path);
 
 	//Constuctors
 	InventoryDatabase();
+	InventoryDatabase(const std::string path);
 
 	//Destructors
 	~InventoryDatabase();
