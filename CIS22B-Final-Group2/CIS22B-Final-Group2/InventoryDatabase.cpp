@@ -119,7 +119,7 @@ std::string InventoryDatabase::fileToString(std::string path)
 	{
 		std::string str;
 
-		//Reserve space in the string to store the entire file
+		//Reserve space in the string to store the entire file, not strictly required
 		in.seekg(0, std::ios::end);
 		str.reserve(in.tellg());
 		in.seekg(0, std::ios::beg);

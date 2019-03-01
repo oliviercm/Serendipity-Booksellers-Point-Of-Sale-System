@@ -5,7 +5,6 @@
 
 #include <string>
 #include <fstream>
-#include <streambuf>
 #include "Book.h"
 
 class InventoryDatabase
@@ -16,7 +15,7 @@ private:
 	static std::string inventoryString;
 	static Book* inventoryArray;
 
-	//Member constants
+	//Constant members
 	const std::string DELIM_BOOK = "book";
 	const std::string DELIM_ISBN = "isbn";
 	const std::string DELIM_TITLE = "title";
