@@ -49,6 +49,9 @@ public:
 	//Destructors
 	~InventoryDatabase();
 
+	//Operator overloads
+	InventoryDatabase& operator=(const InventoryDatabase) = delete; //Delete assignment operator
+
 	//Debugging function, remove in final build
 	void debug();
 };
