@@ -42,3 +42,51 @@ Book::~Book()
 {
 
 }
+
+Book Book::operator=(Book book)
+{
+	Book book;
+
+	book.isbn = this->isbn;
+	book.title = this->title;
+	book.author = this->author;
+	book.publisher = this->publisher;
+	book.addDate = this->addDate;
+	book.quantity = this->quantity;
+	book.wholesale = this->wholesale;
+	book.retail = this->retail;
+
+	return *this;
+}
+
+Book Book::operator+(int n)
+{
+	Book book;
+
+	book.isbn = this->isbn;
+	book.title = this->title;
+	book.author = this->author;
+	book.publisher = this->publisher;
+	book.addDate = this->addDate;
+	book.quantity = this->quantity;
+	book.wholesale = this->wholesale;
+	book.retail = this->retail;
+
+	return *this;
+}
+
+Book Book::operator-(int n)
+{
+	Book book;
+
+	book.isbn = this->isbn;
+	book.title = this->title;
+	book.author = this->author;
+	book.publisher = this->publisher;
+	book.addDate = this->addDate;
+	book.quantity = this->quantity;
+	book.wholesale = this->wholesale;
+	book.retail = this->retail;
+
+	return *this;
+}
