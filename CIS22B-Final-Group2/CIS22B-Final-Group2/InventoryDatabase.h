@@ -45,6 +45,7 @@ public:
 	//Constuctors
 	InventoryDatabase();
 	InventoryDatabase(const std::string path);
+	InventoryDatabase(const InventoryDatabase&) = delete; //Delete copy constructor
 
 	//Destructors
 	~InventoryDatabase();
