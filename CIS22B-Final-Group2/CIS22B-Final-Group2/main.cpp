@@ -14,10 +14,11 @@ Group 2:
 #include <iostream>
 #include <string>
 #include "InventoryDatabase.h"
+#include "Book.h"
 
 int main()
 {
-	const bool debug = true;
+	const bool debug = false;
 	if (debug)
 	{
 		InventoryDatabase inventoryDatabase("books.txt");
@@ -25,7 +26,12 @@ int main()
 		inventoryDatabase.debug();
 	}
 
-	std::cout << "Hello" << std::endl;
+	Book book = Book();
+	book.quantity = 1;
+
+	std::cout << book << std::endl;
+
+	std::cout << ++book << std::endl;
 	
 	std::cin.get();
 	return 0;
