@@ -23,7 +23,15 @@ public:
 	~Book();
 
 	//Operator overloads
-	Book operator=(const Book book);
-	Book operator+(const int n);
-	Book operator-(const int n);
+	Book& operator=(const Book& book);
+	Book& operator+(const int n);
+	Book& operator-(const int n);
+	Book& operator+=(const int n);
+	Book& operator-=(const int n);
+	Book& operator++(); //Prefix
+	Book& operator--(); //Prefix
+	Book operator++(int); //Postfix
+	Book operator--(int); //Postfix
+
+	friend std::ostream& operator<<(std::ostream& os, const Book& book);
 };
