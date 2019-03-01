@@ -24,6 +24,8 @@ int main()
 
 		inventoryDatabase.debug();
 	}
+
+	std::cout << "Hello" << std::endl;
 	
 	std::cin.get();
 	return 0;
