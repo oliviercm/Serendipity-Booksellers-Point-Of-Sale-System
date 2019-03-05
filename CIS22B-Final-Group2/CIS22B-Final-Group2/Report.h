@@ -5,7 +5,7 @@
 #include"Book.h"
 #include"InventoryDatabase.h"
 
-class Report
+class Report // Testing
 {
 private:
 	int nu_books;				//Number of titles in the inventory
