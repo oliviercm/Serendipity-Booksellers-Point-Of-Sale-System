@@ -1,0 +1,29 @@
+<book>
+	<isbn>9781607472209</isbn>
+	<title>A Brief History of Time: From the Big Bang to Black Holes</title>
+	<author>Stephen Hawking</author>
+	<publisher>BIG Publishing</publisher>
+	<adddate>02/20/2019</adddate>
+	<quantity>1</quantity>
+	<wholesale>5.99</wholesale>
+	<retail>15.99</retail>
+</book>
+<book>
+	<isbn>9789604533084</isbn>
+	<title>Harry Potter and the Philosopher's Stone</title>
+	<author>J. K. Rowling</author>
+	<publisher>Phantasy Press</publisher>
+	<adddate>06/13/2000</adddate>
+	<quantity>4</quantity>
+	<wholesale>4.99</wholesale>
+	<retail>11.99</retail>
+</book>
+<book>
+	<isbn>9780840700780</isbn>
+	<title>The Holy Bible (King James Edition)</title>
+	<publisher>Eden Publications</publisher>
+	<adddate>12/25/1970</adddate>
+	<quantity>13</quantity>
+	<wholesale>8.99</wholesale>
+	<retail>19.99</retail>
+</book>
