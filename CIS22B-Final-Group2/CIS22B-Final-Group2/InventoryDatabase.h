@@ -1,7 +1,21 @@
-#pragma once
+/********************************************************************************
+****************************** InventoryDatabase ********************************
+*********************************************************************************
+* The purpose of this class is to control all functions regarding the plaintext
+* inventory file. As a module, this module is designed to solely handle all
+* read/write operations to the inventory file, such as:
+* - Adding a new book to the file
+* - Delete a book from the file
+* - Change any information in the database
+*****************
+***** USAGE *****
+*****************
+* NOTE: This class is mostly intended to have only one single instance at a time.
+* Instead of calling multiple new instances of InventoryDatabase, only one instance
+* should exist, and the reference of that one instance should be passed around.
+*********************************************************************************/
 
-//Debugging, remove in final build
-#include <iostream>
+#pragma once
 
 #include <string>
 #include <fstream>
@@ -13,7 +27,7 @@ private:
 	//Variable members
 	std::string inventoryFilePath;
 	std::string inventoryString;
-	InventoryBook* inventoryArray;
+	std::unique_ptr<InventoryBook[]> inventoryArray;
 	int inventoryArraySize;
 	
 	//Constant members
@@ -33,26 +47,19 @@ private:
 	std::string fileToString(const std::string path) const;
 	int getNumBooksInString(const std::string str) const;
 
-	//Database-related functions
-	void deleteInventoryArray();
-
 public:
-	//Database-related functions
-	bool buildInventoryArray();
-	std::string getInventoryFilePath() const;
-	void setInventoryFilePath(const std::string path);
+	//Database functions
+	bool buildInventoryArray(const std::string path);
+	std::unique_ptr<InventoryBook[]> getInventoryArray() const;
+	int getInventoryArraySize() const;
+	void editBookQuantityByIsbn(std::string isbn, int amount);
 
-	//Constuctors
+	//Constuctors / Destructors
 	InventoryDatabase();
 	InventoryDatabase(const std::string path);
-	InventoryDatabase(const InventoryDatabase&) = delete; //Delete copy constructor
-
-	//Destructors
 	~InventoryDatabase();
 
-	//Operator overloads
-	InventoryDatabase& operator=(const InventoryDatabase) = delete; //Delete assignment operator
-
-	//Debugging function, remove in final build
-	void debug();
+	//Delete copy constructor and copy assignment
+	InventoryDatabase(const InventoryDatabase&) = delete;
+	InventoryDatabase& operator=(const InventoryDatabase) = delete;
 };

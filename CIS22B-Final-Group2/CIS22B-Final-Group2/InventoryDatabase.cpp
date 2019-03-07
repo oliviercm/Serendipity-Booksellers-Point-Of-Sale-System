@@ -19,6 +19,10 @@
 
 #include "InventoryDatabase.h"
 
+/***************************************************************************
+*********** PRIVATE FUNCTIONS
+****************************************************************************/
+
 /****************************************
 * HELPER FUNCTIONS
 *****************************************/
@@ -153,38 +157,31 @@ int InventoryDatabase::getNumBooksInString(std::string str) const
 	return count;
 }
 
+/***************************************************************************
+*********** PUBLIC FUNCTIONS
+****************************************************************************/
+
 /****************************************
 * DATABASE FUNCTIONS
 *****************************************/
 
 /**
-* deleteInventoryArray
-*
-* @brief Deletes the dynamically allocated inventoryArray, if it exists.
-*/
-
-void InventoryDatabase::deleteInventoryArray()
-{
-	if (inventoryArray != nullptr)
-	{
-		delete[] inventoryArray;
-		inventoryArray = nullptr;
-	}
-
-	return;
-}
-
-/**
 * buildInventoryArray
 *
 * @brief Builds and populates inventoryArray. Any existing inventoryArray will be deleted.
+*	This should be called once, and only once, before using InventoryDatabase.
+*	Calling this multiple times may overwrite changes made to the array but not yet saved to file.
+*
+* @param path The file path where the inventory file is located. The file should be a plaintext file formatted using the correct specification.
 *
 * @return True if the file path isn't empty and the file exists, opens, and contains something.
 *	False if the file path is empty, or the file doesn't exist, doesn't open, or doesn't contain anything.
 */
 
-bool InventoryDatabase::buildInventoryArray()
+bool InventoryDatabase::buildInventoryArray(const std::string path)
 {
+	inventoryFilePath = path;
+	
 	//Abort if inventory file path is empty (hasn't been set)
 	if (inventoryFilePath == std::string())
 	{
@@ -198,13 +195,13 @@ bool InventoryDatabase::buildInventoryArray()
 	{
 		return false;
 	}
-	
-	//Delete inventory array, if it already exists
-	deleteInventoryArray();
+
+	//Delete existing inventory array
+	inventoryArray.reset();
 
 	//Create new inventory array and populate
 	inventoryArraySize = getNumBooksInString(inventoryString);
-	inventoryArray = new InventoryBook[inventoryArraySize];
+	inventoryArray = std::make_unique<InventoryBook[]>(inventoryArraySize);
 
 	for (int i = 0; i < inventoryArraySize; i++)
 	{
@@ -223,29 +220,71 @@ bool InventoryDatabase::buildInventoryArray()
 }
 
 /**
-* getInventoryFilePath
+* getInventoryArray
 *
-* @brief Returns inventoryFilePath.
+* @brief Makes a copy of the inventory array and passes the reference of the copy.
 *
-* @return inventoryFilePath
+* @return A smart pointer to a copy of the inventory array.
 */
 
-std::string InventoryDatabase::getInventoryFilePath() const
+std::unique_ptr<InventoryBook[]> InventoryDatabase::getInventoryArray() const
 {
-	return inventoryFilePath;
+	std::unique_ptr<InventoryBook[]> copyInventoryArray = std::make_unique<InventoryBook[]>(inventoryArraySize);
+
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		copyInventoryArray[i].isbn = inventoryArray[i].isbn;
+		copyInventoryArray[i].title = inventoryArray[i].title;
+		copyInventoryArray[i].author = inventoryArray[i].author;
+		copyInventoryArray[i].publisher = inventoryArray[i].publisher;
+		copyInventoryArray[i].addDate = inventoryArray[i].addDate;
+		copyInventoryArray[i].quantity = inventoryArray[i].quantity;
+		copyInventoryArray[i].wholesale = inventoryArray[i].wholesale;
+		copyInventoryArray[i].retail = inventoryArray[i].retail;
+	}
+
+	return copyInventoryArray;
 }
 
 /**
-* setInventoryFilePath
+* getInventoryArraySize
 *
-* @brief Sets inventoryFilePath to path.
+* @brief Returns inventoryArraySize.
 *
-* @param path Path to set inventoryFilePath to, should be a path to a plaintext file.
+* @return inventoryArraySize.
 */
 
-void InventoryDatabase::setInventoryFilePath(std::string path)
+int InventoryDatabase::getInventoryArraySize() const
 {
-	inventoryFilePath = path;
+	return inventoryArraySize;
+}
+
+/**
+* editBookQuantityByIsbn
+*
+* @brief Subracts from the quantity-on-hand of a book in the database based on ISBN.
+*	Note that this doesn't check if the quantity will go below 0 - this should be done
+*	on the caller's side.
+*
+* @param isbn The ISBN of the book to edit the quantity of. If this ISBN doesn't exist for any book in the database,
+*	this function will do nothing!
+*
+* @param amount The amount to edit the quantity by.
+*	A positive number will add to the quantity. (The store buys books from a supplier)
+*	A negative number will subract from the quantity. (The store sells books to a customer)
+*/
+
+void InventoryDatabase::editBookQuantityByIsbn(std::string isbn, int amount)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			inventoryArray[i].quantity += amount;
+		}
+	}
+
+	return;
 }
 
 /****************************************
@@ -256,7 +295,7 @@ void InventoryDatabase::setInventoryFilePath(std::string path)
 * InventoryDatabase
 *
 * @brief Creates a new object of type InventoryDatabase. Overloading sets the inventory file path to the passed string.
-*	If called without overloading, setInventoryFilePath and buildInventoryArray should be called later to properly prepare InventoryDatabase.
+*	If called without overloading, setInventoryFilePath should be called later to properly prepare InventoryDatabase.
 *
 * @param path Path to set inventoryFilePath to, should be a plaintext file.
 */
@@ -265,56 +304,21 @@ InventoryDatabase::InventoryDatabase()
 {
 	inventoryFilePath = std::string();
 	inventoryString = std::string();
-	inventoryArray = nullptr;
 }
 
 InventoryDatabase::InventoryDatabase(std::string path)
 {
 	inventoryFilePath = path;
 	inventoryString = fileToString(inventoryFilePath);
-	buildInventoryArray();
 }
 
 /**
 * ~InventoryDatabase
 *
-* @brief Called when InventoryDatabase leaves scope. Deletes the dynamically allocated bookArray if it exists.
+* @brief Called when InventoryDatabase leaves scope.
 */
 
 InventoryDatabase::~InventoryDatabase()
 {
-	deleteInventoryArray();
-}
-
-/****************************************
-* DEBUG FUNCTION (REMOVE IN FINAL BUILD)
-*****************************************/
-
-/**
-* debug
-*
-* @brief For debugging purposes only. Remove this function in the final build.
-*/
-
-void InventoryDatabase::debug()
-{
-	//std::cout << getBookCount() << std::endl;
-	//std::string str1 = "abc <txt>Foo</txt> <txt>Bar</txt> <bar> </bar> <txt> <txt> mischief </txt> <txt> whoops";
-	//std::string str2 = "abc <nop>Foo <nop> oops";
-	//std::cout << parseString(str2, "nop") << std::endl;
-
-	for (int i = 0; i < inventoryArraySize; i++)
-	{
-		std::cout << "Book " << i << ":" << std::endl;
-		std::cout << "IBSN: " << inventoryArray[i].isbn << std::endl;
-		std::cout << "Title: " << inventoryArray[i].title << std::endl;
-		std::cout << "Author: " << inventoryArray[i].author << std::endl;
-		std::cout << "Publisher: " << inventoryArray[i].publisher << std::endl;
-		std::cout << "Add Date: " << inventoryArray[i].addDate << std::endl;
-		std::cout << "Quantity: " << inventoryArray[i].quantity << std::endl;
-		std::cout << "Wholesale: " << inventoryArray[i].wholesale << std::endl;
-		std::cout << "Retail: " << inventoryArray[i].retail << std::endl;
-		std::cout << std::endl;
-	}
-	return;
+	
 }
