@@ -5,16 +5,17 @@
 
 #include <string>
 #include <fstream>
-#include "Book.h"
+#include "InventoryBook.h"
 
 class InventoryDatabase
 {
 private:
-	//Static members
-	static std::string inventoryFilePath;
-	static std::string inventoryString;
-	static Book* inventoryArray;
-
+	//Variable members
+	std::string inventoryFilePath;
+	std::string inventoryString;
+	InventoryBook* inventoryArray;
+	int inventoryArraySize;
+	
 	//Constant members
 	const std::string DELIM_BOOK = "book";
 	const std::string DELIM_ISBN = "isbn";
@@ -27,10 +28,10 @@ private:
 	const std::string DELIM_RETAIL = "retail";
 
 	//Helper functions
-	std::string parseString(const std::string str, const std::string delimiter);
-	std::string parseString(const std::string str, const std::string delimiter, const int skip);
-	std::string fileToString(std::string path);
-	int getBookCount();
+	std::string parseString(const std::string str, const std::string delimiter) const;
+	std::string parseString(const std::string str, const std::string delimiter, const int skip) const;
+	std::string fileToString(const std::string path) const;
+	int getNumBooksInString(const std::string str) const;
 
 	//Database-related functions
 	void deleteInventoryArray();
@@ -38,8 +39,7 @@ private:
 public:
 	//Database-related functions
 	bool buildInventoryArray();
-	bool buildInventoryArray(const std::string path);
-	const std::string getInventoryFilePath();
+	std::string getInventoryFilePath() const;
 	void setInventoryFilePath(const std::string path);
 
 	//Constuctors

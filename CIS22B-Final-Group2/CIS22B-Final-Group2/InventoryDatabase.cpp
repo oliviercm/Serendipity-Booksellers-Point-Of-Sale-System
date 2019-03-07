@@ -10,23 +10,14 @@
 *****************
 ***** USAGE *****
 *****************
-* In order to use this class, first create a new InventoryDatabase.
-* It is recommended to use the overloaded constructor on the first construction,
-* otherwise, calling most functions will try to work with an inventory file
-* at an empty path if you haven't set the file path yet (this will cause problems)
+* NOTE: This class is mostly intended to have only one single instance at a time.
+* Instead of calling multiple new instances of InventoryDatabase, only one instance
+* should exist, and the reference of that one instance should be passed around.
 *********************************************************************************/
 
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "InventoryDatabase.h"
-
-/****************************************
-* STATIC MEMBERS
-*****************************************/
-
-std::string InventoryDatabase::inventoryFilePath = std::string();
-std::string InventoryDatabase::inventoryString = std::string();
-Book* InventoryDatabase::inventoryArray = nullptr;
 
 /****************************************
 * HELPER FUNCTIONS
@@ -52,7 +43,7 @@ Book* InventoryDatabase::inventoryArray = nullptr;
 *	If skip is greater than the number of delimiters in the string, an empty string is returned.
 */
 
-std::string InventoryDatabase::parseString(const std::string str, const std::string delimiter)
+std::string InventoryDatabase::parseString(const std::string str, const std::string delimiter) const
 {
 	const std::string delimitBeg = "<" + delimiter + ">";
 	const std::string delimitEnd = "</" + delimiter + ">";
@@ -72,7 +63,7 @@ std::string InventoryDatabase::parseString(const std::string str, const std::str
 	}
 }
 
-std::string InventoryDatabase::parseString(const std::string str, const std::string delimiter, const int skip)
+std::string InventoryDatabase::parseString(const std::string str, const std::string delimiter, const int skip) const
 {
 	const std::string delimitBeg = "<" + delimiter + ">";
 	const std::string delimitEnd = "</" + delimiter + ">";
@@ -111,7 +102,7 @@ std::string InventoryDatabase::parseString(const std::string str, const std::str
 * @return The contents of the file from path as a string. If the file at path doesn't exist, returns an empty string.
 */
 
-std::string InventoryDatabase::fileToString(std::string path)
+std::string InventoryDatabase::fileToString(std::string path) const
 {
 	std::ifstream in(path);
 
@@ -137,25 +128,26 @@ std::string InventoryDatabase::fileToString(std::string path)
 }
 
 /**
-* getBookCount
+* getNumBooksInString
 *
-* @brief Returns the number of books in the inventory string based on the book delimiter.
+* @brief Returns the number of books in the string based on the book delimiter.
 *
-* @return Number of books in the inventory string.
+* @param str The string to search for books. In almost every case this should be the inventory string.
+*
+* @return Number of books in the string.
 */
 
-int InventoryDatabase::getBookCount()
+int InventoryDatabase::getNumBooksInString(std::string str) const
 {
-	std::string inventoryStr = inventoryString;
 	int count = 0;
 	size_t pos = 0;
 	std::string delimiter = "<" + DELIM_BOOK + ">";
 
-	pos = inventoryStr.find(delimiter, pos);
+	pos = str.find(delimiter, pos);
 	while (pos != std::string::npos)
 	{
 		count++;
-		pos = inventoryStr.find(delimiter, pos + delimiter.length());
+		pos = str.find(delimiter, pos + delimiter.length());
 	}
 
 	return count;
@@ -187,63 +179,34 @@ void InventoryDatabase::deleteInventoryArray()
 *
 * @brief Builds and populates inventoryArray. Any existing inventoryArray will be deleted.
 *
-* @return True if the file path was not empty (never set/initialized). Note that an invalid path will act the same as a path to an empty file - it will return true and build an empty inventoryArray.
-*	False if the file path is empty ("")
+* @return True if the file path isn't empty and the file exists, opens, and contains something.
+*	False if the file path is empty, or the file doesn't exist, doesn't open, or doesn't contain anything.
 */
 
 bool InventoryDatabase::buildInventoryArray()
 {
-	//Abort if inventory file path isn't set
+	//Abort if inventory file path is empty (hasn't been set)
 	if (inventoryFilePath == std::string())
 	{
 		return false;
 	}
 
 	inventoryString = fileToString(inventoryFilePath);
+
+	//Abort if inventory file doesn't exist, doesn't open, or doesn't contain anything.
+	if (inventoryString == std::string())
+	{
+		return false;
+	}
 	
-	//Delete existing inventory array for replacement
-	if (inventoryArray != nullptr)
-	{
-		deleteInventoryArray();
-	}
+	//Delete inventory array, if it already exists
+	deleteInventoryArray();
 
 	//Create new inventory array and populate
-	int bookCount = getBookCount();
-	inventoryArray = new Book[bookCount];
+	inventoryArraySize = getNumBooksInString(inventoryString);
+	inventoryArray = new InventoryBook[inventoryArraySize];
 
-	for (int i = 0; i < bookCount; i++)
-	{
-		std::string bookStr = parseString(inventoryString, DELIM_BOOK, i);
-		inventoryArray[i].isbn = parseString(bookStr, DELIM_ISBN);
-		inventoryArray[i].title = parseString(bookStr, DELIM_TITLE);
-		inventoryArray[i].author = parseString(bookStr, DELIM_AUTHOR);
-		inventoryArray[i].publisher = parseString(bookStr, DELIM_PUBLISHER);
-		inventoryArray[i].addDate = parseString(bookStr, DELIM_DATE_ADDED);
-		inventoryArray[i].quantity = std::stoi(parseString(bookStr, DELIM_QUANTITY));
-		inventoryArray[i].wholesale = std::stod(parseString(bookStr, DELIM_WHOLESALE));
-		inventoryArray[i].retail = std::stod(parseString(bookStr, DELIM_RETAIL));
-	}
-
-	return true;
-}
-
-bool InventoryDatabase::buildInventoryArray(const std::string path)
-{
-	inventoryFilePath = path;
-
-	inventoryString = fileToString(inventoryFilePath);
-
-	//Delete existing inventory array for replacement
-	if (inventoryArray != nullptr)
-	{
-		deleteInventoryArray();
-	}
-
-	//Create new inventory array and populate
-	int bookCount = getBookCount();
-	inventoryArray = new Book[bookCount];
-
-	for (int i = 0; i < bookCount; i++)
+	for (int i = 0; i < inventoryArraySize; i++)
 	{
 		std::string bookStr = parseString(inventoryString, DELIM_BOOK, i);
 		inventoryArray[i].isbn = parseString(bookStr, DELIM_ISBN);
@@ -267,7 +230,7 @@ bool InventoryDatabase::buildInventoryArray(const std::string path)
 * @return inventoryFilePath
 */
 
-const std::string InventoryDatabase::getInventoryFilePath()
+std::string InventoryDatabase::getInventoryFilePath() const
 {
 	return inventoryFilePath;
 }
@@ -277,7 +240,7 @@ const std::string InventoryDatabase::getInventoryFilePath()
 *
 * @brief Sets inventoryFilePath to path.
 *
-* @param path Path to set inventoryFilePath to, should be a plaintext file.
+* @param path Path to set inventoryFilePath to, should be a path to a plaintext file.
 */
 
 void InventoryDatabase::setInventoryFilePath(std::string path)
@@ -293,18 +256,22 @@ void InventoryDatabase::setInventoryFilePath(std::string path)
 * InventoryDatabase
 *
 * @brief Creates a new object of type InventoryDatabase. Overloading sets the inventory file path to the passed string.
+*	If called without overloading, setInventoryFilePath and buildInventoryArray should be called later to properly prepare InventoryDatabase.
 *
 * @param path Path to set inventoryFilePath to, should be a plaintext file.
 */
 
 InventoryDatabase::InventoryDatabase()
 {
-	
+	inventoryFilePath = std::string();
+	inventoryString = std::string();
+	inventoryArray = nullptr;
 }
 
 InventoryDatabase::InventoryDatabase(std::string path)
 {
-	InventoryDatabase::inventoryFilePath = path;
+	inventoryFilePath = path;
+	inventoryString = fileToString(inventoryFilePath);
 	buildInventoryArray();
 }
 
@@ -336,9 +303,7 @@ void InventoryDatabase::debug()
 	//std::string str2 = "abc <nop>Foo <nop> oops";
 	//std::cout << parseString(str2, "nop") << std::endl;
 
-	int bookCount = getBookCount();
-
-	for (int i = 0; i < bookCount; i++)
+	for (int i = 0; i < inventoryArraySize; i++)
 	{
 		std::cout << "Book " << i << ":" << std::endl;
 		std::cout << "IBSN: " << inventoryArray[i].isbn << std::endl;
