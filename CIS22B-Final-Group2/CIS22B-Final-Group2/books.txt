@@ -21,6 +21,7 @@
 <book>
 	<isbn>9780840700780</isbn>
 	<title>The Holy Bible (King James Edition)</title>
+	<author>Chess Jurist</author>
 	<publisher>Eden Publications</publisher>
 	<adddate>12/25/1970</adddate>
 	<quantity>13</quantity>
