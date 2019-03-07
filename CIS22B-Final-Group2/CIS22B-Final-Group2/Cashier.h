@@ -1,20 +1,21 @@
 #include <string>
-#include "Book.h"
 #include <iostream>
+#include "InventoryBook.h"
 
 class Cashier {
 private:
     Book *cart;
     int cartLength;
-    const int SALES_TAX;
+    const double SALES_TAX = 0.9;
 public:
     // Constructor
-    Cashier(Book* inv); // Oliver, I need access to the inventory array in the InventoryDatabase
+	Cashier();
+    //Cashier(Book* inv); // Oliver, I need access to the inventory array in the InventoryDatabase
     // Destructor
     ~Cashier();
     
     void startCashier();
     void addBookToCart();
-    void checkout();
-    int findBook(string isbnNum);
-}
+    double checkout();
+    int findBook(std::string isbnNum);
+};

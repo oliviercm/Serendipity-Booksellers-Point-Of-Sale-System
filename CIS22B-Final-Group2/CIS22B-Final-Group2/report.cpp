@@ -1,16 +1,17 @@
 #define _CRT_SECURE_NO_WARNINGS
-#ifndef REPORT_M
-#define REPORT_M
+// -$Olivier: I'm not sure what's going on here - if these are include guards, you don't need them since the header file already has #pragma once.
+//#ifndef REPORT_M
+//#define REPORT_M
 #include "Report.h"
 #include "InventoryDatabase.h"
-#include "book.h"
-#include<string>
-#include<fstream>
+#include "InventoryBook.h"
+#include <string>
+//#include <fstream> -$Olivier: I might be wrong, but you don't need fstream for this class.
 
 /*												   	 Constructor
 	From main, we must pass the number of titles in the inventory somehow. This is the only way to create a Report object.
 */
-Report::Report(int num_books, Book *data)
+Report::Report(int num_books, InventoryBook *data)
 {
 	wholesale_value = 0;
 	retail_value = 0;
@@ -19,13 +20,13 @@ Report::Report(int num_books, Book *data)
 }
 
 /*												Array of Books Creation Functions
-	The purpose of these functions are to dynamically create an array of Book objects. With this, the Report class is going to be able to use
+	The purpose of these functions are to dynamically create an array of InventoryBook objects. With this, the Report class is going to be able to use
 	all its member functions on its internal array. "array_books" will create the new array. "setbookList" will fill in the array with
-	a for loop by streaming	in the data from the inventory file. We use the overloaded >> operator to fill in each part of a Book object.
+	a for loop by streaming	in the data from the inventory file. We use the overloaded >> operator to fill in each part of a InventoryBook object.
 */
-Book* Report::array_books()
+InventoryBook* Report::array_books()
 {
-	Book *ptrBL = new Book[nu_books];
+	InventoryBook *ptrBL = new InventoryBook[nu_books];
 	return ptrBL;
 }
 void Report::setbookList()
@@ -49,7 +50,7 @@ void Report::setbookList()
 	These algorithms will be used by several public functions of this class. They will sort by quantity, wholesale cost, and number of days
 	the books have remained in the inventory. All 3 functions will used the Selection Sort algorithm.
 */
-void Report::selectionSortQty(Book *books)
+void Report::selectionSortQty(InventoryBook *books)
 {
 	int startScan, minIndex, minValue;
 
@@ -69,7 +70,7 @@ void Report::selectionSortQty(Book *books)
 		(books + startScan)->quantity = minValue;
 	}
 }
-void Report::selectionSortCost(Book *books)
+void Report::selectionSortCost(InventoryBook *books)
 {
 	int startScan, minIndex;
 	double minValue;
@@ -90,7 +91,7 @@ void Report::selectionSortCost(Book *books)
 		(books + startScan)->wholesale = minValue;
 	}
 }
-void Report::selectionSortAge(Book *books)
+void Report::selectionSortAge(InventoryBook *books)
 {
 	int startScan, minIndex;
 	std::string minValue;
@@ -178,11 +179,11 @@ void Report::getListbyAge()
 }
 
 /*													Destructor
-	Delete dynamically allocated array of Book objects to prevent memory leak
+	Delete dynamically allocated array of InventoryBook objects to prevent memory leak
 */
 Report::~Report()
 {
 	delete books;
 }
 
-#endif
+//#endif -$Olivier: If this is for an include guard, you don't need it since the header file already has #pragma once

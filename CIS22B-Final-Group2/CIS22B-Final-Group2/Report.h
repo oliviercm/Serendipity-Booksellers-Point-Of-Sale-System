@@ -1,24 +1,25 @@
 #pragma once
-#include<iostream>
-#include<fstream>
-#include<string>
-#include"Book.h"
-#include"InventoryDatabase.h"
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include "Book.h"
+#include "InventoryDatabase.h"
 
 class Report // Testing
 {
 private:
 	int nu_books;				//Number of titles in the inventory
-	Book *books;				//Somehow the program must calculate the number of books in the input file so we can make arrays of that size
+	InventoryBook *books;				//Somehow the program must calculate the number of books in the input file so we can make arrays of that size
 	double wholesale_value;		//Counter to find the total wholesale value of all books in the inventory
 	double retail_value;		//Counter to find the total retial value of all books in the inventory
-	Book *inventory;			// OLIVER, I need a pointer to the array your module creates!
+	InventoryBook *inventory;			// OLIVER, I need a pointer to the array your module creates!
 
 	//Private setters.
-	Book *array_books();		//This function will dynamically allocate an array of Book objects
-	void selectionSortQty(Book *books);			//Sort by Quantity
-	void selectionSortCost(Book *books);		//Sort by Wholesale Cost
-	void selectionSortAge(Book *books);			//Sort by date book was added to inventory
+	InventoryBook *array_books();		//This function will dynamically allocate an array of InventoryBook objects
+	void selectionSortQty(InventoryBook *books);			//Sort by Quantity
+	void selectionSortCost(InventoryBook *books);		//Sort by Wholesale Cost
+	void selectionSortAge(InventoryBook *books);			//Sort by date book was added to inventory
 
 public:
 	//Getters
@@ -31,7 +32,7 @@ public:
 	void getListbyAge();                //List by Age
 
 //Constructor
-	Report(int num_books, Book *data);
+	Report(int num_books, InventoryBook *data);
 	//Destructor
 	~Report();
 };
