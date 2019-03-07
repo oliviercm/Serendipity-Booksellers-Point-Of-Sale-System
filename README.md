@@ -50,7 +50,6 @@ This program was written as a final group project for De Anza W19 CIS D022B 03Y,
 
 * **Olivier Chan Sion Moy**
 * **Luis Guerrero**
-* **Natalia Coelho Mendonca**
 * **Samuel Ruiz Cervantes**
 * **Manasi Gowda**
 
