@@ -4,7 +4,6 @@ Final: Serendipity Booksellers POS System
 Group 2:
 	Olivier Chan Sion Moy
 	Luis Guerrero
-	Natalia Coelho Mendonca
 	Samuel Ruiz Cervantes
 	Manasi Gowda
 */
@@ -18,20 +17,13 @@ Group 2:
 
 int main()
 {
-	const bool debug = false;
+	const bool debug = true;
 	if (debug)
 	{
 		InventoryDatabase inventoryDatabase("books.txt");
 
 		inventoryDatabase.debug();
 	}
-
-	Book book = Book();
-	book.quantity = 1;
-
-	std::cout << book << std::endl;
-
-	std::cout << ++book << std::endl;
 	
 	std::cin.get();
 	return 0;
