@@ -1,12 +1,10 @@
 #define _CRT_SECURE_NO_WARNINGS
-#ifndef REPORT_M
-#define REPORT_M
+#pragma once
 #include "Report.h"
 #include "InventoryBook.h"
 #include "InventoryDatabase.h"
 #include "book.h"
 #include<string>
-#include<fstream>
 
 /*												   	 Constructor
 	From main, we must pass the number of titles in the inventory somehow. This is the only way to create a Report object.
@@ -160,5 +158,3 @@ Report::~Report()
 {
 	delete books;
 }
-
-#endif
