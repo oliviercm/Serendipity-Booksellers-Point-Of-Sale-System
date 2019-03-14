@@ -20,6 +20,14 @@ Group 2:
 
 using namespace std;
 
+int main() {
+	InventoryDatabase *data{};
+	Cashier cash{ data };
+	cash.startCashier();
+}
+
+// Take out comment 
+/*
 void displayMainMenu();
 void displayCashierModule();
 void displayInventoryModule();
@@ -183,7 +191,7 @@ void displayInventoryModule() {
 		<< right << setw(15) << "RETAIL PRICE:"
 		<< right << setw(10) << "ISBN:" << endl;
 	cout << endl;
-	cout << bars;
+	cout << bars; */
 	/*
 	auto books = inventoryDatabase[i];
 	for (int i = 0; i < 3; i++) {
@@ -209,7 +217,8 @@ void displayInventoryModule() {
 		<< setw((bars.length() + cashierModeText.length()) / 2) << "RETAIL-PRICE: " << "164.99" << endl << endl
 		<< setw((bars.length() + cashierModeText.length()) / 2) << "ISBN: " << "9781305116405"  << endl;
 	cout << endl;
-	*/
+	*/ // take Out comment 
+/*
 	cout << endl;
 	cout << bars << endl;
 	cout << endl;
@@ -276,7 +285,7 @@ void displayInventoryList() {
 	cout << endl;
 
 	return;
-}
+} */
 
 /*
 void displayInventory() {
@@ -306,6 +315,8 @@ void displayInventory() {
 }
 */
 
+// Take out comment 
+/*
 string generateBars(int number)
 {
 	string bars = string();
@@ -378,4 +389,4 @@ void clearScreen()
 {
 	system("CLS");
 	return;
-} 
+} */
