@@ -61,6 +61,33 @@ void Cashier::addBookToCart(){
     }
 }
 
+// Removes book from cart by prompting the user for the ISBN number 
+void Cashier::removeBookFromCart() {
+	std::string isbn;
+	std::cout << "What is the ISBN number of the book?: ";
+	std::cin >> isbn;
+
+	// -$Olivier I added this here, this is a probable way of getting the number of books in the inventory. 
+	// You need inv to be a pointer to an InventoryDatabase object, don't create your own. 
+	// Instead store a reference in a member variable and let main.cpp set your reference somehow.
+	int bookCount = data->getInventoryArraySize();
+
+	for (int i = 0; i < bookCount; i++) {
+		if ((inv[i].isbn == isbn) && (inv[i].quantity > 0)) {
+			if (findBook(isbn) != -1) {
+				cart[findBook(isbn)].quantity--;
+				inv[i].quantity++;
+			}
+		}
+		else if (inv[i].isbn == isbn) {
+			std::cout << "There are no more books of this ISBN number availiable." << std::endl;
+		}
+		else {
+			std::cout << "Book not found." << std::endl;
+		}
+	}
+}
+
 // Returns -1 if the book is not in the array, else returns the index the book
 // is at
 int Cashier::findBook(std::string isbnNum){

@@ -21,6 +21,7 @@ public:
     
     void startCashier();
     void addBookToCart();
+	void removeBookFromCart();
     double checkout();
     int findBook(std::string isbnNum);
 };
