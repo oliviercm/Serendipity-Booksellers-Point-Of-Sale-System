@@ -1,16 +1,21 @@
 #include <string>
 #include <iostream>
 #include "InventoryBook.h"
+#include "InventoryDatabase.h"
 
 class Cashier {
 private:
-    Book *cart;
+    InventoryBook *cart;
     int cartLength;
     const double SALES_TAX = 0.9;
+	InventoryDatabase * data; 
+	std::unique_ptr<InventoryBook[]> inv; 
+
 public:
     // Constructor
 	Cashier();
-    //Cashier(Book* inv); // Oliver, I need access to the inventory array in the InventoryDatabase
+    Cashier(InventoryDatabase * data2);
+
     // Destructor
     ~Cashier();
     

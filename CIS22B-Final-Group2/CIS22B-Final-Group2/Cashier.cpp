@@ -1,10 +1,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Cashier.h"
+#include "InventoryDatabase.h"
 
-Cashier::Cashier(){
-    cart = new Book;
+// Constructor 
+Cashier::Cashier(InventoryDatabase * data2){
+    cart = new InventoryBook;
     cartLength = 0;
-    //SALES_TAX = 0.9; -$Olivier: Can't initalize a const after declaration
+	data = data2; 
+	inv = data->getInventoryArray();
 }
 
 void Cashier::startCashier(){
@@ -25,15 +28,19 @@ void Cashier::startCashier(){
 	return;
 }
 
+// Adds book to cart by prompting the user for the ISBN number 
 void Cashier::addBookToCart(){
     std::string isbn;
 	std::cout << "What is the ISBN number of the book?: ";
 	std::cin >> isbn;
-	/*
-	int bookCount = inv.getInventoryArraySize() -$Olivier I added this here, this is a probable way of getting the number of books in the inventory. You need inv to be a pointer to an InventoryDatabase object, don't create your own. Instead store a reference in a member variable and let main.cpp set your reference somehow.
+
+	// -$Olivier I added this here, this is a probable way of getting the number of books in the inventory. 
+	// You need inv to be a pointer to an InventoryDatabase object, don't create your own. 
+	// Instead store a reference in a member variable and let main.cpp set your reference somehow.
+	int bookCount = data->getInventoryArraySize(); 
 
     for(int i = 0; i < bookCount; i++){
-        if((inv[i].isbn).strcmp(isbn) == 0 && (inv[i].quantity > 0)){
+        if((inv[i].isbn == isbn) && (inv[i].quantity > 0)){
             if(findBook(isbn) != -1){
                 cart[findBook(isbn)].quantity++;
                 inv[i].quantity--; 
@@ -45,14 +52,13 @@ void Cashier::addBookToCart(){
                 inv[i].quantity--;
             }
         }
-        else if((inv[i].isbn).strcmp(isbn) == 0){
-            cout << "There are no more books of this ISBN number availiable." << endl;
+        else if(inv[i].isbn == isbn){
+            std::cout << "There are no more books of this ISBN number availiable." << std::endl;
         }
         else {
-            cout << "Book not found." << endl;
+            std::cout << "Book not found." << std::endl;
         }
     }
-	*/
 }
 
 // Returns -1 if the book is not in the array, else returns the index the book
@@ -66,10 +72,11 @@ int Cashier::findBook(std::string isbnNum){
     return -1;
 }
 
+// Checks out books in cart by calculating the total price using sales tax 
 double Cashier::checkout(){
     int price = 0, totalPrice = 0;
     for(int i = 0; i < cartLength; i++){
-		//totalPrice += inv[i].quantity * inv[i].wholesale; -$Olivier Get inv to be a pointer to InventoryDatabase and this should work
+		totalPrice += cart[i].quantity * cart[i].wholesale; // -$Olivier Get inv to be a pointer to InventoryDatabase and this should work
     }
     //int totalPrice = return totalPrice * SALES_TAX; -$Olivier Can't have a return statement on the right side of assignment, re-written following this comment
 	return totalPrice * SALES_TAX;

@@ -378,4 +378,4 @@ void clearScreen()
 {
 	system("CLS");
 	return;
-}
+} 
