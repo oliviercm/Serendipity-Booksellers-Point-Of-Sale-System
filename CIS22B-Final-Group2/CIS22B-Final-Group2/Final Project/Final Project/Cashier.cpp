@@ -1,34 +1,19 @@
 #define _CRT_SECURE_NO_WARNINGS
+
 #include "Cashier.h"
-#include "InventoryDataBase.h"
-#include"InventoryBook.h"
+#include "InventoryBook.h"
 
-Cashier::Cashier() {
-	cart = new Book;
-	cartLength = 0;
-	//SALES_TAX = 0.9; -$Olivier: Can't initalize a const after declaration
+Cashier::Cashier(InventoryDatabase* pD)
+{
+	pInventoryDatabase = pD;
+	cart = nullptr;
+	cartSize = 0;
 }
 
-void Cashier::startCashier() {
-	int choice;
-	do {
-		std::cout << "Press 1 to add books to your cart, or press 2 to proceed to checkout: ";
-		std::cin >> choice;
-		if (choice == 1) {
-			addBookToCart();
-		}
-		else {
-			checkout();
-		}
-	} while (choice != 2);
-
-	return;
-}
-
-void Cashier::addBookToCart() {
-	std::string isbn;
+void Cashier::addBookToCart(InventoryBook book) {
+	/*std::string isbn;
 	std::cout << "What is the ISBN number of the book?: ";
-	std::cin >> isbn;
+	std::cin >> isbn;*/
 	
 	//InventoryDatabase *pInv;
 	//pInv = new InventoryDatabase; //Do not forget to delet this
@@ -64,25 +49,19 @@ void Cashier::addBookToCart() {
 // Returns -1 if the book is not in the array, else returns the index the book
 // is at
 int Cashier::findBook(std::string isbnNum) {
-	for (int i = 0; i < cartLength; i++) {
-		if (cart[i].isbn == isbnNum) { // -$Olivier: You were using strcmp here, we are using string class and not C strings so we should use string functions and string operators.
-			return i;
-		}
-	}
+//	for (int i = 0; i < cartLength; i++) {
+//		if (cart[i].isbn == isbnNum) { // -$Olivier: You were using strcmp here, we are using string class and not C strings so we should use string functions and string operators.
+//			return i;
+//		}
+//	}
 	return -1;
 }
 
-double Cashier::checkout() {
-	int price = 0, totalPrice = 0;
-	for (int i = 0; i < cartLength; i++) {
-		//totalPrice += inv[i].quantity * inv[i].wholesale; -$Olivier Get inv to be a pointer to InventoryDatabase and this should work
-	}
-	//int totalPrice = return totalPrice * SALES_TAX; -$Olivier Can't have a return statement on the right side of assignment, re-written following this comment
-	return totalPrice * SALES_TAX;
-}
-
-// Destructor
-Cashier::~Cashier()
-{
-	delete cart;
+void Cashier::checkout() {
+	//int price = 0, totalPrice = 0;
+	//for (int i = 0; i < cartLength; i++) {
+	//	//totalPrice += inv[i].quantity * inv[i].wholesale; -$Olivier Get inv to be a pointer to InventoryDatabase and this should work
+	//}
+	////int totalPrice = return totalPrice * SALES_TAX; -$Olivier Can't have a return statement on the right side of assignment, re-written following this comment
+	//return totalPrice * SALES_TAX;
 }

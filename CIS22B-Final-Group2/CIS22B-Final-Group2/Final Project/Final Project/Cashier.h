@@ -1,22 +1,21 @@
 #pragma once
+
 #include <string>
-#include <iostream>
+#include "InventoryDatabase.h"
 #include "InventoryBook.h"
 
-class Cashier {
+class Cashier
+{
 private:
-	Book *cart;
-	int cartLength;
-	const double SALES_TAX = 0.9;
+	InventoryDatabase* pInventoryDatabase;
+	std::unique_ptr<InventoryBook[]> cart;
+	int cartSize;
+	const double SALES_TAX = 0.0725;
 public:
 	// Constructor
-	Cashier();
-	//Cashier(Book* inv); // Oliver, I need access to the inventory array in the InventoryDatabase
-	// Destructor
-	~Cashier();
+	Cashier(InventoryDatabase* pD);
 
-	void startCashier();
-	void addBookToCart();
-	double checkout();
+	void addBookToCart(InventoryBook book);
+	void checkout();
 	int findBook(std::string isbnNum);
 };

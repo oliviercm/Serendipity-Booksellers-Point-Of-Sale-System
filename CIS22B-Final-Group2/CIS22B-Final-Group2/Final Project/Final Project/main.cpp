@@ -20,9 +20,9 @@ Group 2:
 using namespace std;
 
 void displayMainMenu();
-void displayGoodbye();
 
 void displayCashierModule();
+void cashierSellBooks(InventoryDatabase* pD);
 
 void displayReportModule();
 void displayReportInventoryList(std::unique_ptr<InventoryBook[]> books, int numBooks);
@@ -35,6 +35,16 @@ void reportSelectionSortQuantity(InventoryBook* books, int numBooks);
 void reportSelectionSortCost(InventoryBook* books, int numBooks);
 void reportSelectionSortAge(InventoryBook* books, int numBooks);
 
+/*
+void inventoryLookUpBookByIsbn();
+void inventoryLookUpBookByTitle();
+void inventoryLookUpBookByAuthor();
+void inventoryLookUpBookByPublisher();
+void inventoryAddBookToFile();
+void inventoryDeleteBookFromFile();
+void inventoryEditBookByIsbn();
+*/
+
 void printHeader();
 
 int getUserInputInt(const int& min = INT_MIN, const int& max = INT_MAX);
@@ -45,6 +55,8 @@ string generateBars(int number);
 void clearScreen(bool displayHeader = false);
 void pause();
 int convertDateToInt(string date);
+
+void displayGoodbye();
 
 namespace UI
 {
@@ -61,6 +73,7 @@ namespace UI
 	const string ERR_INVALID_OPTION_RANGE = "ERROR: Invalid option, option must be between ";
 
 	enum MAIN_MENU_OPTIONS { MAIN_NONE, MAIN_CASHIER, MAIN_INVENTORY, MAIN_REPORT, MAIN_EXIT };
+	enum CASHIER_OPTIONS { CASHIER_NONE, CASHIER_SELL_BOOKS, CASHIER_BACK };
 	enum REPORT_OPTIONS { REPORT_NONE, REPORT_INVENTORY_LIST, REPORT_INVENTORY_WHOLESALE, REPORT_INVENTORY_RETAIL, REPORT_LIST_QUANTITY, REPORT_LIST_COST, REPORT_LIST_AGE, REPORT_BACK };
 }
 
@@ -79,9 +92,6 @@ int main()
 	InventoryDatabase inventoryDatabase;
 	inventoryDatabase.buildInventoryArray(filePath);
 
-	//Initialize and setup Cashier
-	Cashier cashier;
-
 	//Display main menu, get user inputs
 	int inputMainMenu, inputSubMenu;
 
@@ -94,12 +104,22 @@ int main()
 		switch (inputMainMenu)
 		{
 		case UI::MAIN_MENU_OPTIONS::MAIN_CASHIER:
-			displayCashierModule();
-			inputSubMenu = getUserInputInt(1, 4);
-			if (inputSubMenu = 1) {
-				//pCashierMode->startCashier();
-				pause();
-			}
+			do
+			{
+				displayCashierModule();
+
+				inputSubMenu = getUserInputInt(UI::CASHIER_OPTIONS::CASHIER_SELL_BOOKS, UI::CASHIER_OPTIONS::CASHIER_BACK);
+
+				switch (inputSubMenu)
+				{
+				case UI::CASHIER_OPTIONS::CASHIER_SELL_BOOKS:
+					break;
+				case UI::CASHIER_OPTIONS::CASHIER_BACK:
+					break;
+				default:
+					break;
+				}
+			} while (inputSubMenu != UI::CASHIER_OPTIONS::CASHIER_BACK);
 			break;
 		case UI::MAIN_MENU_OPTIONS::MAIN_INVENTORY:
 			//displayInventoryModule(inventoryDatabase);
@@ -185,34 +205,58 @@ void displayMainMenu() {
 	return;
 }
 
+/***************************************************************************
+*********** CASHIER MODULE
+****************************************************************************/
+
 void displayCashierModule() {
 
-	clearScreen();
+	clearScreen(true);
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string cashierModeText = "[ CASHIER MODE ] ";
-	const string purchaseText = "[ 1 ] PURCHASE A BOOK ";
-	const string rentText = "[ 2 ] RENT A BOOK ";
-	const string exitText = "[ 3 ] EXIT ";
+	const string cashierModeText = "[ CASHIER MODE ]";
+	const string purchaseText = "[ 1 ] SELL BOOKS";
+	const string backText = "[ 2 ] BACK";
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + cashierModeText.length()) / 2;
 	const size_t optionMargin = titleMargin - cashierModeText.length();
 
-	cout << endl;
-	cout << bars << endl;
-	cout << endl;
-	cout << setw(titleMargin + 3) << cashierModeText << endl;
-	cout << endl;
-	cout << setw(optionMargin + purchaseText.length()) << purchaseText << endl;
-	cout << endl;
-	cout << setw(optionMargin + rentText.length()) << rentText << endl;
-	cout << endl;
-	cout << setw(optionMargin + exitText.length()) << exitText << endl;
-	cout << endl;
-	cout << bars << endl;
-	cout << endl;
+	cout << setw(titleMargin) << cashierModeText << endl << endl << bars << endl << endl;
+
+	cout << setw(optionMargin + purchaseText.length()) << cashierModeText << endl << endl
+		<< setw(optionMargin + backText.length()) << backText << endl << endl
+		<< bars << endl << endl;
 
 	return;
+}
+
+void cashierSellBooks(InventoryDatabase* pD)
+{
+	Cashier cashier(pD);
+	bool stop = false;
+
+	while (!stop)
+	{
+		clearScreen(true);
+
+		const string bars = generateBars(UI::TERMINAL_WIDTH);
+		const string sellBooksText = "[ SELL BOOKS ]";
+		const string addBooksText = "[ 1 ] ADD BOOKS TO CART";
+		const string removeBooksText = "[ 2 ] REMOVE BOOKS FROM CART";
+		const string checkoutText = "[ 3 ] CHECKOUT CART";
+		const string cancelText = "[ 4 ] CANCEL";
+
+		const size_t titleMargin = (UI::TERMINAL_WIDTH + sellBooksText.length()) / 2;
+		const size_t optionMargin = titleMargin - sellBooksText.length();
+
+		cout << setw(titleMargin) << sellBooksText << endl << endl << bars << endl << endl;
+
+		cout << setw(optionMargin + addBooksText.length()) << addBooksText << endl << endl
+			<< setw(optionMargin + removeBooksText.length()) << removeBooksText << endl << endl
+			<< setw(optionMargin + checkoutText.length()) << checkoutText << endl << endl
+			<< setw(optionMargin + cancelText.length()) << cancelText << endl << endl
+			<< bars << endl << endl;
+	}
 }
 
 /***************************************************************************
@@ -224,7 +268,7 @@ void displayReportModule() {
 	clearScreen(true);
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string reportModuleText = "[ REPORT MODE ] ";
+	const string reportModeText = "[ REPORT MODE ]";
 	const string inventoryListText = "[ 1 ] INVENTORY LIST";
 	const string wholesaleValueText = "[ 2 ] INVENTORY WHOLESALE VALUE";
 	const string retailValueText = "[ 3 ] INVENTORY RETAIL VALUE";
@@ -233,10 +277,10 @@ void displayReportModule() {
 	const string listByAgeText = "[ 6 ] LIST BY AGE";
 	const string backText = "[ 7 ] BACK";
 
-	const size_t titleMargin = (UI::TERMINAL_WIDTH + reportModuleText.length()) / 2;
-	const size_t optionMargin = titleMargin - reportModuleText.length();
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + reportModeText.length()) / 2;
+	const size_t optionMargin = titleMargin - reportModeText.length();
 
-	cout << setw(titleMargin) << reportModuleText << endl << endl << bars << endl << endl;
+	cout << setw(titleMargin) << reportModeText << endl << endl << bars << endl << endl;
 
 	cout << setw(optionMargin + inventoryListText.length()) << inventoryListText << endl << endl
 		<< setw(optionMargin + wholesaleValueText.length()) << wholesaleValueText << endl << endl
@@ -668,13 +712,6 @@ void reportSelectionSortAge(InventoryBook* books, int numBooks)
 	return;
 }
 
-void displayGoodbye()
-{
-	clearScreen();
-
-	cout << "Thank you for visiting Serendipity Booksellers." << endl << endl;
-}
-
 /***************************************************************************
 *********** HELPER FUNCTIONS
 ****************************************************************************/
@@ -827,4 +864,51 @@ int convertDateToInt(string date)
 	int year = stoi(date.substr(6, 4));
 
 	return 10000 * year + 100 * month + day;
+}
+
+void displayGoodbye()
+{
+	clearScreen();
+
+	cout << R"(
+  _______   _                       _                                   __                            _         _   _     _                 
+ |__   __| | |                     | |                                 / _|                          (_)       (_) | |   (_)                
+    | |    | |__     __ _   _ __   | | __    _   _    ___    _   _    | |_    ___    _ __    __   __  _   ___   _  | |_   _   _ __     __ _ 
+    | |    | '_ \   / _` | | '_ \  | |/ /   | | | |  / _ \  | | | |   |  _|  / _ \  | '__|   \ \ / / | | / __| | | | __| | | | '_ \   / _` |
+    | |    | | | | | (_| | | | | | |   <    | |_| | | (_) | | |_| |   | |   | (_) | | |       \ V /  | | \__ \ | | | |_  | | | | | | | (_| |
+    |_|    |_| |_|  \__,_| |_| |_| |_|\_\    \__, |  \___/   \__,_|   |_|    \___/  |_|        \_/   |_| |___/ |_|  \__| |_| |_| |_|  \__, |
+                                              __/ |                                                                                    __/ |
+                                             |___/                                                                                    |___/ 
+   _____                                    _   _           _   _               ____                    _                   _   _                         
+  / ____|                                  | | (_)         (_) | |             |  _ \                  | |                 | | | |                        
+ | (___     ___   _ __    ___   _ __     __| |  _   _ __    _  | |_   _   _    | |_) |   ___     ___   | | __  ___    ___  | | | |   ___   _ __   ___     
+  \___ \   / _ \ | '__|  / _ \ | '_ \   / _` | | | | '_ \  | | | __| | | | |   |  _ <   / _ \   / _ \  | |/ / / __|  / _ \ | | | |  / _ \ | '__| / __|    
+  ____) | |  __/ | |    |  __/ | | | | | (_| | | | | |_) | | | | |_  | |_| |   | |_) | | (_) | | (_) | |   <  \__ \ |  __/ | | | | |  __/ | |    \__ \  _ 
+ |_____/   \___| |_|     \___| |_| |_|  \__,_| |_| | .__/  |_|  \__|  \__, |   |____/   \___/   \___/  |_|\_\ |___/  \___| |_| |_|  \___| |_|    |___/ (_)
+                                                   | |                 __/ |                                                                              
+                                                   |_|                |___/                                                                               
+
+
+
+   ___                      _              _     _             _ 
+  / __|  _ _   ___   __ _  | |_   ___   __| |   | |__   _  _  (_)
+ | (__  | '_| / -_) / _` | |  _| / -_) / _` |   | '_ \ | || |  _ 
+  \___| |_|   \___| \__,_|  \__| \___| \__,_|   |_.__/  \_, | (_)
+                                                        |__/     
+   ___    _   _         _                  ___   _                  
+  / _ \  | | (_) __ __ (_)  ___   _ _     / __| | |_    __ _   _ _  
+ | (_) | | | | | \ V / | | / -_) | '_|   | (__  | ' \  / _` | | ' \ 
+  \___/  |_| |_|  \_/  |_| \___| |_|      \___| |_||_| \__,_| |_||_|
+  _             _           ___                                            
+ | |     _  _  (_)  ___    / __|  _  _   ___   _ _   _ _   ___   _ _   ___ 
+ | |__  | || | | | (_-<   | (_ | | || | / -_) | '_| | '_| / -_) | '_| / _ \
+ |____|  \_,_| |_| /__/    \___|  \_,_| \___| |_|   |_|   \___| |_|   \___/
+  ___                               _     ___          _           ___                                   _              
+ / __|  __ _   _ __    _  _   ___  | |   | _ \  _  _  (_)  ___    / __|  ___   _ _  __ __  __ _   _ _   | |_   ___   ___
+ \__ \ / _` | | '  \  | || | / -_) | |   |   / | || | | | |_ /   | (__  / -_) | '_| \ V / / _` | | ' \  |  _| / -_) (_-<
+ |___/ \__,_| |_|_|_|  \_,_| \___| |_|   |_|_\  \_,_| |_| /__|    \___| \___| |_|    \_/  \__,_| |_||_|  \__| \___| /__/
+  __  __                             _      ___                     _        
+ |  \/  |  __ _   _ _    __ _   ___ (_)    / __|  ___  __ __ __  __| |  __ _ 
+ | |\/| | / _` | | ' \  / _` | (_-< | |   | (_ | / _ \ \ V  V / / _` | / _` |
+ |_|  |_| \__,_| |_||_| \__,_| /__/ |_|    \___| \___/  \_/\_/  \__,_| \__,_|)" << endl << endl << endl;
 }
