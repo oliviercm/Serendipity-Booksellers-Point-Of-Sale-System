@@ -120,14 +120,12 @@
     <ClCompile Include="InventoryBook.cpp" />
     <ClCompile Include="InventoryDatabase.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Report.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Book.h" />
     <ClInclude Include="Cashier.h" />
     <ClInclude Include="InventoryBook.h" />
     <ClInclude Include="InventoryDatabase.h" />
-    <ClInclude Include="Report.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

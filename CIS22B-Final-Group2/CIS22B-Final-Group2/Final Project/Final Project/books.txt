@@ -60,10 +60,10 @@
 </book>
 <book>
 	<isbn>9781976773150</isbn>
-	<title>Julius Caesar</title>
+	<title>Macbeth</title>
 	<author>William Shakespeare</author>
 	<publisher>Ye Olde Printing Presse</publisher>
-	<adddate>03/15/1599</adddate>
+	<adddate>01/01/1905</adddate>
 	<quantity>2</quantity>
 	<wholesale>4.99</wholesale>
 	<retail>9.99</retail>

@@ -16,138 +16,167 @@ Group 2:
 #include "InventoryDatabase.h"
 #include "InventoryBook.h"
 #include "Cashier.h"
-#include "Report.h"
 
 using namespace std;
 
 void displayMainMenu();
-void displayCashierModule();
-void displayInventoryModule();
-void displayReportModule();
-void displayInventoryList();
-void displayWholeSaleInv();
-void displayRetailInv();
-void displayListQuantity();
-void displayListCost();
-void displayListAged();
 void displayGoodbye();
+
+void displayCashierModule();
+
+void displayReportModule();
+void displayReportInventoryList(std::unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportInventoryWholesaleValue(std::unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportInventoryRetailValue(std::unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportListByQuantity(std::unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportListByCost(std::unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportListByAge(std::unique_ptr<InventoryBook[]> books, int numBooks);
+void reportSelectionSortQuantity(InventoryBook* books, int numBooks);
+void reportSelectionSortCost(InventoryBook* books, int numBooks);
+void reportSelectionSortAge(InventoryBook* books, int numBooks);
+
+void printHeader();
+
+int getUserInputInt(const int& min = INT_MIN, const int& max = INT_MAX);
+double getUserInputDouble(const double& min = DBL_MIN, const double& max = DBL_MAX);
+string getUserInputString();
+
 string generateBars(int number);
-int getUserOption(int min, int max);
-void clearScreen();
+void clearScreen(bool displayHeader = false);
+void pause();
+int convertDateToInt(string date);
 
 namespace UI
 {
-	const int TERMINAL_WIDTH = 130;
+	const int TERMINAL_WIDTH = 200;
 	const int TERMINAL_HEIGHT = 50;
 
 	const string BARS_CHARACTER = "=";
 
-	const string GOODBYE_MESSAGE = "Thank you, bye...";
-
 	const string PROMPT_OPTION = "Choose an option: ";
 
-	const string ERR_GENERIC = "ERROR: ";
-	const string ERR_EXCEPTION_GENERIC = "ERROR: Exception";
+	const string ERR_EXCEPTION_GENERIC = "ERROR: An exception occured.";
 	const string ERR_EXCEPTION_INVALID_ARGUMENT = "ERROR: Invalid option, option is not a valid argument. Are you correctly typing a number or a string?";
 	const string ERR_EXCEPTION_OUT_OF_RANGE = "ERROR: Invalid option, option is out of range.";
 	const string ERR_INVALID_OPTION_RANGE = "ERROR: Invalid option, option must be between ";
 
-	enum MAIN_MENU_OPTIONS { NONE, CASHIER, INVENTORY, REPORT, EXIT };
+	enum MAIN_MENU_OPTIONS { MAIN_NONE, MAIN_CASHIER, MAIN_INVENTORY, MAIN_REPORT, MAIN_EXIT };
+	enum REPORT_OPTIONS { REPORT_NONE, REPORT_INVENTORY_LIST, REPORT_INVENTORY_WHOLESALE, REPORT_INVENTORY_RETAIL, REPORT_LIST_QUANTITY, REPORT_LIST_COST, REPORT_LIST_AGE, REPORT_BACK };
 }
 
 int main()
 {
+	//Resize the terminal window
+	string systemResizeStr = "mode " + to_string(UI::TERMINAL_WIDTH) + ", " + to_string(UI::TERMINAL_HEIGHT);
+	system(systemResizeStr.c_str());
+
+	//Format cout
+	cout << fixed << setprecision(2);
+	
 	//Initialize and setup InventoryDatabase
 	const std::string filePath = "books.txt";
 
 	InventoryDatabase inventoryDatabase;
 	inventoryDatabase.buildInventoryArray(filePath);
 
-	//Resize the terminal window
-	string systemResizeStr = "mode " + to_string(UI::TERMINAL_WIDTH) + ", " + to_string(UI::TERMINAL_HEIGHT);
-	system(systemResizeStr.c_str());
+	//Initialize and setup Cashier
+	Cashier cashier;
 
-	//Display main menu, get user input
+	//Display main menu, get user inputs
 	int inputMainMenu, inputSubMenu;
-
-	//Pointer to cashier
-	Cashier *pCashierMode;
-	pCashierMode = new Cashier; //Do not forget to delet this
 
 	do
 	{
 		displayMainMenu();
 
-		inputMainMenu = getUserOption(UI::MAIN_MENU_OPTIONS::CASHIER, UI::MAIN_MENU_OPTIONS::EXIT);
+		inputMainMenu = getUserInputInt(UI::MAIN_MENU_OPTIONS::MAIN_CASHIER, UI::MAIN_MENU_OPTIONS::MAIN_EXIT);
 
 		switch (inputMainMenu)
 		{
-		case UI::MAIN_MENU_OPTIONS::CASHIER:
+		case UI::MAIN_MENU_OPTIONS::MAIN_CASHIER:
 			displayCashierModule();
-			inputSubMenu = getUserOption(1, 4);
+			inputSubMenu = getUserInputInt(1, 4);
 			if (inputSubMenu = 1) {
-				pCashierMode->startCashier();
-				system("pause");
+				//pCashierMode->startCashier();
+				pause();
 			}
 			break;
-		case UI::MAIN_MENU_OPTIONS::INVENTORY:
-			displayInventoryModule();
-			inputSubMenu = getUserOption(1, 4);
+		case UI::MAIN_MENU_OPTIONS::MAIN_INVENTORY:
+			//displayInventoryModule(inventoryDatabase);
+			inputSubMenu = getUserInputInt(1, 4);
 			break;
-		case UI::MAIN_MENU_OPTIONS::REPORT:
-			displayReportModule();
-			inputSubMenu = getUserOption(1, 6);
-			if (inputSubMenu == 1) {
-				displayInventoryList();
-				system("pause");
-			}else if (inputSubMenu == 2) {
-				displayWholeSaleInv();
-				system("pause");
-			}else if (inputSubMenu == 3) {
-				displayRetailInv();
-				system("pause");
-			}else if (inputSubMenu == 4) {
-				displayListQuantity();
-				system("pause");
-			}else if (inputSubMenu == 5) {
-				displayListCost();
-				system("pause");
-			}else if (inputSubMenu == 6) {
-				displayListAged();
-				system("pause");
-			}
+		case UI::MAIN_MENU_OPTIONS::MAIN_REPORT:
+			do
+			{
+				displayReportModule();
+
+				inputSubMenu = getUserInputInt(UI::REPORT_OPTIONS::REPORT_INVENTORY_LIST, UI::REPORT_OPTIONS::REPORT_BACK);
+
+				switch (inputSubMenu)
+				{
+				case UI::REPORT_OPTIONS::REPORT_INVENTORY_LIST:
+					displayReportInventoryList(inventoryDatabase.getInventoryArray(), inventoryDatabase.getInventoryArraySize());
+					pause();
+					break;
+				case UI::REPORT_OPTIONS::REPORT_INVENTORY_WHOLESALE:
+					displayReportInventoryWholesaleValue(inventoryDatabase.getInventoryArray(), inventoryDatabase.getInventoryArraySize());
+					pause();
+					break;
+				case UI::REPORT_OPTIONS::REPORT_INVENTORY_RETAIL:
+					displayReportInventoryRetailValue(inventoryDatabase.getInventoryArray(), inventoryDatabase.getInventoryArraySize());
+					pause();
+					break;
+				case UI::REPORT_OPTIONS::REPORT_LIST_QUANTITY:
+					displayReportListByQuantity(inventoryDatabase.getInventoryArray(), inventoryDatabase.getInventoryArraySize());
+					pause();
+					break;
+				case UI::REPORT_OPTIONS::REPORT_LIST_COST:
+					displayReportListByCost(inventoryDatabase.getInventoryArray(), inventoryDatabase.getInventoryArraySize());
+					pause();
+					break;
+				case UI::REPORT_OPTIONS::REPORT_LIST_AGE:
+					displayReportListByAge(inventoryDatabase.getInventoryArray(), inventoryDatabase.getInventoryArraySize());
+					pause();
+					break;
+				case UI::REPORT_OPTIONS::REPORT_BACK:
+					break;
+				default:
+					break;
+				}
+			} while (inputSubMenu != UI::REPORT_OPTIONS::REPORT_BACK);
 			break;
-		case UI::MAIN_MENU_OPTIONS::EXIT:
+		case UI::MAIN_MENU_OPTIONS::MAIN_EXIT:
 			displayGoodbye();
 			break;
 		default:
 			break;
 		}
-	} while (inputMainMenu != UI::MAIN_MENU_OPTIONS::EXIT);
+	} while (inputMainMenu != UI::MAIN_MENU_OPTIONS::MAIN_EXIT);
 
-	system("pause");
+	std::cout << "Press ENTER to exit.";
+	std::cin.get();
 	return 0;
 }
 
 void displayMainMenu() {
 
-	clearScreen();
+	clearScreen(true);
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string title = "Welcome to Serendipity Booksellers.";
-	const string mainMenuText = "[ MAIN MENU ]";
+	const string titleText = "[ MAIN MENU ]";
 	const string cashierText = "[ 1 ] CASHIER MODE";
 	const string inventoryText = "[ 2 ] INVENTORY MODE";
 	const string reportText = "[ 3 ] REPORT MODE";
 	const string exitText = "[ 4 ] EXIT";
 
-	const size_t titleMargin = (UI::TERMINAL_WIDTH + title.length()) / 2;
-	const size_t optionMargin = titleMargin - title.length();
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+	const size_t optionMargin = titleMargin - titleText.length();
+	
+	cout << right;
+	
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
 
-	cout << setw(titleMargin - 5) << title << endl << endl
-		<< bars << endl << endl
-		<< setw((optionMargin + mainMenuText.length())+3) << mainMenuText << endl << endl
-		<< setw(optionMargin + cashierText.length()) << cashierText << endl << endl
+	cout << setw(optionMargin + cashierText.length()) << cashierText << endl << endl
 		<< setw(optionMargin + inventoryText.length()) << inventoryText << endl << endl
 		<< setw(optionMargin + reportText.length()) << reportText << endl << endl
 		<< setw(optionMargin + exitText.length()) << exitText << endl << endl
@@ -186,331 +215,482 @@ void displayCashierModule() {
 	return;
 }
 
-void displayInventoryModule() {
-
-	clearScreen();
-
-	//Pointer to Inventory Database
-	InventoryDatabase *pInvMode;
-	pInvMode = new InventoryDatabase; //Do not forget to delet this
-
-
-	//Book book = Book("1234567890", "Harry Potter", "J.K Rolling", "blabla", "02/03/2019", 3, 35.29, 30.99);
-	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string inventoryModuleText = "[ INVENTORY ]";
-	const string bookTitle = "TITLE:";
-	const string bookAuthor = "AUTHOR:";
-	const string bookPublisher = "PUBLISHER:";
-	const string bookDate = "DATE:";
-	const string bookOnHand = "ON-HAND:";
-	const string bookWholePrice = "WHOLESALE-PRICE:";
-	const string bookRetailPrice = "RETAIL-PRICE:";
-	const string bookIsbn = "ISBN:";
-
-	const size_t titleMargin = (UI::TERMINAL_WIDTH + inventoryModuleText.length()) / 2;
-	const size_t optionMargin = titleMargin - inventoryModuleText.length();
-
-	cout << endl;
-	cout << bars << endl << endl;
-	cout << right << setw(titleMargin + 3) << inventoryModuleText << endl << endl;
-	cout << left << bookTitle
-		<< right << setw((UI::TERMINAL_WIDTH)/7) << bookAuthor
-		<< right << setw((UI::TERMINAL_WIDTH) / 7) << bookPublisher
-		<< right << setw((UI::TERMINAL_WIDTH) / 7) << bookDate
-		<< right << setw((UI::TERMINAL_WIDTH) / 7) << bookOnHand
-		<< right << setw((UI::TERMINAL_WIDTH) / 7) << bookWholePrice
-		<< right << setw((UI::TERMINAL_WIDTH) / 7) << bookRetailPrice
-		<< right << setw(((UI::TERMINAL_WIDTH) / 7)-5) << bookIsbn << endl << endl;
-	cout << bars;
-	
-	int bookNum = pInvMode->getInventoryArraySize();
-	std::unique_ptr<InventoryBook[]> inventoryArray = pInvMode->getInventoryArray();
-
-	for (int i = 0; i < bookNum; i++) {
-
-		cout << left << inventoryArray[i].title
-			<< right << setw(5) << "*" << right << setw(12) << inventoryArray[i].author
-			<< right << setw(5) << "*" << right << setw(15) << inventoryArray[i].publisher
-			<< right << setw(7) << "*" << right << setw(8) << inventoryArray[i].addDate
-			<< right << setw(1) << "*" << right << setw(1) << inventoryArray[i].quantity
-			<< right << setw(2) << "*" << right << setw(18) << inventoryArray[i].wholesale
-			<< right << setw(2) << "*" << right << setw(14) << inventoryArray[i].retail
-			<< right << setw(3) << "*" << right << setw(10) << inventoryArray[i].isbn << endl;
-	}
-	
-
-	/*
-	cout << setw((bars.length() + cashierModeText.length()) / 2) << "TITLE: " << " Physics for Scientist and Engineers (9th edition)" << endl << endl
-		<< setw((bars.length() + cashierModeText.length()) / 2) << "AUTHOR: " << "Jewett Serway" << endl << endl
-		<< setw((bars.length() + cashierModeText.length()) / 2) << "PUBLISHER: " <<"Cengage Learning" << endl << endl
-		<< setw((bars.length() + cashierModeText.length()) / 2) << "DATE: " << "02/21/2019" << endl << endl
-		<< setw((bars.length() + cashierModeText.length()) / 2) << "ON-HAND: " << "5" << endl << endl
-		<< setw((bars.length() + cashierModeText.length()) / 2) << "WHOLESALE-PRICE: " << "155.93" << endl << endl
-		<< setw((bars.length() + cashierModeText.length()) / 2) << "RETAIL-PRICE: " << "164.99" << endl << endl
-		<< setw((bars.length() + cashierModeText.length()) / 2) << "ISBN: " << "9781305116405"  << endl;
-	cout << endl;
-	*/
-	cout << endl;
-	cout << bars << endl;
-	cout << endl;
-
-	return;
-}
+/***************************************************************************
+*********** REPORT MODULE
+****************************************************************************/
 
 void displayReportModule() {
 
-	clearScreen();
+	clearScreen(true);
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
 	const string reportModuleText = "[ REPORT MODE ] ";
-	const string inventoryListText = "[ 1 ] INVENTORY LIST ";
-	const string wholeSaleText = "[ 2 ] WHOLESALE INVENTORY ";
-	const string retailInventoryText = "[ 3 ] RETAIL INVENTORY ";
-	const string listByQuantityText = "[ 4 ] LIST BY QUANTITY ";
-	const string listByCostText = "[ 5 ] LIST BY COST ";
-	const string listByAgedText = "[ 6 ] LIST BY AGE ";
+	const string inventoryListText = "[ 1 ] INVENTORY LIST";
+	const string wholesaleValueText = "[ 2 ] INVENTORY WHOLESALE VALUE";
+	const string retailValueText = "[ 3 ] INVENTORY RETAIL VALUE";
+	const string listByQuantityText = "[ 4 ] LIST BY QUANTITY";
+	const string listByCostText = "[ 5 ] LIST BY COST";
+	const string listByAgeText = "[ 6 ] LIST BY AGE";
+	const string backText = "[ 7 ] BACK";
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + reportModuleText.length()) / 2;
 	const size_t optionMargin = titleMargin - reportModuleText.length();
 
-	cout << endl;
-	cout << bars << endl;
-	cout << endl;
-	cout << setw(titleMargin + 3) << reportModuleText << endl;
-	cout << endl;
-	cout << setw(optionMargin + inventoryListText.length()) << inventoryListText << endl;
-	cout << endl;
-	cout << setw(optionMargin + wholeSaleText.length()) << wholeSaleText << endl;
-	cout << endl;
-	cout << setw(optionMargin + retailInventoryText.length()) << retailInventoryText << endl;
-	cout << endl;
-	cout << setw(optionMargin + listByQuantityText.length()) << listByQuantityText << endl;
-	cout << endl;
-	cout << setw(optionMargin + listByCostText.length()) << listByCostText << endl;
-	cout << endl;
-	cout << setw(optionMargin + listByAgedText.length()) << listByAgedText << endl;
-	cout << endl;
-	cout << bars << endl;
-	cout << endl;
+	cout << setw(titleMargin) << reportModuleText << endl << endl << bars << endl << endl;
+
+	cout << setw(optionMargin + inventoryListText.length()) << inventoryListText << endl << endl
+		<< setw(optionMargin + wholesaleValueText.length()) << wholesaleValueText << endl << endl
+		<< setw(optionMargin + retailValueText.length()) << retailValueText << endl << endl
+		<< setw(optionMargin + listByQuantityText.length()) << listByQuantityText << endl << endl
+		<< setw(optionMargin + listByCostText.length()) << listByCostText << endl << endl
+		<< setw(optionMargin + listByAgeText.length()) << listByAgeText << endl << endl
+		<< setw(optionMargin + backText.length()) << backText << endl << endl
+		<< bars << endl << endl;
 
 	return;
 }
 
-void displayInventoryList() {
+void displayReportInventoryList(std::unique_ptr<InventoryBook[]> books, int numBooks) {
 
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ INVENTORY LIST ]";
+	const string bookIsbnText = "ISBN:";
+	const string bookTitleText = "TITLE:";
+	const string bookAuthorText = "AUTHOR:";
+	const string bookPublisherText = "PUBLISHER:";
+	const string bookDateText = "DATE ADDED:";
+	const string bookQuantityText = "ON-HAND:";
+	const string bookWholesaleText = "WHOLESALE:";
+	const string bookRetailText = "RETAIL:";
+
+	const size_t columnSpacing = 3;
+
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t dateColumnLength = 10 + columnSpacing;
+	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
+	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
+	const size_t retailColumnLength = bookRetailText.length() + columnSpacing;
+
+	const size_t titleColumnLength = (UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 2;
+	const size_t authorColumnLength = (UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+	const size_t publisherColumnLength = (UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+	
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+
+	cout << right;
+	
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	cout << left;
+
+	cout << setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(authorColumnLength) << bookAuthorText
+		<< setw(publisherColumnLength) << bookPublisherText
+		<< setw(dateColumnLength) << bookDateText
+		<< setw(quantityColumnLength) << bookQuantityText
+		<< setw(wholesaleColumnLength) << bookWholesaleText
+		<< setw(retailColumnLength) << bookRetailText
+		<< endl << endl;
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		cout << left;
+		
+		cout << setw(isbnColumnLength) << books[i].isbn
+			<< setw(titleColumnLength) << books[i].title
+			<< setw(authorColumnLength) << books[i].author
+			<< setw(publisherColumnLength) << books[i].publisher
+			<< setw(dateColumnLength) << books[i].addDate
+			<< setw(quantityColumnLength) << books[i].quantity
+			<< setw(wholesaleColumnLength) << books[i].wholesale
+			<< setw(retailColumnLength) << books[i].retail
+			<< endl;
+	}
+	
+	cout << endl << bars << endl << endl;
+
+	return;
+}
+
+void displayReportInventoryWholesaleValue(std::unique_ptr<InventoryBook[]> books, int numBooks) {
+
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ INVENTORY WHOLESALE VALUE ]";
+	const string bookIsbnText = "ISBN:";
+	const string bookTitleText = "TITLE:";
+	const string bookQuantityText = "ON-HAND:";
+	const string bookWholesaleText = "INDIVIDUAL WHOLESALE:";
+	const string bookTotalWholesaleText = "COMBINED WHOLESALE:";
+	const string inventoryTotalWholesaleText = "INVENTORY TOTAL WHOLESALE VALUE: $";
+
+	const size_t columnSpacing = 3;
+
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
+	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
+	const size_t totalWholesaleColumnLength = bookTotalWholesaleText.length() + columnSpacing;
+
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - quantityColumnLength - wholesaleColumnLength - totalWholesaleColumnLength;
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+
+	cout << right;
+
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	cout << left;
+
+	cout << setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(quantityColumnLength) << bookQuantityText
+		<< setw(wholesaleColumnLength) << bookWholesaleText
+		<< setw(totalWholesaleColumnLength) << bookTotalWholesaleText
+		<< endl << endl;
+
+	double inventoryTotalWholesale = 0;
+	
+	for (int i = 0; i < numBooks; i++)
+	{
+		double totalWholesale = books[i].quantity * books[i].wholesale;
+		inventoryTotalWholesale += totalWholesale;
+		
+		cout << left;
+
+		cout << setw(isbnColumnLength) << books[i].isbn
+			<< setw(titleColumnLength) << books[i].title
+			<< setw(quantityColumnLength) << books[i].quantity
+			<< setw(wholesaleColumnLength) << books[i].wholesale
+			<< setw(totalWholesaleColumnLength) << totalWholesale
+			<< endl;
+	}
+
+	cout << right;
+
+	cout << endl << bars << endl << endl << setw((UI::TERMINAL_WIDTH + inventoryTotalWholesaleText.length()) / 2) << inventoryTotalWholesaleText << inventoryTotalWholesale << endl << endl << bars << endl << endl;
+
+	return;
+}
+
+void displayReportInventoryRetailValue(std::unique_ptr<InventoryBook[]> books, int numBooks) {
+
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ INVENTORY RETAIL VALUE ]";
+	const string bookIsbnText = "ISBN:";
+	const string bookTitleText = "TITLE:";
+	const string bookQuantityText = "ON-HAND:";
+	const string bookRetailText = "INDIVIDUAL RETAIL:";
+	const string bookTotalRetailText = "COMBINED RETAIL:";
+	const string inventoryTotalRetailText = "INVENTORY TOTAL RETAIL VALUE: $";
+
+	const size_t columnSpacing = 3;
+
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
+	const size_t retailColumnLength = bookRetailText.length() + columnSpacing;
+	const size_t totalRetailColumnLength = bookTotalRetailText.length() + columnSpacing;
+
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - quantityColumnLength - retailColumnLength - totalRetailColumnLength;
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+
+	cout << right;
+
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	cout << left;
+
+	cout << setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(quantityColumnLength) << bookQuantityText
+		<< setw(retailColumnLength) << bookRetailText
+		<< setw(totalRetailColumnLength) << bookTotalRetailText
+		<< endl << endl;
+
+	double inventoryTotalRetail = 0;
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		double totalRetail = books[i].quantity * books[i].retail;
+		inventoryTotalRetail += totalRetail;
+
+		cout << left;
+
+		cout << setw(isbnColumnLength) << books[i].isbn
+			<< setw(titleColumnLength) << books[i].title
+			<< setw(quantityColumnLength) << books[i].quantity
+			<< setw(retailColumnLength) << books[i].retail
+			<< setw(totalRetailColumnLength) << totalRetail
+			<< endl;
+	}
+
+	cout << right;
+
+	cout << endl << bars << endl << endl << setw((UI::TERMINAL_WIDTH + inventoryTotalRetailText.length()) / 2) << inventoryTotalRetailText << inventoryTotalRetail << endl << endl << bars << endl << endl;
+
+	return;
+}
+
+void displayReportListByQuantity(std::unique_ptr<InventoryBook[]> books, int numBooks) {
+
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ LIST BY QUANTITY ]";
+	const string bookIsbnText = "ISBN:";
+	const string bookTitleText = "TITLE:";
+	const string bookQuantityText = "ON-HAND:";
+
+	const size_t columnSpacing = 3;
+
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
+
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - quantityColumnLength;
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+
+	cout << right;
+
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	cout << left;
+
+	cout << setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(quantityColumnLength) << bookQuantityText
+		<< endl << endl;
+
+	std::unique_ptr<InventoryBook[]> copyBooks = std::make_unique<InventoryBook[]>(numBooks);
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		copyBooks[i].isbn = books[i].isbn;
+		copyBooks[i].title = books[i].title;
+		copyBooks[i].quantity = books[i].quantity;
+	}
+
+	reportSelectionSortQuantity(copyBooks.get(), numBooks);
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		cout << left;
+
+		cout << setw(isbnColumnLength) << copyBooks[i].isbn
+			<< setw(titleColumnLength) << copyBooks[i].title
+			<< setw(quantityColumnLength) << copyBooks[i].quantity
+			<< endl;
+	}
+
+	cout << endl << bars << endl << endl;
+
+	return;
+}
+
+void displayReportListByCost(std::unique_ptr<InventoryBook[]> books, int numBooks) {
+
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ LIST BY COST ]";
+	const string bookIsbnText = "ISBN:";
+	const string bookTitleText = "TITLE:";
+	const string bookWholesaleText = "WHOLESALE COST:";
+
+	const size_t columnSpacing = 3;
+
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
+
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - wholesaleColumnLength;
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+
+	cout << right;
+
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	cout << left;
+
+	cout << setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(wholesaleColumnLength) << bookWholesaleText
+		<< endl << endl;
+
+	std::unique_ptr<InventoryBook[]> copyBooks = std::make_unique<InventoryBook[]>(numBooks);
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		copyBooks[i].isbn = books[i].isbn;
+		copyBooks[i].title = books[i].title;
+		copyBooks[i].wholesale = books[i].wholesale;
+	}
+
+	reportSelectionSortCost(copyBooks.get(), numBooks);
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		cout << left;
+
+		cout << setw(isbnColumnLength) << copyBooks[i].isbn
+			<< setw(titleColumnLength) << copyBooks[i].title
+			<< setw(wholesaleColumnLength) << copyBooks[i].wholesale
+			<< endl;
+	}
+
+	cout << endl << bars << endl << endl;
+
+	return;
+}
+
+void displayReportListByAge(std::unique_ptr<InventoryBook[]> books, int numBooks) {
+
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ LIST BY AGE ]";
+	const string bookIsbnText = "ISBN:";
+	const string bookTitleText = "TITLE:";
+	const string bookDateText = "ADD DATE:";
+
+	const size_t columnSpacing = 3;
+
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t dateColumnLength = 10 + columnSpacing;
+
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength;
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+
+	cout << right;
+
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	cout << left;
+
+	cout << setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(dateColumnLength) << bookDateText
+		<< endl << endl;
+
+	std::unique_ptr<InventoryBook[]> copyBooks = std::make_unique<InventoryBook[]>(numBooks);
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		copyBooks[i].isbn = books[i].isbn;
+		copyBooks[i].title = books[i].title;
+		copyBooks[i].addDate = books[i].addDate;
+	}
+
+	reportSelectionSortAge(copyBooks.get(), numBooks);
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		cout << left;
+
+		cout << setw(isbnColumnLength) << copyBooks[i].isbn
+			<< setw(titleColumnLength) << copyBooks[i].title
+			<< setw(dateColumnLength) << copyBooks[i].addDate
+			<< endl;
+	}
+
+	cout << endl << bars << endl << endl;
+
+	return;
+}
+
+void reportSelectionSortQuantity(InventoryBook* books, int numBooks)
+{
+	for (int startScan = 0; startScan < numBooks - 1; startScan++)
+	{
+		int minIndex = startScan;
+		int maxQuantity = books[startScan].quantity;
+
+		for (int index = startScan + 1; index < numBooks; index++)
+		{
+			if (books[index].quantity > maxQuantity)
+			{
+				maxQuantity = books[index].quantity;
+				minIndex = index;
+			}
+		}
+		std::swap(books[startScan], books[minIndex]);
+	}
+
+	return;
+}
+
+void reportSelectionSortCost(InventoryBook* books, int numBooks)
+{
+	for (int startScan = 0; startScan < numBooks - 1; startScan++)
+	{
+		int minIndex = startScan;
+		double maxWholesale = books[startScan].wholesale;
+
+		for (int index = startScan + 1; index < numBooks; index++)
+		{
+			if (books[index].wholesale > maxWholesale)
+			{
+				maxWholesale = books[index].wholesale;
+				minIndex = index;
+			}
+		}
+		std::swap(books[startScan], books[minIndex]);
+	}
+
+	return;
+}
+
+void reportSelectionSortAge(InventoryBook* books, int numBooks)
+{
+	for (int startScan = 0; startScan < numBooks - 1; startScan++)
+	{
+		int minIndex = startScan;
+		int minDate = convertDateToInt(books[startScan].addDate);
+
+		for (int index = startScan + 1; index < numBooks; index++)
+		{
+			if (convertDateToInt(books[index].addDate) < minDate)
+			{
+				minDate = convertDateToInt(books[index].addDate);
+				minIndex = index;
+			}
+		}
+		std::swap(books[startScan], books[minIndex]);
+	}
+
+	return;
+}
+
+void displayGoodbye()
+{
 	clearScreen();
 
+	cout << "Thank you for visiting Serendipity Booksellers." << endl << endl;
+}
+
+/***************************************************************************
+*********** HELPER FUNCTIONS
+****************************************************************************/
+
+void printHeader()
+{
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string inventoryModuleText = "[ INVENTORY ]";
-	const string bookTitle = "TITLE:";
-	const string bookAuthor = "AUTHOR:";
-	const string bookOnHand = "ON-HAND:";
-	const string bookIsbn = "ISBN:";
+	const string header = "Welcome to Serendipity Booksellers.";
 
-	const size_t titleMargin = (UI::TERMINAL_WIDTH + inventoryModuleText.length()) / 2;
-	const size_t optionMargin = titleMargin - inventoryModuleText.length();
+	const size_t headerMargin = (UI::TERMINAL_WIDTH + header.length()) / 2;
 
-	cout << endl;
-	cout << bars << endl;
-	cout << endl;
-	cout << right << setw(titleMargin + 3) << inventoryModuleText << endl;
-	cout << endl;
-	cout << left << bookTitle
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookAuthor
-		//<< right << setw((UI::TERMINAL_WIDTH) / 7) << bookPublisher
-		//<< right << setw((UI::TERMINAL_WIDTH) / 7) << bookDate
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookOnHand
-		//<< right << setw((UI::TERMINAL_WIDTH) / 7) << bookWholePrice
-		//<< right << setw((UI::TERMINAL_WIDTH) / 7) << bookRetailPrice
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookIsbn << endl;
-	cout << endl;
-	cout << bars;
-
-
-
-	/*
-	cout << "===================================================" << endl;
-	cout << endl;
-	cout << setw(31) << "[ INVENTORY LIST ] " << endl;
-	cout << endl;
-	cout << setw(5) << "TITLE: " << " Physics for Scientist and Engineers (9th edition)" << endl << endl
-		<< setw(5) << "AUTHOR: " << "Jewett Serway" << endl << endl
-		<< setw(5) << "PUBLISHER: " << "Cengage Learning" << endl << endl
-		<< setw(5) << "DATE: " << "02/21/2019" << endl << endl
-		<< setw(5) << "ON-HAND: " << "5" << endl << endl
-		<< setw(5) << "WHOLESALE-PRICE: " << "155.93" << endl << endl
-		<< setw(5) << "RETAIL-PRICE: " << "164.99" << endl << endl
-		<< setw(5) << "ISBN: " << "9781305116405" << endl;
-	cout << endl;
-
-
-	cout << "===================================================" << endl;
-	cout << endl;
-	*/
-	return;
-}
-
-void displayWholeSaleInv() {
-
-	cout << endl;
-	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string wholeSaleText = "[ WHOLESALE INVENTORY ]";
-	const string bookTitle = "TITLE:";
-	const string bookAuthor = "AUTHOR:";
-	const string bookWholePrice = "WHOLESALE-PRICE:";
-	const string bookIsbn = "ISBN:";
-
-	const size_t titleMargin = (UI::TERMINAL_WIDTH + wholeSaleText.length()) / 2;
-
-	//Pointer to Inventory Database
-	InventoryDatabase *pInvMode;
-	pInvMode = new InventoryDatabase; //Do not forget to delet this
-
-	cout << bars << endl << endl;
-	cout << setw(titleMargin + 3) << wholeSaleText << endl << endl;
-	cout << left << bookWholePrice
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookTitle
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookAuthor
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookIsbn << endl <<endl;
-	cout << bars;
-
-
+	cout << right;
+	cout << setw(headerMargin) << header << endl << endl << bars << endl << endl;
 
 	return;
 }
-
-void displayRetailInv() {
-
-	cout << endl;
-	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string retailInventoryText = "[ RETAIL INVENTORY ]";
-	const string bookTitle = "TITLE:";
-	const string bookAuthor = "AUTHOR:";
-	const string bookRetailPrice = "RETAIL-PRICE:";
-	const string bookIsbn = "ISBN:";
-
-	const size_t titleMargin = (UI::TERMINAL_WIDTH + retailInventoryText.length()) / 2;
-
-	//Pointer to Inventory Database
-	InventoryDatabase *pInvMode;
-	pInvMode = new InventoryDatabase; //Do not forget to delet this
-
-	cout << bars << endl << endl;
-	cout << setw(titleMargin + 3) << retailInventoryText << endl << endl;
-	cout << left << bookRetailPrice
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookTitle
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookAuthor
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookIsbn << endl << endl;
-	cout << bars;
-	return;
-}
-
-void displayListQuantity() {
-
-	cout << endl;
-	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string listByQuantityText = "[ LIST BY QUANTITY ]";
-	const string bookTitle = "TITLE:";
-	const string bookAuthor = "AUTHOR:";
-	const string bookOnHand = "ON-HAND:";
-	const string bookIsbn = "ISBN:";
-
-	const size_t titleMargin = (UI::TERMINAL_WIDTH + listByQuantityText.length()) / 2;
-
-	//Pointer to Inventory Database
-	InventoryDatabase *pInvMode;
-	pInvMode = new InventoryDatabase; //Do not forget to delet this
-
-	cout << bars << endl << endl;
-	cout << setw(titleMargin + 3) << listByQuantityText << endl << endl;
-	cout << left << bookOnHand
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookTitle
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookAuthor
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookIsbn << endl << endl;
-	cout << bars;
-
-	return;
-}
-
-void displayListCost() {
-
-	cout << endl;
-	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string listByCostText = "[ LIST BY COST ]";
-	const string bookTitle = "TITLE:";
-	const string bookAuthor = "AUTHOR:";
-	const string bookWholePrice = "WHOLESALE-PRICE:";
-	const string bookRetailPrice = "RETAIL-PRICE:";
-	const string bookIsbn = "ISBN:";
-
-	const size_t titleMargin = (UI::TERMINAL_WIDTH + listByCostText.length()) / 2;
-
-	//Pointer to Inventory Database
-	InventoryDatabase *pInvMode;
-	pInvMode = new InventoryDatabase; //Do not forget to delet this
-
-	cout << bars << endl << endl;
-	cout << setw(titleMargin + 3) << listByCostText << endl << endl;
-	cout << left << bookWholePrice
-		<< right << setw((UI::TERMINAL_WIDTH) / 5) << bookRetailPrice
-		<< right << setw((UI::TERMINAL_WIDTH) / 5) << bookTitle
-		<< right << setw((UI::TERMINAL_WIDTH) / 5) << bookAuthor
-		<< right << setw((UI::TERMINAL_WIDTH) / 5) << bookIsbn << endl << endl;
-	cout << bars;
-
-	return;
-}
-
-void displayListAged() {
-
-	cout << endl;
-	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string listByAgedText = "[ LIST BY AGE ]";
-	const string bookTitle = "TITLE:";
-	const string bookAuthor = "AUTHOR:";
-	const string bookDate = "DATE:";
-	const string bookIsbn = "ISBN:";
-
-	const size_t titleMargin = (UI::TERMINAL_WIDTH + listByAgedText.length()) / 2;
-
-	//Pointer to Inventory Database
-	InventoryDatabase *pInvMode;
-	pInvMode = new InventoryDatabase; //Do not forget to delet this
-
-	cout << bars << endl << endl;
-	cout << setw(titleMargin + 3) << listByAgedText << endl << endl;
-	cout << left << bookDate
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookTitle
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookAuthor
-		<< right << setw((UI::TERMINAL_WIDTH) / 4) << bookIsbn << endl << endl;
-	cout << bars;
-
-	return;
-}
-
-/*
-void displayInventory() {
-	cout << "===================================================" << endl;
-	cout << endl;
-	cout << right << setw(31) << "[ INVENTORY ] " << endl;
-	cout << endl;
-	cout << left << setw(5) << "TITLE " << right << setw(10) << " AUTHOR "
-		<< right << setw(10) << " PUBLISHER " << right << setw(10) << " DATE "
-		<< right << setw(10) << " ON-HAND "
-		<< right << setw(10) << " WHOLESALE-PRICE "
-		<< right << setw(10) << " RETAIL-PRICE "
-		<< right << setw(10) << " ISBN " << endl;
-	cout << left << setw(5) << "Physics for Scientist and Engineers (9th edition) " << right << setw(10) << " Jewett Serway "
-		<< right << setw(10) << " Cengage Learning " << right << setw(10) << " 02/21/2019 "
-		<< right << setw(10) << " 5 "
-		<< right << setw(10) << " 155.93 "
-		<< right << setw(10) << " 164.99 "
-		<< right << setw(10) << " 9781305116405 " << endl;
-	cout << "===================================================" << endl;
-	cout << endl;
-	return;
-}
-*/
 
 string generateBars(int number)
 {
@@ -525,23 +705,29 @@ string generateBars(int number)
 	return bars;
 }
 
-int getUserOption(int min, int max)
+int getUserInputInt(const int& min, const int& max)
 {
-	string inputString;
-	int inputInt = -1;
+	string input;
+	int inputInt;
+	bool err;
 
 	do
 	{
-		bool err = false;
+		err = false;
 
-		//Prompt the user for input
-		cout << UI::PROMPT_OPTION;
-		std::getline(std::cin, inputString);
+		getline(cin, input);
 
 		//Exception handling
 		try
 		{
-			inputInt = stoi(inputString);
+			inputInt = stoi(input);
+
+			//Input must be between min and max
+			if (inputInt < min || inputInt > max)
+			{
+				cerr << UI::ERR_INVALID_OPTION_RANGE << min << " and " << max << " inclusive." << endl;
+				err = true;
+			}
 		}
 		catch (invalid_argument&)
 		{
@@ -559,28 +745,86 @@ int getUserOption(int min, int max)
 			err = true;
 		}
 
-		//Check if the input was a valid option, between min and max
-		if (!err)
-		{
-			if (inputInt < min || inputInt > max)
-			{
-				cerr << UI::ERR_INVALID_OPTION_RANGE << min << " and " << max << " inclusive." << endl;
-			}
-		}
-	} while (!cin || inputInt < min || inputInt > max);
+	} while (err || !cin);
 
 	return inputInt;
 }
 
-void displayGoodbye()
+double getUserInputDouble(const double& min, const double& max)
 {
-	clearScreen();
+	string input;
+	double inputDouble;
+	bool err;
 
-	cout << UI::GOODBYE_MESSAGE << endl << endl << endl;
+	do
+	{
+		err = false;
+
+		getline(cin, input);
+
+		//Exception handling
+		try
+		{
+			inputDouble = stod(input);
+
+			//Input must be between min and max
+			if (inputDouble < min || inputDouble > max)
+			{
+				cerr << UI::ERR_INVALID_OPTION_RANGE << min << " and " << max << " inclusive." << endl;
+				err = true;
+			}
+		}
+		catch (invalid_argument&)
+		{
+			cerr << UI::ERR_EXCEPTION_INVALID_ARGUMENT << endl;
+			err = true;
+		}
+		catch (out_of_range&)
+		{
+			cerr << UI::ERR_EXCEPTION_OUT_OF_RANGE << endl;
+			err = true;
+		}
+		catch (...)
+		{
+			cerr << UI::ERR_EXCEPTION_GENERIC << endl;
+			err = true;
+		}
+
+	} while (err || !cin);
+
+	return inputDouble;
 }
 
-void clearScreen()
+string getUserInputString()
+{
+	string input;
+
+	getline(cin, input);
+
+	return input;
+}
+
+void clearScreen(bool displayHeader)
 {
 	system("CLS");
+	if (displayHeader)
+	{
+		printHeader();
+	}
 	return;
+}
+
+void pause()
+{
+	cout << "Press ENTER to continue.";
+	cin.get();
+}
+
+int convertDateToInt(string date)
+{
+	int month = stoi(date.substr(0, 2));
+	int day = stoi(date.substr(3, 2));
+	int year = stoi(date.substr(6, 4));
+
+	return 10000 * year + 100 * month + day;
 }
