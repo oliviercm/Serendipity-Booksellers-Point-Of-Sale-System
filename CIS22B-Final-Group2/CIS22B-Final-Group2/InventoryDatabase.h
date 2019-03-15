@@ -46,6 +46,8 @@ private:
 	std::string parseString(const std::string str, const std::string delimiter) const;
 	std::string parseString(const std::string str, const std::string delimiter, const int skip) const;
 	std::string fileToString(const std::string path) const;
+	std::string bookToString(InventoryBook book) const;
+	std::string inventoryArrayToString();
 	int getNumBooksInString(const std::string str) const;
 
 public:
@@ -55,6 +57,9 @@ public:
 	int getInventoryArraySize() const;
 	void editBookQuantityByIsbn(std::string isbn, int amount);
 	InventoryBook getBookByIsbn(std::string isbn);
+	int getBookIndexByIsbn(std::string isbn);
+	void addBookToArray(InventoryBook book);
+	void removeBookFromArray(int index);
 
 	//Constuctors / Destructors
 	InventoryDatabase();

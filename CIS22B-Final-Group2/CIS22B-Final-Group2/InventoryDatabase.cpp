@@ -133,6 +133,61 @@ std::string InventoryDatabase::fileToString(std::string path) const
 }
 
 /**
+* bookToString
+*
+* @brief Turns a book into a string, formatted into the form used in the inventory file.
+*
+* @param book The book to turn into a string.
+*
+* @return The book as a formatted string.
+*/
+
+std::string InventoryDatabase::bookToString(InventoryBook book) const
+{
+	std::string bookString = std::string();
+
+	std::string wholesaleString = std::to_string(book.wholesale);
+	wholesaleString = wholesaleString.substr(0, wholesaleString.find(".") + 3);
+
+	std::string retailString = std::to_string(book.retail);
+	retailString = retailString.substr(0, retailString.find(".") + 3);
+
+	bookString =
+		"<" + DELIM_BOOK + ">" + "\n"
+			+ "\t" + "<" + DELIM_ISBN + ">" + book.isbn + "</" + DELIM_ISBN + ">" + "\n"
+			+ "\t" + "<" + DELIM_TITLE + ">" + book.title + "</" + DELIM_TITLE + ">" + "\n"
+			+ "\t" + "<" + DELIM_AUTHOR + ">" + book.author + "</" + DELIM_AUTHOR + ">" + "\n"
+			+ "\t" + "<" + DELIM_PUBLISHER + ">" + book.publisher + "</" + DELIM_PUBLISHER + ">" + "\n"
+			+ "\t" + "<" + DELIM_DATE_ADDED + ">" + book.addDate + "</" + DELIM_DATE_ADDED + ">" + "\n"
+			+ "\t" + "<" + DELIM_QUANTITY + ">" + std::to_string(book.quantity) + "</" + DELIM_QUANTITY + ">" + "\n"
+			+ "\t" + "<" + DELIM_WHOLESALE + ">" + wholesaleString + "</" + DELIM_WHOLESALE + ">" + "\n"
+			+ "\t" + "<" + DELIM_RETAIL + ">" + retailString + "</" + DELIM_RETAIL + ">" "\n"
+		"</" + DELIM_BOOK + ">" + "\n";
+
+	return bookString;
+}
+
+/**
+* inventoryArrayToString
+*
+* @brief Uses inventoryArray and inventoryArraySize to create a full database file string.
+*
+* @return A string containing the entire database as is currently loaded in memory.
+*/
+
+std::string InventoryDatabase::inventoryArrayToString()
+{
+	std::string booksString = std::string();
+	
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		booksString.append(bookToString(inventoryArray[i]));
+	}
+
+	return booksString;
+}
+
+/**
 * getNumBooksInString
 *
 * @brief Returns the number of books in the string based on the book delimiter.
@@ -309,6 +364,91 @@ InventoryBook InventoryDatabase::getBookByIsbn(std::string isbn)
 	}
 
 	return InventoryBook();
+}
+
+/**
+* getBookIndexByIsbn
+*
+* @brief Returns the index of the book with the passed ISBN.
+*
+* @param isbn The ISBN of the book to search for.
+*
+* @return The index of the book matching the passed ISBN. If a book with the passed ISBN doesn't exist, passes -1.
+*/
+
+int InventoryDatabase::getBookIndexByIsbn(std::string isbn)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+/**
+* addBookToArray
+*
+* @brief Adds a new book to the inventory array.
+*
+* @param book The new book to add to the inventory array.
+*/
+
+void InventoryDatabase::addBookToArray(InventoryBook book)
+{
+	//Make a new array to hold the new book plus the old books
+	std::unique_ptr<InventoryBook[]> newInventoryArray = std::make_unique<InventoryBook[]>(inventoryArraySize + 1);
+
+	//Copy the old books into the new array
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		newInventoryArray[i] = inventoryArray[i];
+	}
+
+	//Copy the new book into the new array
+	newInventoryArray[inventoryArraySize] = book;
+
+	//Swap the old array and the new array, then set the array size variable to the right value
+	inventoryArray.swap(newInventoryArray);
+	inventoryArraySize++;
+	
+	return;
+}
+
+/**
+* removeBookFromArray
+*
+* @brief Removes a book from the inventory array.
+*
+* @param index The index of the book to remove from the inventory array.
+*/
+
+void InventoryDatabase::removeBookFromArray(int index)
+{
+	//Make a new array to hold the old books, minus the one we are removing
+	std::unique_ptr<InventoryBook[]> newInventoryArray = std::make_unique<InventoryBook[]>(inventoryArraySize - 1);
+
+	//Keep track of whether we have passed the book to remove or not
+	bool passedIndex = false;
+
+	//Copy the old books into the new array, except the one we are removing
+	for (int i = 0; i < index; i++)
+	{
+		newInventoryArray[i] = inventoryArray[i];
+	}
+	for (int i = index + 1; i < inventoryArraySize; i++)
+	{
+		newInventoryArray[i - 1] = inventoryArray[i];
+	}
+
+	//Swap the old array and the new array, then set the array size variable to the right value
+	inventoryArray.swap(newInventoryArray);
+	inventoryArraySize--;
+
+	return;
 }
 
 /****************************************
