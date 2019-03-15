@@ -27,15 +27,6 @@ void displayCashierModule();
 void cashierSellBooks(InventoryDatabase* pD);
 
 void displayInventoryModule();
-
-void displayReportModule();
-void displayReportInventoryList(unique_ptr<InventoryBook[]> books, int numBooks);
-void displayReportInventoryWholesaleValue(unique_ptr<InventoryBook[]> books, int numBooks);
-void displayReportInventoryRetailValue(unique_ptr<InventoryBook[]> books, int numBooks);
-void displayReportListByQuantity(unique_ptr<InventoryBook[]> books, int numBooks);
-void displayReportListByCost(unique_ptr<InventoryBook[]> books, int numBooks);
-void displayReportListByAge(unique_ptr<InventoryBook[]> books, int numBooks);
-
 /*
 void inventoryLookUpBookByIsbn();
 void inventoryLookUpBookByTitle();
@@ -45,6 +36,14 @@ void inventoryAddBookToFile();
 void inventoryDeleteBookFromFile();
 void inventoryEditBookByIsbn();
 */
+
+void displayReportModule();
+void displayReportInventoryList(unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportInventoryWholesaleValue(unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportInventoryRetailValue(unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportListByQuantity(unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportListByCost(unique_ptr<InventoryBook[]> books, int numBooks);
+void displayReportListByAge(unique_ptr<InventoryBook[]> books, int numBooks);
 
 int getUserInputInt(const int& min = INT_MIN, const int& max = INT_MAX);
 double getUserInputDouble(const double& min = DBL_MIN, const double& max = DBL_MAX);
@@ -73,7 +72,7 @@ namespace UI
 
 	enum MAIN_MENU_OPTIONS { MAIN_NONE, MAIN_CASHIER, MAIN_INVENTORY, MAIN_REPORT, MAIN_EXIT };
 	enum CASHIER_OPTIONS { CASHIER_NONE, CASHIER_SELL_BOOKS, CASHIER_BACK };
-	enum INVENTORY_OPTIONS { INVENTORY_NONE, INVENTORY_FIND_ID, INVENTORY_FIND_ISBN, INVENTORY_BACK };
+	enum INVENTORY_OPTIONS { INVENTORY_NONE, INVENTORY_FIND_ID, INVENTORY_FIND_ISBN, INVENTORY_ADD_BOOK, INVENTORY_REMOVE_BOOK, INVENTORY_EDIT_BOOK, INVENTORY_BACK };
 	enum REPORT_OPTIONS { REPORT_NONE, REPORT_INVENTORY_LIST, REPORT_INVENTORY_WHOLESALE, REPORT_INVENTORY_RETAIL, REPORT_LIST_QUANTITY, REPORT_LIST_COST, REPORT_LIST_AGE, REPORT_BACK };
 }
 
@@ -93,8 +92,7 @@ int main()
 	inventoryDatabase.buildInventoryArray(filePath);
 
 	//Display main menu, get user inputs
-	int inputMainMenu, inputSubMenu;
-
+	int inputMainMenu;
 	do
 	{
 		displayMainMenu();
@@ -103,6 +101,7 @@ int main()
 
 		switch (inputMainMenu)
 		{
+			int inputSubMenu;
 		case UI::MAIN_MENU_OPTIONS::MAIN_CASHIER:
 			do
 			{
@@ -126,10 +125,20 @@ int main()
 			{
 				displayInventoryModule();
 
-				inputSubMenu = getUserInputInt(UI::INVENTORY_OPTIONS::INVENTORY_NONE, UI::INVENTORY_OPTIONS::INVENTORY_BACK);
-
+				inputSubMenu = getUserInputInt(UI::INVENTORY_OPTIONS::INVENTORY_FIND_ID, UI::INVENTORY_OPTIONS::INVENTORY_BACK);
+				
 				switch (inputSubMenu)
 				{
+				case UI::INVENTORY_OPTIONS::INVENTORY_FIND_ID:
+					break;
+				case UI::INVENTORY_OPTIONS::INVENTORY_FIND_ISBN:
+					break;
+				case UI::INVENTORY_OPTIONS::INVENTORY_ADD_BOOK:
+					break;
+				case UI::INVENTORY_OPTIONS::INVENTORY_REMOVE_BOOK:
+					break;
+				case UI::INVENTORY_OPTIONS::INVENTORY_EDIT_BOOK:
+					break;
 				case UI::INVENTORY_OPTIONS::INVENTORY_BACK:
 					break;
 				default:
@@ -347,6 +356,7 @@ void displayReportInventoryList(unique_ptr<InventoryBook[]> books, int numBooks)
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
 	const string titleText = "[ INVENTORY LIST ]";
+	const string bookIndexText = "ID:";
 	const string bookIsbnText = "ISBN:";
 	const string bookTitleText = "TITLE:";
 	const string bookAuthorText = "AUTHOR:";
@@ -358,15 +368,16 @@ void displayReportInventoryList(unique_ptr<InventoryBook[]> books, int numBooks)
 
 	const size_t columnSpacing = 3;
 
+	const size_t idColumnLength = 3 + columnSpacing;
 	const size_t isbnColumnLength = 13 + columnSpacing;
 	const size_t dateColumnLength = 10 + columnSpacing;
 	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
 	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
 	const size_t retailColumnLength = bookRetailText.length() + columnSpacing;
 
-	const size_t titleColumnLength = (UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 2;
-	const size_t authorColumnLength = (UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
-	const size_t publisherColumnLength = (UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+	const size_t titleColumnLength = (UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 2;
+	const size_t authorColumnLength = (UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+	const size_t publisherColumnLength = (UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
 
@@ -376,7 +387,8 @@ void displayReportInventoryList(unique_ptr<InventoryBook[]> books, int numBooks)
 
 	cout << left;
 
-	cout << setw(isbnColumnLength) << bookIsbnText
+	cout << setw(idColumnLength) << bookIndexText
+		<< setw(isbnColumnLength) << bookIsbnText
 		<< setw(titleColumnLength) << bookTitleText
 		<< setw(authorColumnLength) << bookAuthorText
 		<< setw(publisherColumnLength) << bookPublisherText
@@ -390,7 +402,8 @@ void displayReportInventoryList(unique_ptr<InventoryBook[]> books, int numBooks)
 	{
 		cout << left;
 
-		cout << setw(isbnColumnLength) << books[i].isbn
+		cout << setw(idColumnLength) << i
+			<< setw(isbnColumnLength) << books[i].isbn
 			<< setw(titleColumnLength) << books[i].title
 			<< setw(authorColumnLength) << books[i].author
 			<< setw(publisherColumnLength) << books[i].publisher
@@ -412,6 +425,7 @@ void displayReportInventoryWholesaleValue(unique_ptr<InventoryBook[]> books, int
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
 	const string titleText = "[ INVENTORY WHOLESALE VALUE ]";
+	const string bookIndexText = "ID:";
 	const string bookIsbnText = "ISBN:";
 	const string bookTitleText = "TITLE:";
 	const string bookQuantityText = "ON-HAND:";
@@ -421,12 +435,13 @@ void displayReportInventoryWholesaleValue(unique_ptr<InventoryBook[]> books, int
 
 	const size_t columnSpacing = 3;
 
+	const size_t idColumnLength = 3 + columnSpacing;
 	const size_t isbnColumnLength = 13 + columnSpacing;
 	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
 	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
 	const size_t totalWholesaleColumnLength = bookTotalWholesaleText.length() + columnSpacing;
 
-	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - quantityColumnLength - wholesaleColumnLength - totalWholesaleColumnLength;
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - quantityColumnLength - wholesaleColumnLength - totalWholesaleColumnLength;
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
 
@@ -436,7 +451,8 @@ void displayReportInventoryWholesaleValue(unique_ptr<InventoryBook[]> books, int
 
 	cout << left;
 
-	cout << setw(isbnColumnLength) << bookIsbnText
+	cout << setw(idColumnLength) << bookIndexText
+		<< setw(isbnColumnLength) << bookIsbnText
 		<< setw(titleColumnLength) << bookTitleText
 		<< setw(quantityColumnLength) << bookQuantityText
 		<< setw(wholesaleColumnLength) << bookWholesaleText
@@ -452,7 +468,8 @@ void displayReportInventoryWholesaleValue(unique_ptr<InventoryBook[]> books, int
 
 		cout << left;
 
-		cout << setw(isbnColumnLength) << books[i].isbn
+		cout << setw(idColumnLength) << i
+			<< setw(isbnColumnLength) << books[i].isbn
 			<< setw(titleColumnLength) << books[i].title
 			<< setw(quantityColumnLength) << books[i].quantity
 			<< setw(wholesaleColumnLength) << books[i].wholesale
@@ -473,6 +490,7 @@ void displayReportInventoryRetailValue(unique_ptr<InventoryBook[]> books, int nu
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
 	const string titleText = "[ INVENTORY RETAIL VALUE ]";
+	const string bookIndexText = "ID:";
 	const string bookIsbnText = "ISBN:";
 	const string bookTitleText = "TITLE:";
 	const string bookQuantityText = "ON-HAND:";
@@ -482,12 +500,13 @@ void displayReportInventoryRetailValue(unique_ptr<InventoryBook[]> books, int nu
 
 	const size_t columnSpacing = 3;
 
+	const size_t idColumnLength = 3 + columnSpacing;
 	const size_t isbnColumnLength = 13 + columnSpacing;
 	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
 	const size_t retailColumnLength = bookRetailText.length() + columnSpacing;
 	const size_t totalRetailColumnLength = bookTotalRetailText.length() + columnSpacing;
 
-	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - quantityColumnLength - retailColumnLength - totalRetailColumnLength;
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - quantityColumnLength - retailColumnLength - totalRetailColumnLength;
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
 
@@ -497,7 +516,8 @@ void displayReportInventoryRetailValue(unique_ptr<InventoryBook[]> books, int nu
 
 	cout << left;
 
-	cout << setw(isbnColumnLength) << bookIsbnText
+	cout << setw(idColumnLength) << bookIndexText
+		<< setw(isbnColumnLength) << bookIsbnText
 		<< setw(titleColumnLength) << bookTitleText
 		<< setw(quantityColumnLength) << bookQuantityText
 		<< setw(retailColumnLength) << bookRetailText
@@ -513,7 +533,8 @@ void displayReportInventoryRetailValue(unique_ptr<InventoryBook[]> books, int nu
 
 		cout << left;
 
-		cout << setw(isbnColumnLength) << books[i].isbn
+		cout << setw(idColumnLength) << i
+			<< setw(isbnColumnLength) << books[i].isbn
 			<< setw(titleColumnLength) << books[i].title
 			<< setw(quantityColumnLength) << books[i].quantity
 			<< setw(retailColumnLength) << books[i].retail
@@ -534,16 +555,18 @@ void displayReportListByQuantity(unique_ptr<InventoryBook[]> books, int numBooks
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
 	const string titleText = "[ LIST BY QUANTITY ]";
+	const string bookIndexText = "ID:";
 	const string bookIsbnText = "ISBN:";
 	const string bookTitleText = "TITLE:";
 	const string bookQuantityText = "ON-HAND:";
 
 	const size_t columnSpacing = 3;
 
+	const size_t idColumnLength = 3 + columnSpacing;
 	const size_t isbnColumnLength = 13 + columnSpacing;
 	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
 
-	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - quantityColumnLength;
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - quantityColumnLength;
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
 
@@ -553,7 +576,8 @@ void displayReportListByQuantity(unique_ptr<InventoryBook[]> books, int numBooks
 
 	cout << left;
 
-	cout << setw(isbnColumnLength) << bookIsbnText
+	cout << setw(idColumnLength) << bookIndexText
+		<< setw(isbnColumnLength) << bookIsbnText
 		<< setw(titleColumnLength) << bookTitleText
 		<< setw(quantityColumnLength) << bookQuantityText
 		<< endl << endl;
@@ -574,7 +598,8 @@ void displayReportListByQuantity(unique_ptr<InventoryBook[]> books, int numBooks
 	{
 		cout << left;
 
-		cout << setw(isbnColumnLength) << copyBooks[i].isbn
+		cout << setw(idColumnLength) << i
+			<< setw(isbnColumnLength) << copyBooks[i].isbn
 			<< setw(titleColumnLength) << copyBooks[i].title
 			<< setw(quantityColumnLength) << copyBooks[i].quantity
 			<< endl;
@@ -591,16 +616,18 @@ void displayReportListByCost(unique_ptr<InventoryBook[]> books, int numBooks) {
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
 	const string titleText = "[ LIST BY COST ]";
+	const string bookIndexText = "ID:";
 	const string bookIsbnText = "ISBN:";
 	const string bookTitleText = "TITLE:";
 	const string bookWholesaleText = "WHOLESALE COST:";
 
 	const size_t columnSpacing = 3;
 
+	const size_t idColumnLength = 3 + columnSpacing;
 	const size_t isbnColumnLength = 13 + columnSpacing;
 	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
 
-	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - wholesaleColumnLength;
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - wholesaleColumnLength;
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
 
@@ -610,7 +637,8 @@ void displayReportListByCost(unique_ptr<InventoryBook[]> books, int numBooks) {
 
 	cout << left;
 
-	cout << setw(isbnColumnLength) << bookIsbnText
+	cout << setw(idColumnLength) << bookIndexText
+		<< setw(isbnColumnLength) << bookIsbnText
 		<< setw(titleColumnLength) << bookTitleText
 		<< setw(wholesaleColumnLength) << bookWholesaleText
 		<< endl << endl;
@@ -631,7 +659,8 @@ void displayReportListByCost(unique_ptr<InventoryBook[]> books, int numBooks) {
 	{
 		cout << left;
 
-		cout << setw(isbnColumnLength) << copyBooks[i].isbn
+		cout << setw(idColumnLength) << i
+			<< setw(isbnColumnLength) << copyBooks[i].isbn
 			<< setw(titleColumnLength) << copyBooks[i].title
 			<< setw(wholesaleColumnLength) << copyBooks[i].wholesale
 			<< endl;
@@ -648,16 +677,18 @@ void displayReportListByAge(unique_ptr<InventoryBook[]> books, int numBooks) {
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
 	const string titleText = "[ LIST BY AGE ]";
+	const string bookIndexText = "ID:";
 	const string bookIsbnText = "ISBN:";
 	const string bookTitleText = "TITLE:";
 	const string bookDateText = "ADD DATE:";
 
 	const size_t columnSpacing = 3;
 
+	const size_t idColumnLength = 3 + columnSpacing;
 	const size_t isbnColumnLength = 13 + columnSpacing;
 	const size_t dateColumnLength = 10 + columnSpacing;
 
-	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength;
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength;
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
 
@@ -667,7 +698,8 @@ void displayReportListByAge(unique_ptr<InventoryBook[]> books, int numBooks) {
 
 	cout << left;
 
-	cout << setw(isbnColumnLength) << bookIsbnText
+	cout << setw(idColumnLength) << bookIndexText
+		<< setw(isbnColumnLength) << bookIsbnText
 		<< setw(titleColumnLength) << bookTitleText
 		<< setw(dateColumnLength) << bookDateText
 		<< endl << endl;
@@ -688,7 +720,8 @@ void displayReportListByAge(unique_ptr<InventoryBook[]> books, int numBooks) {
 	{
 		cout << left;
 
-		cout << setw(isbnColumnLength) << copyBooks[i].isbn
+		cout << setw(idColumnLength) << i
+			<< setw(isbnColumnLength) << copyBooks[i].isbn
 			<< setw(titleColumnLength) << copyBooks[i].title
 			<< setw(dateColumnLength) << copyBooks[i].addDate
 			<< endl;
