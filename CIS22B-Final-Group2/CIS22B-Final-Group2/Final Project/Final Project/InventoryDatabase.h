@@ -18,6 +18,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <fstream>
 #include "InventoryBook.h"
 

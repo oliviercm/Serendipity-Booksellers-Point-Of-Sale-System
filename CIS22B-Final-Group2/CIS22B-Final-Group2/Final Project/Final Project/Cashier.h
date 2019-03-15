@@ -3,6 +3,7 @@
 #include <string>
 #include "InventoryDatabase.h"
 #include "InventoryBook.h"
+#include <memory>
 
 class Cashier
 {

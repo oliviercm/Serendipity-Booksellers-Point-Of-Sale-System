@@ -13,6 +13,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include "Book.h"
 
 struct InventoryBook : public Book

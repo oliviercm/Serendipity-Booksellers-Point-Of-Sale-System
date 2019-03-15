@@ -13,6 +13,7 @@ Group 2:
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <memory>
 #include "InventoryDatabase.h"
 #include "InventoryBook.h"
 #include "Cashier.h"
@@ -63,7 +64,7 @@ void displayGoodbye();
 namespace UI
 {
 	const int TERMINAL_WIDTH = 200;
-	const int TERMINAL_HEIGHT = 50;
+	const int TERMINAL_HEIGHT = 100;
 
 	const string BARS_CHARACTER = "=";
 
