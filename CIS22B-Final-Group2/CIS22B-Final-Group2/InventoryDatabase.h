@@ -18,6 +18,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <fstream>
 #include "InventoryBook.h"
 
@@ -29,7 +30,7 @@ private:
 	std::string inventoryString;
 	std::unique_ptr<InventoryBook[]> inventoryArray;
 	int inventoryArraySize;
-	
+
 	//Constant members
 	const std::string DELIM_BOOK = "book";
 	const std::string DELIM_ISBN = "isbn";
@@ -53,6 +54,7 @@ public:
 	std::unique_ptr<InventoryBook[]> getInventoryArray() const;
 	int getInventoryArraySize() const;
 	void editBookQuantityByIsbn(std::string isbn, int amount);
+	InventoryBook getBookByIsbn(std::string isbn);
 
 	//Constuctors / Destructors
 	InventoryDatabase();

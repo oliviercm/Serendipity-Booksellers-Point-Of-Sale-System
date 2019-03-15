@@ -1,28 +1,24 @@
+#pragma once
+
 #include <string>
-#include <iostream>
-#include "InventoryBook.h"
+#include <memory>
 #include "InventoryDatabase.h"
+#include "InventoryBook.h"
 
-class Cashier {
+class Cashier
+{
 private:
-    InventoryBook *cart;
-    int cartLength;
-    const double SALES_TAX = 0.9;
-	InventoryDatabase * data; 
-	std::unique_ptr<InventoryBook[]> inv; 
-
+	InventoryDatabase* pInventoryDatabase;
+	std::unique_ptr<InventoryBook[]> cart;
+	int cartSize;
+	const double SALES_TAX = 0.0725;
 public:
-    // Constructor
-	Cashier();
-    Cashier(InventoryDatabase * data2);
+	// Constructor
+	Cashier(InventoryDatabase* pD);
 
-    // Destructor
-    ~Cashier();
-    
-    void startCashier();
-    void addBookToCart(InventoryBook book);
+	void addBookToCart(InventoryBook book);
 	void removeBookFromCart(InventoryBook book);
-    double checkout();
-    int findBook(std::string isbnNum);
-	std::unique_ptr<InventoryBook[]> getCartArray() const;
+	std::unique_ptr<InventoryBook[]> getCart() const;
+	void checkout();
+	int findBook(std::string isbnNum);
 };

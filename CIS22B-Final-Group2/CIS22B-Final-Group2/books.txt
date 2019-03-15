@@ -5,7 +5,7 @@
 	<publisher>BIG Publishing</publisher>
 	<adddate>02/20/2019</adddate>
 	<quantity>1</quantity>
-	<wholesale>5.99</wholesale>
+	<wholesale>5.65</wholesale>
 	<retail>15.99</retail>
 </book>
 <book>
@@ -15,7 +15,7 @@
 	<publisher>Phantasy Press</publisher>
 	<adddate>06/13/2000</adddate>
 	<quantity>4</quantity>
-	<wholesale>4.99</wholesale>
+	<wholesale>4.12</wholesale>
 	<retail>11.99</retail>
 </book>
 <book>
@@ -23,8 +23,178 @@
 	<title>The Holy Bible (King James Edition)</title>
 	<author>Chess Jurist</author>
 	<publisher>Eden Publications</publisher>
-	<adddate>12/25/1970</adddate>
+	<adddate>12/25/0000</adddate>
 	<quantity>13</quantity>
-	<wholesale>8.99</wholesale>
+	<wholesale>8.76</wholesale>
 	<retail>19.99</retail>
+</book>
+<book>
+	<isbn>9783776520378</isbn>
+	<title>The Odyssey</title>
+	<author>Homer</author>
+	<publisher>Ajax Ltd.</publisher>
+	<adddate>01/01/1970</adddate>
+	<quantity>3</quantity>
+	<wholesale>7.15</wholesale>
+	<retail>17.99</retail>
+</book>
+<book>
+	<isbn>9788862777216</isbn>
+	<title>Alice's Adventures in Wonderland</title>
+	<author>Lewis Carroll</author>
+	<publisher>Phantasy Press</publisher>
+	<adddate>02/27/2001</adddate>
+	<quantity>6</quantity>
+	<wholesale>5.01</wholesale>
+	<retail>11.95</retail>
+</book>
+<book>
+	<isbn>9781508560449</isbn>
+	<title>The Stranger</title>
+	<author>Albert Camus</author>
+	<publisher>BIG Publishing</publisher>
+	<adddate>10/13/1995</adddate>
+	<quantity>13</quantity>
+	<wholesale>13.37</wholesale>
+	<retail>19.95</retail>
+</book>
+<book>
+	<isbn>9781976773150</isbn>
+	<title>Julius Caesar</title>
+	<author>William Shakespeare</author>
+	<publisher>Ye Olde Printing Presse</publisher>
+	<adddate>03/15/1599</adddate>
+	<quantity>2</quantity>
+	<wholesale>4.99</wholesale>
+	<retail>9.99</retail>
+</book>
+<book>
+	<isbn>9780061917707</isbn>
+	<title>The Lord of the Rings</title>
+	<author>J. R. R. Tolkien</author>
+	<publisher>Fellowship Shires</publisher>
+	<adddate>12/19/2001</adddate>
+	<quantity>19</quantity>
+	<wholesale>10.01</wholesale>
+	<retail>16.90</retail>
+</book>
+<book>
+	<isbn>9788026874256</isbn>
+	<title>Nineteen Eighty-Four</title>
+	<author>George Orwell</author>
+	<publisher>Big Brother Entertainment</publisher>
+	<adddate>01/01/1984</adddate>
+	<quantity>4</quantity>
+	<wholesale>4.04</wholesale>
+	<retail>19.84</retail>
+</book>
+<book>
+	<isbn>9783499120923</isbn>
+	<title>One Flew Over the Cuckoo's Nest</title>
+	<author>Ken Kesey</author>
+	<publisher>Phantasy Press</publisher>
+	<adddate>10/24/2010</adddate>
+	<quantity>1</quantity>
+	<wholesale>4.65</wholesale>
+	<retail>9.99</retail>
+</book>
+<book>
+	<isbn>9781305116405</isbn>
+	<title>Physics for Scientists and Engineers (9th edition)</title>
+	<author>Jewett Serway</author>
+	<publisher>School Aztec Corp.</publisher>
+	<adddate>01/01/1970</adddate>
+	<quantity>4</quantity>
+	<wholesale>16.72</wholesale>
+	<retail>99.99</retail>
+</book>
+<book>
+	<isbn>9780190216405</isbn>
+	<title>Rigging the Game</title>
+	<author>Michael Schwalbe</author>
+	<publisher>Phantasy Press</publisher>
+	<adddate>12/12/2012</adddate>
+	<quantity>3</quantity>
+	<wholesale>7.93</wholesale>
+	<retail>12.99</retail>
+</book>
+<book>
+	<isbn>9780062741585</isbn>
+	<title>Read & Riot</title>
+	<author>Nadya Tolokonnikova</author>
+	<publisher>Phantasy Press</publisher>
+	<adddate>01/01/2000</adddate>
+	<quantity>2</quantity>
+	<wholesale>5.00</wholesale>
+	<retail>15.99</retail>
+</book>
+<book>
+	<isbn>9781285741550</isbn>
+	<title>Calculus: Early Transcendentals</title>
+	<author>James Stewart</author>
+	<publisher>School Aztec Corp.</publisher>
+	<adddate>01/01/2000</adddate>
+	<quantity>4</quantity>
+	<wholesale>21.56</wholesale>
+	<retail>119.99</retail>
+</book>
+<book>
+	<isbn>9780134093413</isbn>
+	<title>Campbell Biology</title>
+	<author>Luis A. Urry</author>
+	<publisher>School Aztec Corp.</publisher>
+	<adddate>01/01/2000</adddate>
+	<quantity>3</quantity>
+	<wholesale>33.33</wholesale>
+	<retail>149.95</retail>
+</book>
+<book>
+	<isbn>9781260153125</isbn>
+	<title>Environmental Science (14th edition)</title>
+	<author>William Cunningham</author>
+	<publisher>School Aztec Corp.</publisher>
+	<adddate>06/05/2015</adddate>
+	<quantity>7</quantity>
+	<wholesale>23.54</wholesale>
+	<retail>68.99</retail>
+</book>
+<book>
+	<isbn>9780134497181</isbn>
+	<title>Differential Equations and Linear Algebra (4th edition)</title>
+	<author>C. Henry Edwards</author>
+	<publisher>School Aztec Corp.</publisher>
+	<adddate>06/05/2015</adddate>
+	<quantity>5</quantity>
+	<wholesale>45.67</wholesale>
+	<retail>99.99</retail>
+</book>
+<book>
+	<isbn>9780134472096</isbn>
+	<title>International Economics</title>
+	<author>James Gerber</author>
+	<publisher>School Aztec Corp.</publisher>
+	<adddate>06/05/2015</adddate>
+	<quantity>1</quantity>
+	<wholesale>40.11</wholesale>
+	<retail>79.99</retail>
+</book>
+<book>
+	<isbn>9780134565613</isbn>
+	<title>Modified Mastering Chemistry</title>
+	<author>Nivaldo J. Tro</author>
+	<publisher>School Aztec Corp.</publisher>
+	<adddate>06/05/2015</adddate>
+	<quantity>2</quantity>
+	<wholesale>55.40</wholesale>
+	<retail>139.99</retail>
+</book>
+<book>
+	<isbn>9780134498379</isbn>
+	<title>C++ from Control Structures to Objects</title>
+	<author>Tony Gaddis</author>
+	<publisher>Standard Output Printers</publisher>
+	<adddate>03/22/2019</adddate>
+	<quantity>1</quantity>
+	<wholesale>0.01</wholesale>
+	<retail>999.99</retail>
 </book>

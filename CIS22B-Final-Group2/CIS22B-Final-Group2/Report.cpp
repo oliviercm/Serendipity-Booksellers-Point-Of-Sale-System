@@ -1,21 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
+
 #pragma once
+
+#include <string>
 #include "Report.h"
 #include "InventoryBook.h"
 #include "InventoryDatabase.h"
-#include "book.h"
-#include<string>
-
-/*												   	 Constructor
-	From main, we must pass the number of titles in the inventory somehow. This is the only way to create a Report object.
-*/
-Report::Report(int num_books, InventoryBook *data)
-{
-	wholesale_value = 0;
-	retail_value = 0;
-	nu_books = num_books;
-	books = data;
-}
 
 /*												Array of Books Creation Functions
 	The purpose of these functions are to dynamically create an array of Book objects. With this, the Report class is going to be able to use
@@ -26,135 +16,116 @@ Report::Report(int num_books, InventoryBook *data)
 	These algorithms will be used by several public functions of this class. They will sort by quantity, wholesale cost, and number of days
 	the books have remained in the inventory. All 3 functions will used the Selection Sort algorithm.
 */
-void Report::selectionSortQty(InventoryBook *books)
+void Report::selectionSortQuantity(InventoryBook* books, int numBooks)
 {
-	int startScan, minIndex, minValue;
-
-	for (startScan = 0; startScan < (nu_books - 1); startScan++)
+	for (int startScan = 0; startScan < numBooks - 1; startScan++)
 	{
-		minIndex = startScan;
-		minValue = (books + startScan)->quantity;
-		for (int index = startScan + 1; index < nu_books; index++)
+		int minIndex = startScan;
+		int maxQuantity = books[startScan].quantity;
+
+		for (int index = startScan + 1; index < numBooks; index++)
 		{
-			if ((books + index)->quantity < minValue)
+			if (books[index].quantity > maxQuantity)
 			{
-				minValue = (books + index)->quantity;
+				maxQuantity = books[index].quantity;
 				minIndex = index;
 			}
 		}
-		(books + minIndex)->quantity = (books + startScan)->quantity;
-		(books + startScan)->quantity = minValue;
+		swap(books[startScan], books[minIndex]);
 	}
-}
-void Report::selectionSortCost(InventoryBook *books)
-{
-	int startScan, minIndex;
-	double minValue;
 
-	for (startScan = 0; startScan < (nu_books - 1); startScan++)
+	return;
+}
+
+void Report::selectionSortCost(InventoryBook* books, int numBooks)
+{
+	for (int startScan = 0; startScan < numBooks - 1; startScan++)
 	{
-		minIndex = startScan;
-		minValue = (books + startScan)->wholesale;
-		for (int index = startScan + 1; index < nu_books; index++)
+		int minIndex = startScan;
+		double maxWholesale = books[startScan].wholesale;
+
+		for (int index = startScan + 1; index < numBooks; index++)
 		{
-			if ((books + index)->wholesale < minValue)
+			if (books[index].wholesale > maxWholesale)
 			{
-				minValue = (books + index)->wholesale;
+				maxWholesale = books[index].wholesale;
 				minIndex = index;
 			}
 		}
-		(books + minIndex)->wholesale = (books + startScan)->wholesale;
-		(books + startScan)->wholesale = minValue;
+		swap(books[startScan], books[minIndex]);
 	}
-}
-void Report::selectionSortAge(InventoryBook *books)
-{
-	int startScan, minIndex;
-	std::string minValue;
 
-	for (startScan = 0; startScan < (nu_books - 1); startScan++)
+	return;
+}
+
+void Report::selectionSortAge(InventoryBook* books, int numBooks)
+{
+	for (int startScan = 0; startScan < numBooks - 1; startScan++)
 	{
-		minIndex = startScan;
-		minValue = (books + startScan)->addDate;
-		for (int index = startScan + 1; index < nu_books; index++)
+		int minIndex = startScan;
+		int minDate = convertDateToInt(books[startScan].addDate);
+
+		for (int index = startScan + 1; index < numBooks; index++)
 		{
-			if ((books + index)->addDate < minValue)
+			if (convertDateToInt(books[index].addDate) < minDate)
 			{
-				minValue = (books + index)->addDate;
+				minDate = convertDateToInt(books[index].addDate);
 				minIndex = index;
 			}
 		}
-		(books + minIndex)->addDate = (books + startScan)->addDate;
-		(books + startScan)->addDate = minValue;
+		swap(books[startScan], books[minIndex]);
 	}
+
+	return;
 }
 
-/*												Inventory List Function
-	A list of information on all books.
-*/
-InventoryBook* Report::getInvList()
+int Report::convertDateToInt(std::string date)
 {
-	return books;
+	int month = stoi(date.substr(0, 2));
+	int day = stoi(date.substr(3, 2));
+	int year = stoi(date.substr(6, 4));
+
+	return 10000 * year + 100 * month + day;
+}
+
+template <typename T>
+void Report::swap(T& a, T& b)
+{
+	T temp = std::move(a);
+	a = std::move(b);
+	b = std::move(temp);
 }
 
 /*											Inventory Wholesale Value Function
 	A list of the wholesale value of all the books in the inventory and the total wholesale value of the inventory
 */
-double Report::getInvWholesaleV()
+double Report::getBookTotalWholesale(InventoryBook book)
 {
-	//When you call this in main, first you need to call getInvList to work with the wholesale value of all books. 
-	for (int i = 0; i < 3; i++)
+	return book.quantity * book.wholesale;
+}
+double Report::getInventoryTotalWholesale(InventoryBook* books, int numBooks)
+{
+	double totalWholesaleValue = 0;
+	for (int i = 0; i < numBooks; i++)
 	{
-		wholesale_value += (books + i)->wholesale;
+		totalWholesaleValue += getBookTotalWholesale(books[i]);
 	}
-	return wholesale_value;
+	return totalWholesaleValue;
 }
 
 /*											 Inventory Retail Value Function
 	A list of the retail value of all the books in the inventory and the total retail value of the inventory
 */
-double Report::getInvRetailV()
+double Report::getBookTotalRetail(InventoryBook book)
 {
-	//When you call this in main, first you need to call getInvList to work with the wholesale value of all books.
-	for (int i = 0; i < 3; i++)
+	return book.quantity * book.retail;
+}
+double Report::getInventoryTotalRetail(InventoryBook* books, int numBooks)
+{
+	double totalRetailValue = 0;
+	for (int i = 0; i < numBooks; i++)
 	{
-		retail_value += (books + i)->retail;
+		totalRetailValue += getBookTotalRetail(books[i]);
 	}
-	return retail_value;
-}
-
-/*													List by Quantity
-	A list of all the books in the inventory, sorted by quantity on hand. The books with the greatest quantity on hand will be listed first
-*/
-InventoryBook* Report::getListbyQty()
-{
-	selectionSortQty(books);
-	return books;
-}
-
-/*													List by Cost
-	A list of all the books in the inventory, sorted by wholesale cost. The books with the greatest wholesale cost will be listed first
-*/
-InventoryBook* Report::getListbyCost()
-{
-	selectionSortCost(books);
-	return books;
-}
-
-/*													List by Age
-	A list of all the books in the inventory, sorted by purchase date. The books that have been in the inventory the longest will
-	be listed first
-*/
-InventoryBook* Report::getListbyAge()
-{
-	selectionSortAge(books);
-	return books;
-}
-
-/*													Destructor
-	Delete dynamically allocated array of Book objects to prevent memory leak
-*/
-Report::~Report()
-{
-	delete books;
+	return totalRetailValue;
 }

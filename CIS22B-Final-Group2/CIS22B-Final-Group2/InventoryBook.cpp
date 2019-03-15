@@ -30,6 +30,18 @@ InventoryBook::InventoryBook()
 	retail = 0;
 }
 
+InventoryBook::InventoryBook(const InventoryBook &book)
+{
+	isbn = book.isbn;
+	title = book.title;
+	author = book.author;
+	publisher = book.publisher;
+	addDate = book.addDate;
+	quantity = book.quantity;
+	wholesale = book.wholesale;
+	retail = book.retail;
+}
+
 InventoryBook::InventoryBook(std::string is, std::string ti, std::string au, std::string pu, std::string ad, int qu, double wh, double re)
 {
 	isbn = is;

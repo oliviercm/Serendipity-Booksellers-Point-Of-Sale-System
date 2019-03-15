@@ -13,6 +13,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include "Book.h"
 
 struct InventoryBook : public Book
@@ -26,6 +27,7 @@ public:
 
 	//Constructors
 	InventoryBook();
+	InventoryBook(const InventoryBook &book);
 	InventoryBook(std::string is, std::string ti, std::string au, std::string pu, std::string ad, int qu, double wh, double re);
 
 	//Destructors
