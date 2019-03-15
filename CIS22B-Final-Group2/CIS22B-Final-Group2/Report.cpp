@@ -1,7 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#pragma once
-
 #include <string>
 #include "Report.h"
 #include "InventoryBook.h"
