@@ -29,8 +29,8 @@ void displayCashierModule();
 void cashierSellBooks(InventoryDatabase* pD);
 
 void displayInventoryModule();
-void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase);
-void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase);
+void inventoryFindBookById(InventoryDatabase* inventoryDatabase);
+void inventoryFindBookByIsbn(InventoryDatabase* inventoryDatabase);
 void inventoryAddBookToDatabase(InventoryDatabase* inventoryDatabase);
 void inventoryRemoveBookFromDatabase(InventoryDatabase* inventoryDatabase);
 void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase);
@@ -122,10 +122,10 @@ int main()
 				switch (inputSubMenu)
 				{
 				case UI::INVENTORY_OPTIONS::INVENTORY_FIND_ID:
-					inventoryLookUpBookById(&inventoryDatabase);
+					inventoryFindBookById(&inventoryDatabase);
 					break;
 				case UI::INVENTORY_OPTIONS::INVENTORY_FIND_ISBN:
-					inventoryLookUpBookByIsbn(&inventoryDatabase);
+					inventoryFindBookByIsbn(&inventoryDatabase);
 					break;
 				case UI::INVENTORY_OPTIONS::INVENTORY_ADD_BOOK:
 					inventoryAddBookToDatabase(&inventoryDatabase);
@@ -312,12 +312,12 @@ void displayInventoryModule()
 	return;
 }
 
-void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase)
+void inventoryFindBookById(InventoryDatabase* inventoryDatabase)
 {
 	clearScreen(true);
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string titleText = "[ LOOK UP BOOK BY ID ]";
+	const string titleText = "[ FIND BOOK BY ID ]";
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
 	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
@@ -338,6 +338,7 @@ void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase)
 	if (id < 0 || id >= numBooks)
 	{
 		cout << "ERROR: ID does not exist in database." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		return;
 	}
@@ -367,7 +368,7 @@ void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase)
 
 	cout << left;
 
-	cout << endl;
+	cout << endl << bars << endl << endl;
 
 	cout << setw(idColumnLength) << bookIndexText
 		<< setw(isbnColumnLength) << bookIsbnText
@@ -398,12 +399,12 @@ void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase)
 	return;
 }
 
-void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase)
+void inventoryFindBookByIsbn(InventoryDatabase* inventoryDatabase)
 {
 	clearScreen(true);
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
-	const string titleText = "[ LOOK UP BOOK BY ISBN ]";
+	const string titleText = "[ FIND BOOK BY ISBN ]";
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
 	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
@@ -414,6 +415,7 @@ void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase)
 	if (numBooks == 0)
 	{
 		cout << "ERROR: Database is empty." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		return;
 	}
@@ -435,6 +437,7 @@ void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase)
 	if (!bookExists)
 	{
 		cout << "ERROR: Book ISBN does not exist in database." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		return;
 	}
@@ -464,7 +467,7 @@ void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase)
 
 	cout << left;
 
-	cout << endl;
+	cout << endl << bars << endl << endl;
 
 	cout << setw(idColumnLength) << bookIndexText
 		<< setw(isbnColumnLength) << bookIsbnText
@@ -614,7 +617,8 @@ void inventoryAddBookToDatabase(InventoryDatabase* inventoryDatabase)
 	InventoryBook newBook = InventoryBook(isbn, title, author, publisher, addDate, quantity, wholesale, retail);
 	inventoryDatabase->addBookToArray(newBook);
 
-	cout << "Successfully added book to database." << endl << endl;
+	cout << "Successfully added book to database." << endl;
+	cout << endl << bars << endl << endl;
 	pause();
 
 	return;
@@ -636,6 +640,7 @@ void inventoryRemoveBookFromDatabase(InventoryDatabase* inventoryDatabase)
 	if (numBooks == 0)
 	{
 		cout << "ERROR: Database is empty." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		return;
 	}
@@ -655,13 +660,14 @@ void inventoryRemoveBookFromDatabase(InventoryDatabase* inventoryDatabase)
 
 	if (bookExists)
 	{
-		cout << "Successfully removed book from database." << endl << endl;
+		cout << "Successfully removed book from database." << endl;
 	}
 	else
 	{
-		cout << "ERROR: Book does not exist in database." << endl << endl;
+		cout << "ERROR: Book does not exist in database." << endl;
 	}
 
+	cout << endl << bars << endl << endl;
 	pause();
 
 	return;
@@ -682,7 +688,8 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 
 	if (numBooks == 0)
 	{
-		cout << "ERROR: Database is empty." << endl;
+		cout << "ERROR: Database is empty." << endl << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		return;
 	}
@@ -705,7 +712,8 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 
 	if (!bookExists)
 	{
-		cout << "ERROR: Book does not exist in database." << endl << endl;
+		cout << "ERROR: Book does not exist in database." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		return;
 	}
@@ -800,6 +808,7 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 		}
 		inventoryDatabase->setBookIsbnByIsbn(foundBook.isbn, newString);
 		cout << "Book ISBN successfully edited." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		break;
 	case BOOK_TITLE:
@@ -808,6 +817,7 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 		newString = getUserInputString();
 		inventoryDatabase->setBookTitleByIsbn(foundBook.isbn, newString);
 		cout << "Book title successfully edited." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		break;
 	case BOOK_AUTHOR:
@@ -816,6 +826,7 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 		newString = getUserInputString();
 		inventoryDatabase->setBookAuthorByIsbn(foundBook.isbn, newString);
 		cout << "Book author successfully edited." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		break;
 	case BOOK_PUBLISHER:
@@ -824,6 +835,7 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 		newString = getUserInputString();
 		inventoryDatabase->setBookPublisherByIsbn(foundBook.isbn, newString);
 		cout << "Book publisher successfully edited." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		break;
 	case BOOK_DATE:
@@ -871,6 +883,7 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 		}
 		inventoryDatabase->setBookAddDateByIsbn(foundBook.isbn, newString);
 		cout << "Book add date successfully edited." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		break;
 	case BOOK_QUANTITY:
@@ -879,6 +892,7 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 		newInt = getUserInputInt(0);
 		inventoryDatabase->setBookQuantityByIsbn(foundBook.isbn, newInt);
 		cout << "Book quantity successfully edited." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		break;
 	case BOOK_WHOLESALE:
@@ -887,6 +901,7 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 		newDouble = getUserInputDouble(0);
 		inventoryDatabase->setBookWholesaleByIsbn(foundBook.isbn, newDouble);
 		cout << "Book wholesale price successfully edited." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		break;
 	case BOOK_RETAIL:
@@ -895,6 +910,7 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 		newDouble = getUserInputDouble(0);
 		inventoryDatabase->setBookRetailByIsbn(foundBook.isbn, newDouble);
 		cout << "Book retail price successfully edited." << endl;
+		cout << endl << bars << endl << endl;
 		pause();
 		break;
 	default:
