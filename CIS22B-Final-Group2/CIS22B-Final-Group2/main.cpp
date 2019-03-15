@@ -536,7 +536,7 @@ void inventoryAddBookToDatabase(InventoryDatabase* inventoryDatabase)
 		{
 			try
 			{
-				int temp = stod(isbn);
+				double temp = stod(isbn);
 			}
 			catch (...)
 			{
@@ -789,7 +789,7 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 			{
 				try
 				{
-					int temp = stod(newString);
+					double temp = stod(newString);
 				}
 				catch (...)
 				{
@@ -1462,6 +1462,9 @@ void initialize()
 	//Resize the terminal window
 	string systemResizeStr = "mode " + to_string(UI::TERMINAL_WIDTH) + ", " + to_string(UI::TERMINAL_HEIGHT);
 	system(systemResizeStr.c_str());
+
+	//Rename the window
+	system("title Serendipity Booksellers by Olivier Chan, Luis Guerrero, Samuel Ruiz Cervantes, and Manasi Gowda");
 
 	//Format cout
 	cout << fixed << setprecision(2);
