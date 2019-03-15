@@ -294,7 +294,7 @@ void InventoryDatabase::editBookQuantityByIsbn(std::string isbn, int amount)
 *
 * @param isbn The ISBN of the book to search for.
 *
-* @return The InventoryBook matching the passed ISBN.
+* @return The InventoryBook matching the passed ISBN. If a book with the passed ISBN doesn't exist, passes a default constructed book.
 */
 
 InventoryBook InventoryDatabase::getBookByIsbn(std::string isbn)
