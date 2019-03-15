@@ -53,6 +53,7 @@ public:
 	std::unique_ptr<InventoryBook[]> getInventoryArray() const;
 	int getInventoryArraySize() const;
 	void editBookQuantityByIsbn(std::string isbn, int amount);
+	InventoryBook getBookByIsbn(std::string isbn);
 
 	//Constuctors / Destructors
 	InventoryDatabase();

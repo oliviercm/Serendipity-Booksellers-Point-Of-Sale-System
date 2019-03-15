@@ -287,6 +287,29 @@ void InventoryDatabase::editBookQuantityByIsbn(std::string isbn, int amount)
 	return;
 }
 
+/**
+* getBookByIsbn
+*
+* @brief Returns the book with the passed ISBN.
+*
+* @param isbn The ISBN of the book to search for.
+*
+* @return The InventoryBook matching the passed ISBN.
+*/
+
+InventoryBook InventoryDatabase::getBookByIsbn(std::string isbn)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			return inventoryArray[i];
+		}
+	}
+
+	return InventoryBook();
+}
+
 /****************************************
 * CONSTRUCTORS / DESTRUCTORS
 *****************************************/
