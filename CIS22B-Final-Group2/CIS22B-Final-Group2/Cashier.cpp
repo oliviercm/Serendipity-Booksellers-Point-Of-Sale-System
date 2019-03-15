@@ -109,7 +109,7 @@ double Cashier::checkout(){
 	return totalPrice * SALES_TAX;
 }
 
-std::unique_ptr<InventoryBook[]> InventoryDatabase::getCartArray() const
+std::unique_ptr<InventoryBook[]> Cashier::getCartArray() const
 {
 	std::unique_ptr<InventoryBook[]> copyCartArray = std::make_unique<InventoryBook[]>(cartLength);
 
