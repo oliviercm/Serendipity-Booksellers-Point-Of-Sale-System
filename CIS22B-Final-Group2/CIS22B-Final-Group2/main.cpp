@@ -21,14 +21,17 @@ Group 2:
 
 using namespace std;
 
+
+void initialize();
 void displayMainMenu();
 
 void displayCashierModule();
 void cashierSellBooks(InventoryDatabase* pD);
 
 void displayInventoryModule();
+void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase);
+void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase);
 /*
-void inventoryLookUpBookByIsbn();
 void inventoryLookUpBookByTitle();
 void inventoryLookUpBookByAuthor();
 void inventoryLookUpBookByPublisher();
@@ -52,7 +55,6 @@ string getUserInputString();
 string generateBars(int number);
 void clearScreen(bool displayHeader = false);
 void pause();
-
 void printHeader();
 void displayGoodbye();
 
@@ -78,16 +80,11 @@ namespace UI
 
 int main()
 {
-	//Resize the terminal window
-	string systemResizeStr = "mode " + to_string(UI::TERMINAL_WIDTH) + ", " + to_string(UI::TERMINAL_HEIGHT);
-	system(systemResizeStr.c_str());
-
-	//Format cout
-	cout << fixed << setprecision(2);
-
-	//Initialize and setup InventoryDatabase
+	//Resize terminal, format cout
+	initialize();
+	
+	//Setup InventoryDatabase
 	const string filePath = "books.txt";
-
 	InventoryDatabase inventoryDatabase;
 	inventoryDatabase.buildInventoryArray(filePath);
 
@@ -130,8 +127,10 @@ int main()
 				switch (inputSubMenu)
 				{
 				case UI::INVENTORY_OPTIONS::INVENTORY_FIND_ID:
+					inventoryLookUpBookById(&inventoryDatabase);
 					break;
 				case UI::INVENTORY_OPTIONS::INVENTORY_FIND_ISBN:
+					inventoryLookUpBookByIsbn(&inventoryDatabase);
 					break;
 				case UI::INVENTORY_OPTIONS::INVENTORY_ADD_BOOK:
 					break;
@@ -311,6 +310,189 @@ void displayInventoryModule()
 		<< setw(optionMargin + editBookText.length()) << editBookText << endl << endl
 		<< setw(optionMargin + backText.length()) << backText << endl << endl
 		<< bars << endl << endl;
+
+	return;
+}
+
+void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase)
+{
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ LOOK UP BOOK BY ID ]";
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	unique_ptr<InventoryBook[]> books = inventoryDatabase->getInventoryArray();
+	int inventoryArraySize = inventoryDatabase->getInventoryArraySize();
+
+	if (inventoryArraySize == 0)
+	{
+		cout << "ERROR: Database is empty." << endl;
+		pause();
+		return;
+	}
+
+	cout << "Enter ID to look up: ";
+	int id = getUserInputInt();
+
+	if (id < 0 || id >= inventoryArraySize)
+	{
+		cout << "ERROR: ID does not exist in database." << endl;
+		pause();
+		return;
+	}
+
+	const string bookIndexText = "ID:";
+	const string bookIsbnText = "ISBN:";
+	const string bookTitleText = "TITLE:";
+	const string bookAuthorText = "AUTHOR:";
+	const string bookPublisherText = "PUBLISHER:";
+	const string bookDateText = "DATE ADDED:";
+	const string bookQuantityText = "ON-HAND:";
+	const string bookWholesaleText = "WHOLESALE:";
+	const string bookRetailText = "RETAIL:";
+
+	const size_t columnSpacing = 3;
+
+	const size_t idColumnLength = 3 + columnSpacing;
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t dateColumnLength = 10 + columnSpacing;
+	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
+	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
+	const size_t retailColumnLength = bookRetailText.length() + columnSpacing;
+
+	const size_t titleColumnLength = (UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 2;
+	const size_t authorColumnLength = (UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+	const size_t publisherColumnLength = (UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+
+	cout << left;
+
+	cout << endl;
+
+	cout << setw(idColumnLength) << bookIndexText
+		<< setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(authorColumnLength) << bookAuthorText
+		<< setw(publisherColumnLength) << bookPublisherText
+		<< setw(dateColumnLength) << bookDateText
+		<< setw(quantityColumnLength) << bookQuantityText
+		<< setw(wholesaleColumnLength) << bookWholesaleText
+		<< setw(retailColumnLength) << bookRetailText
+		<< endl << endl;
+
+	cout << setw(idColumnLength) << id
+		<< setw(isbnColumnLength) << books[id].isbn
+		<< setw(titleColumnLength) << books[id].title
+		<< setw(authorColumnLength) << books[id].author
+		<< setw(publisherColumnLength) << books[id].publisher
+		<< setw(dateColumnLength) << books[id].addDate
+		<< setw(quantityColumnLength) << books[id].quantity
+		<< setw(wholesaleColumnLength) << books[id].wholesale
+		<< setw(retailColumnLength) << books[id].retail
+		<< endl;
+
+	cout << endl << bars << endl << endl;
+
+	pause();
+
+	return;
+}
+
+void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase)
+{
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ LOOK UP BOOK BY ISBN ]";
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	unique_ptr<InventoryBook[]> books = inventoryDatabase->getInventoryArray();
+	int inventoryArraySize = inventoryDatabase->getInventoryArraySize();
+
+	if (inventoryArraySize == 0)
+	{
+		cout << "ERROR: Database is empty." << endl;
+		pause();
+		return;
+	}
+
+	cout << "Enter ISBN to look up: ";
+	string isbn = getUserInputString();
+	int foundBookIndex;
+	bool bookExists = false;
+
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (isbn == books[i].isbn)
+		{
+			foundBookIndex = i;
+			bookExists = true;
+		}
+	}
+
+	if (!bookExists)
+	{
+		cout << "ERROR: Book ISBN does not exist in database." << endl;
+		pause();
+		return;
+	}
+
+	const string bookIndexText = "ID:";
+	const string bookIsbnText = "ISBN:";
+	const string bookTitleText = "TITLE:";
+	const string bookAuthorText = "AUTHOR:";
+	const string bookPublisherText = "PUBLISHER:";
+	const string bookDateText = "DATE ADDED:";
+	const string bookQuantityText = "ON-HAND:";
+	const string bookWholesaleText = "WHOLESALE:";
+	const string bookRetailText = "RETAIL:";
+
+	const size_t columnSpacing = 3;
+
+	const size_t idColumnLength = 3 + columnSpacing;
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t dateColumnLength = 10 + columnSpacing;
+	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
+	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
+	const size_t retailColumnLength = bookRetailText.length() + columnSpacing;
+
+	const size_t titleColumnLength = (UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 2;
+	const size_t authorColumnLength = (UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+	const size_t publisherColumnLength = (UI::TERMINAL_WIDTH - idColumnLength - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+
+	cout << left;
+
+	cout << endl;
+
+	cout << setw(idColumnLength) << bookIndexText
+		<< setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(authorColumnLength) << bookAuthorText
+		<< setw(publisherColumnLength) << bookPublisherText
+		<< setw(dateColumnLength) << bookDateText
+		<< setw(quantityColumnLength) << bookQuantityText
+		<< setw(wholesaleColumnLength) << bookWholesaleText
+		<< setw(retailColumnLength) << bookRetailText
+		<< endl << endl;
+
+	cout << setw(idColumnLength) << foundBookIndex
+		<< setw(isbnColumnLength) << books[foundBookIndex].isbn
+		<< setw(titleColumnLength) << books[foundBookIndex].title
+		<< setw(authorColumnLength) << books[foundBookIndex].author
+		<< setw(publisherColumnLength) << books[foundBookIndex].publisher
+		<< setw(dateColumnLength) << books[foundBookIndex].addDate
+		<< setw(quantityColumnLength) << books[foundBookIndex].quantity
+		<< setw(wholesaleColumnLength) << books[foundBookIndex].wholesale
+		<< setw(retailColumnLength) << books[foundBookIndex].retail
+		<< endl;
+
+	cout << endl << bars << endl << endl;
+
+	pause();
 
 	return;
 }
@@ -862,6 +1044,16 @@ void pause()
 {
 	cout << "Press ENTER to continue.";
 	cin.get();
+}
+
+void initialize()
+{
+	//Resize the terminal window
+	string systemResizeStr = "mode " + to_string(UI::TERMINAL_WIDTH) + ", " + to_string(UI::TERMINAL_HEIGHT);
+	system(systemResizeStr.c_str());
+
+	//Format cout
+	cout << fixed << setprecision(2);
 }
 
 /***************************************************************************
