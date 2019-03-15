@@ -46,8 +46,6 @@ void inventoryDeleteBookFromFile();
 void inventoryEditBookByIsbn();
 */
 
-void printHeader();
-
 int getUserInputInt(const int& min = INT_MIN, const int& max = INT_MAX);
 double getUserInputDouble(const double& min = DBL_MIN, const double& max = DBL_MAX);
 string getUserInputString();
@@ -56,6 +54,7 @@ string generateBars(int number);
 void clearScreen(bool displayHeader = false);
 void pause();
 
+void printHeader();
 void displayGoodbye();
 
 namespace UI

@@ -18,6 +18,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "InventoryDatabase.h"
+#include "InventoryBook.h"
 
 /***************************************************************************
 *********** PRIVATE FUNCTIONS
