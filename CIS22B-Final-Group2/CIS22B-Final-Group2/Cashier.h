@@ -20,8 +20,9 @@ public:
     ~Cashier();
     
     void startCashier();
-    void addBookToCart();
-	void removeBookFromCart();
+    void addBookToCart(InventoryBook book);
+	void removeBookFromCart(InventoryBook book);
     double checkout();
     int findBook(std::string isbnNum);
+	std::unique_ptr<InventoryBook[]> getCartArray() const;
 };
