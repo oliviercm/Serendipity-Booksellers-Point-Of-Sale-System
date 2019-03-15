@@ -53,7 +53,7 @@ void Cashier::addBookToCart(InventoryBook book){
             }
         }
         else if(inv[i].isbn == book.isbn){
-            std::cout << "There are no more books of this ISBN number availiable." << std::endl;
+            std::cout << "There are no more books of this ISBN number availiable." << std::endl; // Create function for this 
         }
         else {
             std::cout << "Book not found." << std::endl;
@@ -100,7 +100,7 @@ int Cashier::findBook(std::string isbnNum){
 }
 
 // Checks out books in cart by calculating the total price using sales tax 
-double Cashier::checkout(){
+double Cashier::checkout(){ // Change this to return price of books in cart and create function to return price of each book
     int price = 0, totalPrice = 0;
     for(int i = 0; i < cartLength; i++){
 		totalPrice += cart[i].quantity * cart[i].wholesale; // -$Olivier Get inv to be a pointer to InventoryDatabase and this should work
@@ -108,6 +108,8 @@ double Cashier::checkout(){
     //int totalPrice = return totalPrice * SALES_TAX; -$Olivier Can't have a return statement on the right side of assignment, re-written following this comment
 	return totalPrice * SALES_TAX;
 }
+
+// Create function that checks out books, or reduce quantity by 1 
 
 std::unique_ptr<InventoryBook[]> Cashier::getCartArray() const
 {
