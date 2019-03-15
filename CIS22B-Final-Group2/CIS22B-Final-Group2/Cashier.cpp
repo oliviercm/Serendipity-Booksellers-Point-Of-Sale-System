@@ -29,10 +29,10 @@ void Cashier::startCashier(){
 }
 
 // Adds book to cart by prompting the user for the ISBN number 
-void Cashier::addBookToCart(){
-    std::string isbn;
+void Cashier::addBookToCart(InventoryBook book){
+    /* std::string isbn;
 	std::cout << "What is the ISBN number of the book?: ";
-	std::cin >> isbn;
+	std::cin >> isbn; */ 
 
 	// -$Olivier I added this here, this is a probable way of getting the number of books in the inventory. 
 	// You need inv to be a pointer to an InventoryDatabase object, don't create your own. 
@@ -40,9 +40,9 @@ void Cashier::addBookToCart(){
 	int bookCount = data->getInventoryArraySize(); 
 
     for(int i = 0; i < bookCount; i++){
-        if((inv[i].isbn == isbn) && (inv[i].quantity > 0)){
-            if(findBook(isbn) != -1){
-                cart[findBook(isbn)].quantity++;
+        if((inv[i].isbn == book.isbn) && (inv[i].quantity > 0)){
+            if(findBook(book.isbn) != -1){
+                cart[findBook(book.isbn)].quantity++;
                 inv[i].quantity--; 
             }
             else {
@@ -52,7 +52,7 @@ void Cashier::addBookToCart(){
                 inv[i].quantity--;
             }
         }
-        else if(inv[i].isbn == isbn){
+        else if(inv[i].isbn == book.isbn){
             std::cout << "There are no more books of this ISBN number availiable." << std::endl;
         }
         else {
@@ -62,10 +62,10 @@ void Cashier::addBookToCart(){
 }
 
 // Removes book from cart by prompting the user for the ISBN number 
-void Cashier::removeBookFromCart() {
-	std::string isbn;
+void Cashier::removeBookFromCart(InventoryBook book) {
+	/* std::string isbn;
 	std::cout << "What is the ISBN number of the book?: ";
-	std::cin >> isbn;
+	std::cin >> isbn; */
 
 	// -$Olivier I added this here, this is a probable way of getting the number of books in the inventory. 
 	// You need inv to be a pointer to an InventoryDatabase object, don't create your own. 
@@ -73,13 +73,13 @@ void Cashier::removeBookFromCart() {
 	int bookCount = data->getInventoryArraySize();
 
 	for (int i = 0; i < bookCount; i++) {
-		if ((inv[i].isbn == isbn) && (inv[i].quantity > 0)) {
-			if (findBook(isbn) != -1) {
-				cart[findBook(isbn)].quantity--;
+		if ((inv[i].isbn == book.isbn) && (inv[i].quantity > 0)) {
+			if (findBook(book.isbn) != -1) {
+				cart[findBook(book.isbn)].quantity--;
 				inv[i].quantity++;
 			}
 		}
-		else if (inv[i].isbn == isbn) {
+		else if (inv[i].isbn == book.isbn) {
 			std::cout << "There are no more books of this ISBN number availiable." << std::endl;
 		}
 		else {
@@ -107,6 +107,25 @@ double Cashier::checkout(){
     }
     //int totalPrice = return totalPrice * SALES_TAX; -$Olivier Can't have a return statement on the right side of assignment, re-written following this comment
 	return totalPrice * SALES_TAX;
+}
+
+std::unique_ptr<InventoryBook[]> Cashier::getCartArray() const
+{
+	std::unique_ptr<InventoryBook[]> copyCartArray = std::make_unique<InventoryBook[]>(cartLength);
+
+	for (int i = 0; i < cartLength; i++)
+	{
+		copyCartArray[i].isbn = cart[i].isbn;
+		copyCartArray[i].title = cart[i].title;
+		copyCartArray[i].author = cart[i].author;
+		copyCartArray[i].publisher = cart[i].publisher;
+		copyCartArray[i].addDate = cart[i].addDate;
+		copyCartArray[i].quantity = cart[i].quantity;
+		copyCartArray[i].wholesale = cart[i].wholesale;
+		copyCartArray[i].retail = cart[i].retail;
+	}
+
+	return copyCartArray;
 }
 
 // Destructor
