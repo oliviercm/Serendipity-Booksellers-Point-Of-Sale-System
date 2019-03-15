@@ -24,6 +24,8 @@ void displayMainMenu();
 void displayCashierModule();
 void cashierSellBooks(InventoryDatabase* pD);
 
+void displayInventoryModule();
+
 void displayReportModule();
 void displayReportInventoryList(std::unique_ptr<InventoryBook[]> books, int numBooks);
 void displayReportInventoryWholesaleValue(std::unique_ptr<InventoryBook[]> books, int numBooks);
@@ -74,6 +76,7 @@ namespace UI
 
 	enum MAIN_MENU_OPTIONS { MAIN_NONE, MAIN_CASHIER, MAIN_INVENTORY, MAIN_REPORT, MAIN_EXIT };
 	enum CASHIER_OPTIONS { CASHIER_NONE, CASHIER_SELL_BOOKS, CASHIER_BACK };
+	enum INVENTORY_OPTIONS { INVENTORY_NONE, INVENTORY_FIND_ID, INVENTORY_FIND_ISBN , INVENTORY_BACK};
 	enum REPORT_OPTIONS { REPORT_NONE, REPORT_INVENTORY_LIST, REPORT_INVENTORY_WHOLESALE, REPORT_INVENTORY_RETAIL, REPORT_LIST_QUANTITY, REPORT_LIST_COST, REPORT_LIST_AGE, REPORT_BACK };
 }
 
@@ -122,8 +125,20 @@ int main()
 			} while (inputSubMenu != UI::CASHIER_OPTIONS::CASHIER_BACK);
 			break;
 		case UI::MAIN_MENU_OPTIONS::MAIN_INVENTORY:
-			//displayInventoryModule(inventoryDatabase);
-			inputSubMenu = getUserInputInt(1, 4);
+			do
+			{
+				displayInventoryModule();
+
+				inputSubMenu = getUserInputInt(UI::INVENTORY_OPTIONS::INVENTORY_NONE, UI::INVENTORY_OPTIONS::INVENTORY_BACK);
+
+				switch (inputSubMenu)
+				{
+				case UI::INVENTORY_OPTIONS::INVENTORY_BACK:
+					break;
+				default:
+					break;
+				}
+			} while (inputSubMenu != UI::INVENTORY_OPTIONS::INVENTORY_BACK);
 			break;
 		case UI::MAIN_MENU_OPTIONS::MAIN_REPORT:
 			do
@@ -223,7 +238,7 @@ void displayCashierModule() {
 
 	cout << setw(titleMargin) << cashierModeText << endl << endl << bars << endl << endl;
 
-	cout << setw(optionMargin + purchaseText.length()) << cashierModeText << endl << endl
+	cout << setw(optionMargin + purchaseText.length()) << purchaseText << endl << endl
 		<< setw(optionMargin + backText.length()) << backText << endl << endl
 		<< bars << endl << endl;
 
@@ -257,6 +272,41 @@ void cashierSellBooks(InventoryDatabase* pD)
 			<< setw(optionMargin + cancelText.length()) << cancelText << endl << endl
 			<< bars << endl << endl;
 	}
+
+	return;
+}
+
+/***************************************************************************
+*********** INVENTORY MODULE
+****************************************************************************/
+
+void displayInventoryModule()
+{
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string inventoryModeText = "[ INVENTORY MODE ]";
+	const string findBookByIdText = "[ 1 ] FIND BOOK BY ID";
+	const string findBookByIsbnText = "[ 2 ] FIND BOOK BY ISBN";
+	const string addBookText = "[ 3 ] ADD BOOK TO DATABASE";
+	const string removeBookText = "[ 4 ] REMOVE BOOK FROM DATABASE";
+	const string editBookText = "[ 5 ] EDIT BOOK IN DATABASE";
+	const string backText = "[ 6 ] BACK";
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + inventoryModeText.length()) / 2;
+	const size_t optionMargin = titleMargin - inventoryModeText.length();
+
+	cout << setw(titleMargin) << inventoryModeText << endl << endl << bars << endl << endl;
+
+	cout << setw(optionMargin + findBookByIdText.length()) << findBookByIdText << endl << endl
+		<< setw(optionMargin + findBookByIsbnText.length()) << findBookByIsbnText << endl << endl
+		<< setw(optionMargin + addBookText.length()) << addBookText << endl << endl
+		<< setw(optionMargin + removeBookText.length()) << removeBookText << endl << endl
+		<< setw(optionMargin + editBookText.length()) << editBookText << endl << endl
+		<< setw(optionMargin + backText.length()) << backText << endl << endl
+		<< bars << endl << endl;
+	
+	return;
 }
 
 /***************************************************************************
@@ -852,6 +902,10 @@ int convertDateToInt(string date)
 
 	return 10000 * year + 100 * month + day;
 }
+
+/***************************************************************************
+*********** DISPLAY ART
+****************************************************************************/
 
 void printHeader()
 {
