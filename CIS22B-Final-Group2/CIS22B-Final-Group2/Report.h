@@ -2,7 +2,6 @@
 
 #include <string>
 #include "InventoryBook.h"
-#include "InventoryDatabase.h"
 
 class Report
 {

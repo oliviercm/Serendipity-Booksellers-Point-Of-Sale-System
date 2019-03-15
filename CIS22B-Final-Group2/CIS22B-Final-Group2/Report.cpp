@@ -5,7 +5,6 @@
 #include <string>
 #include "Report.h"
 #include "InventoryBook.h"
-#include "InventoryDatabase.h"
 
 /*												Array of Books Creation Functions
 	The purpose of these functions are to dynamically create an array of Book objects. With this, the Report class is going to be able to use
