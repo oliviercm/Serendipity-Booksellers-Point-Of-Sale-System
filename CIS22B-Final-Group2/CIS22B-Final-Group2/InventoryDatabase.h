@@ -55,9 +55,21 @@ public:
 	bool buildInventoryArray(const std::string path);
 	std::unique_ptr<InventoryBook[]> getInventoryArray() const;
 	int getInventoryArraySize() const;
-	void editBookQuantityByIsbn(std::string isbn, int amount);
+
+	void setBookIsbnByIsbn(const std::string isbn, const std::string edit);
+	void setBookTitleByIsbn(const std::string isbn, const std::string edit);
+	void setBookAuthorByIsbn(const std::string isbn, const std::string edit);
+	void setBookPublisherByIsbn(const std::string isbn, const std::string edit);
+	void setBookAddDateByIsbn(const std::string isbn, const std::string edit);
+	void setBookQuantityByIsbn(const std::string isbn, const int edit);
+	void setBookWholesaleByIsbn(const std::string isbn, const double edit);
+	void setBookRetailByIsbn(const std::string isbn, const double edit);
+
+	void addToBookQuantityByIsbn(const std::string isbn, const int amount);
+
 	InventoryBook getBookByIsbn(std::string isbn);
 	int getBookIndexByIsbn(std::string isbn);
+
 	void addBookToArray(InventoryBook book);
 	void removeBookFromArray(int index);
 

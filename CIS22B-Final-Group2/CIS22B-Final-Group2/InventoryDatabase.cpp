@@ -316,27 +316,228 @@ int InventoryDatabase::getInventoryArraySize() const
 }
 
 /**
-* editBookQuantityByIsbn
+* setBookIsbnByIsbn
 *
-* @brief Subracts from the quantity-on-hand of a book in the database based on ISBN.
-*	Note that this doesn't check if the quantity will go below 0 - this should be done
-*	on the caller's side.
+* @brief Sets the ISBN of a book in the database based on ISBN.
 *
-* @param isbn The ISBN of the book to edit the quantity of. If this ISBN doesn't exist for any book in the database,
+* @param isbn The ISBN of the book to set the ISBN of. If this ISBN doesn't exist for any book in the database,
 *	this function will do nothing!
 *
-* @param amount The amount to edit the quantity by.
-*	A positive number will add to the quantity. (The store buys books from a supplier)
-*	A negative number will subract from the quantity. (The store sells books to a customer)
+* @param edit The string to set the ISBN to.
 */
 
-void InventoryDatabase::editBookQuantityByIsbn(std::string isbn, int amount)
+void InventoryDatabase::setBookIsbnByIsbn(const std::string isbn, const std::string edit)
 {
 	for (int i = 0; i < inventoryArraySize; i++)
 	{
 		if (inventoryArray[i].isbn == isbn)
 		{
-			inventoryArray[i].quantity += amount;
+			inventoryArray[i].isbn = edit;
+			return;
+		}
+	}
+
+	return;
+}
+
+/**
+* setBookTitleByIsbn
+*
+* @brief Sets the title of a book in the database based on ISBN.
+*
+* @param isbn The ISBN of the book to set the  of. If this ISBN doesn't exist for any book in the database,
+*	this function will do nothing!
+*
+* @param edit The string to set the title to.
+*/
+
+void InventoryDatabase::setBookTitleByIsbn(const std::string isbn, const std::string edit)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			inventoryArray[i].title = edit;
+			return;
+		}
+	}
+
+	return;
+}
+
+/**
+* setBookAuthorByIsbn
+*
+* @brief Sets the author of a book in the database based on ISBN.
+*
+* @param isbn The ISBN of the book to set the author of. If this ISBN doesn't exist for any book in the database,
+*	this function will do nothing!
+*
+* @param edit The string to set the author to.
+*/
+
+void InventoryDatabase::setBookAuthorByIsbn(const std::string isbn, const std::string edit)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			inventoryArray[i].author = edit;
+			return;
+		}
+	}
+
+	return;
+}
+
+/**
+* setBookPublisherByIsbn
+*
+* @brief Sets the publisher of a book in the database based on ISBN.
+*
+* @param isbn The ISBN of the book to set the publisher of. If this ISBN doesn't exist for any book in the database,
+*	this function will do nothing!
+*
+* @param edit The string to set the publisher to.
+*/
+
+void InventoryDatabase::setBookPublisherByIsbn(const std::string isbn, const std::string edit)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			inventoryArray[i].publisher = edit;
+			return;
+		}
+	}
+
+	return;
+}
+
+/**
+* setBookAddDateByIsbn
+*
+* @brief Sets the add date of a book in the database based on ISBN.
+*
+* @param isbn The ISBN of the book to set the add date of. If this ISBN doesn't exist for any book in the database,
+*	this function will do nothing!
+*
+* @param edit The string to set the add date to.
+*/
+
+void InventoryDatabase::setBookAddDateByIsbn(const std::string isbn, const std::string edit)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			inventoryArray[i].addDate = edit;
+			return;
+		}
+	}
+
+	return;
+}
+
+/**
+* setBookQuantityByIsbn
+*
+* @brief Sets the quantity-on-hand of a book in the database based on ISBN.
+*	Note that this doesn't check if the quantity will go below 0 - this should be done
+*	on the caller's side.
+*
+* @param isbn The ISBN of the book to set the quantity of. If this ISBN doesn't exist for any book in the database,
+*	this function will do nothing!
+*
+* @param edit The amount to set the quantity to.
+*/
+
+void InventoryDatabase::setBookQuantityByIsbn(const std::string isbn, const int edit)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			inventoryArray[i].quantity = edit;
+			return;
+		}
+	}
+
+	return;
+}
+
+/**
+* setBookWholesaleByIsbn
+*
+* @brief Sets the wholesale of a book in the database based on ISBN.
+*
+* @param isbn The ISBN of the book to set the quantity of. If this ISBN doesn't exist for any book in the database,
+*	this function will do nothing!
+*
+* @param edit The amount to set the wholesale to.
+*/
+
+void InventoryDatabase::setBookWholesaleByIsbn(const std::string isbn, const double edit)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			inventoryArray[i].wholesale = edit;
+			return;
+		}
+	}
+
+	return;
+}
+
+/**
+* setBookRetailByIsbn
+*
+* @brief Sets the wholesale of a book in the database based on ISBN.
+*
+* @param isbn The ISBN of the book to set the quantity of. If this ISBN doesn't exist for any book in the database,
+*	this function will do nothing!
+*
+* @param edit The amount to set the wholesale to.
+*/
+
+void InventoryDatabase::setBookRetailByIsbn(const std::string isbn, const double edit)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			inventoryArray[i].retail = edit;
+			return;
+		}
+	}
+
+	return;
+}
+
+/**
+* addToBookQuantityByIsbn
+*
+* @brief Adds to the quantity-on-hand of a book in the database based on ISBN. Using a negative value will instead subtract from the quantity-on-hand.
+*
+* @param isbn The ISBN of the book to edit the quantity of. If this ISBN doesn't exist for any book in the database,
+*	this function will do nothing!
+*
+* @param amount The amount to add to the quantity.
+*	A positive number will add to the quantity. (The store buys books from a supplier)
+*	A negative number will subract from the quantity. (The store sells books to a customer)
+*/
+
+void InventoryDatabase::addToBookQuantityByIsbn(const std::string isbn, const int edit)
+{
+	for (int i = 0; i < inventoryArraySize; i++)
+	{
+		if (inventoryArray[i].isbn == isbn)
+		{
+			inventoryArray[i].quantity += edit;
+			return;
 		}
 	}
 

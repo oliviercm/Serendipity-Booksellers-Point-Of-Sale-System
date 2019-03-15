@@ -31,14 +31,9 @@ void cashierSellBooks(InventoryDatabase* pD);
 void displayInventoryModule();
 void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase);
 void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase);
-/*
-void inventoryLookUpBookByTitle();
-void inventoryLookUpBookByAuthor();
-void inventoryLookUpBookByPublisher();
-void inventoryAddBookToFile();
-void inventoryDeleteBookFromFile();
-void inventoryEditBookByIsbn();
-*/
+void inventoryAddBookToDatabase(InventoryDatabase* inventoryDatabase);
+void inventoryRemoveBookFromDatabase(InventoryDatabase* inventoryDatabase);
+void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase);
 
 void displayReportModule();
 void displayReportInventoryList(unique_ptr<InventoryBook[]> books, int numBooks);
@@ -133,10 +128,13 @@ int main()
 					inventoryLookUpBookByIsbn(&inventoryDatabase);
 					break;
 				case UI::INVENTORY_OPTIONS::INVENTORY_ADD_BOOK:
+					inventoryAddBookToDatabase(&inventoryDatabase);
 					break;
 				case UI::INVENTORY_OPTIONS::INVENTORY_REMOVE_BOOK:
+					inventoryRemoveBookFromDatabase(&inventoryDatabase);
 					break;
 				case UI::INVENTORY_OPTIONS::INVENTORY_EDIT_BOOK:
+					inventoryEditBookByIsbn(&inventoryDatabase);
 					break;
 				case UI::INVENTORY_OPTIONS::INVENTORY_BACK:
 					break;
@@ -325,9 +323,9 @@ void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase)
 	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
 
 	unique_ptr<InventoryBook[]> books = inventoryDatabase->getInventoryArray();
-	int inventoryArraySize = inventoryDatabase->getInventoryArraySize();
+	int numBooks = inventoryDatabase->getInventoryArraySize();
 
-	if (inventoryArraySize == 0)
+	if (numBooks == 0)
 	{
 		cout << "ERROR: Database is empty." << endl;
 		pause();
@@ -337,7 +335,7 @@ void inventoryLookUpBookById(InventoryDatabase* inventoryDatabase)
 	cout << "Enter ID to look up: ";
 	int id = getUserInputInt();
 
-	if (id < 0 || id >= inventoryArraySize)
+	if (id < 0 || id >= numBooks)
 	{
 		cout << "ERROR: ID does not exist in database." << endl;
 		pause();
@@ -411,9 +409,9 @@ void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase)
 	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
 
 	unique_ptr<InventoryBook[]> books = inventoryDatabase->getInventoryArray();
-	int inventoryArraySize = inventoryDatabase->getInventoryArraySize();
+	int numBooks = inventoryDatabase->getInventoryArraySize();
 
-	if (inventoryArraySize == 0)
+	if (numBooks == 0)
 	{
 		cout << "ERROR: Database is empty." << endl;
 		pause();
@@ -425,7 +423,7 @@ void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase)
 	int foundBookIndex;
 	bool bookExists = false;
 
-	for (int i = 0; i < inventoryArraySize; i++)
+	for (int i = 0; i < numBooks; i++)
 	{
 		if (isbn == books[i].isbn)
 		{
@@ -493,6 +491,415 @@ void inventoryLookUpBookByIsbn(InventoryDatabase* inventoryDatabase)
 	cout << endl << bars << endl << endl;
 
 	pause();
+
+	return;
+}
+
+void inventoryAddBookToDatabase(InventoryDatabase* inventoryDatabase)
+{
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ ADD BOOK TO DATABASE ]";
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	string isbn = string();
+	string title;
+	string author;
+	string publisher;
+	string addDate = string();
+	int quantity;
+	double wholesale;
+	double retail;
+
+	unique_ptr<InventoryBook[]> books = inventoryDatabase->getInventoryArray();
+	int numBooks = inventoryDatabase->getInventoryArraySize();
+
+	cout << "Creating new book." << endl;
+
+	while (isbn == string())
+	{
+		cout << "Enter book ISBN: ";
+		isbn = getUserInputString();
+
+		if (isbn.length() != 13)
+		{
+			cout << "ERROR: ISBN must be 13 digits." << endl;
+			isbn = string();
+		}
+		else
+		{
+			try
+			{
+				int temp = stod(isbn);
+			}
+			catch (...)
+			{
+				cout << "ERROR: ISBN must be a number." << endl;
+				isbn = string();
+			}
+			for (int i = 0; i < numBooks; i++)
+			{
+				if (isbn == books[i].isbn)
+				{
+					cout << "ERROR: ISBN already exists in database." << endl;
+					isbn = string();
+				}
+			}
+		}
+	}
+
+	cout << "Enter book title: ";
+	title = getUserInputString();
+
+	cout << "Enter book author: ";
+	author = getUserInputString();
+
+	cout << "Enter book publisher: ";
+	publisher = getUserInputString();
+
+	while (addDate == string())
+	{
+		cout << "Enter book add date: ";
+		addDate = getUserInputString();
+		int month, day, year;
+		bool error = false;
+
+		if (addDate.length() != 10)
+		{
+			error = true;
+		}
+		else
+		{
+			if (addDate.substr(2, 1) != "/" || addDate.substr(5, 1) != "/")
+			{
+				error = true;
+			}
+			else
+			{
+				try
+				{
+					month = stoi(addDate.substr(0, 2));
+					day = stoi(addDate.substr(3, 2));
+					year = stoi(addDate.substr(6, 4));
+				}
+				catch (...)
+				{
+					error = true;
+				}
+			}
+			if (month < 1 || month > 12 || day < 1 || day > 31 || year < 0 || year > 9999)
+			{
+				error = true;
+			}
+		}
+		if (error)
+		{
+			cout << "ERROR: Date must be of form \"MM/DD/YYYY\"" << endl;
+			addDate = string();
+		}
+	}
+
+	cout << "Enter book quantity: ";
+	quantity = getUserInputInt(0);
+
+	cout << "Enter book wholesale price: ";
+	wholesale = getUserInputDouble(0);
+
+	cout << "Enter book retail price: ";
+	retail = getUserInputDouble(0);
+
+	InventoryBook newBook = InventoryBook(isbn, title, author, publisher, addDate, quantity, wholesale, retail);
+	inventoryDatabase->addBookToArray(newBook);
+
+	cout << "Successfully added book to database." << endl << endl;
+	pause();
+
+	return;
+}
+
+void inventoryRemoveBookFromDatabase(InventoryDatabase* inventoryDatabase)
+{
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ REMOVE BOOK FROM DATABASE ]";
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	unique_ptr<InventoryBook[]> books = inventoryDatabase->getInventoryArray();
+	int numBooks = inventoryDatabase->getInventoryArraySize();
+
+	if (numBooks == 0)
+	{
+		cout << "ERROR: Database is empty." << endl;
+		pause();
+		return;
+	}
+
+	cout << "Enter book ISBN: ";
+	string isbn = getUserInputString();
+	bool bookExists = false;
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		if (isbn == books[i].isbn)
+		{
+			inventoryDatabase->removeBookFromArray(i);
+			bookExists = true;
+		}
+	}
+
+	if (bookExists)
+	{
+		cout << "Successfully removed book from database." << endl << endl;
+	}
+	else
+	{
+		cout << "ERROR: Book does not exist in database." << endl << endl;
+	}
+
+	pause();
+
+	return;
+}
+
+void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
+{
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string titleText = "[ EDIT BOOK BY ISBN ]";
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + titleText.length()) / 2;
+	cout << setw(titleMargin) << titleText << endl << endl << bars << endl << endl;
+
+	unique_ptr<InventoryBook[]> books = inventoryDatabase->getInventoryArray();
+	int numBooks = inventoryDatabase->getInventoryArraySize();
+
+	if (numBooks == 0)
+	{
+		cout << "ERROR: Database is empty." << endl;
+		pause();
+		return;
+	}
+
+	cout << "Enter book ISBN: ";
+	string isbn = getUserInputString();
+	bool bookExists = false;
+	int foundIndex;
+	InventoryBook foundBook;
+
+	for (int i = 0; i < numBooks; i++)
+	{
+		if (isbn == books[i].isbn)
+		{
+			bookExists = true;
+			foundIndex = i;
+			foundBook = books[i];
+		}
+	}
+
+	if (!bookExists)
+	{
+		cout << "ERROR: Book does not exist in database." << endl << endl;
+		pause();
+		return;
+	}
+
+	const string bookIsbnText = "[1] ISBN:";
+	const string bookTitleText = "[2] TITLE:";
+	const string bookAuthorText = "[3] AUTHOR:";
+	const string bookPublisherText = "[4] PUBLISHER:";
+	const string bookDateText = "[5] DATE ADDED:";
+	const string bookQuantityText = "[6] ON-HAND:";
+	const string bookWholesaleText = "[7] WHOLESALE:";
+	const string bookRetailText = "[8] RETAIL:";
+
+	const size_t columnSpacing = 3;
+
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t dateColumnLength = bookDateText.length() + columnSpacing;
+	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
+	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
+	const size_t retailColumnLength = bookRetailText.length() + columnSpacing;
+
+	const size_t titleColumnLength = (UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 2;
+	const size_t authorColumnLength = (UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+	const size_t publisherColumnLength = (UI::TERMINAL_WIDTH - isbnColumnLength - dateColumnLength - quantityColumnLength - wholesaleColumnLength - retailColumnLength) / 4;
+
+	cout << left;
+
+	cout << endl << bars << endl << endl;
+
+	cout << setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(authorColumnLength) << bookAuthorText
+		<< setw(publisherColumnLength) << bookPublisherText
+		<< setw(dateColumnLength) << bookDateText
+		<< setw(quantityColumnLength) << bookQuantityText
+		<< setw(wholesaleColumnLength) << bookWholesaleText
+		<< setw(retailColumnLength) << bookRetailText
+		<< endl;
+
+	cout << setw(isbnColumnLength) << books[foundIndex].isbn
+		<< setw(titleColumnLength) << books[foundIndex].title
+		<< setw(authorColumnLength) << books[foundIndex].author
+		<< setw(publisherColumnLength) << books[foundIndex].publisher
+		<< setw(dateColumnLength) << books[foundIndex].addDate
+		<< setw(quantityColumnLength) << books[foundIndex].quantity
+		<< setw(wholesaleColumnLength) << books[foundIndex].wholesale
+		<< setw(retailColumnLength) << books[foundIndex].retail
+		<< endl << endl << bars << endl << endl;
+
+	enum BOOK_ATTRIBUTES { NONE, BOOK_ISBN, BOOK_TITLE, BOOK_AUTHOR, BOOK_PUBLISHER, BOOK_DATE, BOOK_QUANTITY, BOOK_WHOLESALE, BOOK_RETAIL};
+	
+	cout << "Enter book attribute to edit (1-8): ";
+	int edit = getUserInputInt(BOOK_ISBN, BOOK_RETAIL);
+	string newString = string();
+	int newInt;
+	double newDouble;
+
+	switch (edit)
+	{
+	case BOOK_ISBN:
+		cout << "Editing book ISBN." << endl;
+		while (newString == string())
+		{
+			cout << "Enter new book ISBN: ";
+			newString = getUserInputString();
+
+			if (newString.length() != 13)
+			{
+				cout << "ERROR: ISBN must be 13 digits." << endl;
+				newString = string();
+			}
+			else
+			{
+				try
+				{
+					int temp = stod(newString);
+				}
+				catch (...)
+				{
+					cout << "ERROR: ISBN must be a number." << endl;
+					newString = string();
+				}
+				for (int i = 0; i < numBooks; i++)
+				{
+					if (newString == books[i].isbn)
+					{
+						cout << "ERROR: ISBN already exists in database." << endl;
+						newString = string();
+					}
+				}
+			}
+		}
+		inventoryDatabase->setBookIsbnByIsbn(foundBook.isbn, newString);
+		cout << "Book ISBN successfully edited." << endl;
+		pause();
+		break;
+	case BOOK_TITLE:
+		cout << "Editing book title." << endl;
+		cout << "Enter new book title: ";
+		newString = getUserInputString();
+		inventoryDatabase->setBookTitleByIsbn(foundBook.isbn, newString);
+		cout << "Book title successfully edited." << endl;
+		pause();
+		break;
+	case BOOK_AUTHOR:
+		cout << "Editing book author." << endl;
+		cout << "Enter new book author: ";
+		newString = getUserInputString();
+		inventoryDatabase->setBookAuthorByIsbn(foundBook.isbn, newString);
+		cout << "Book author successfully edited." << endl;
+		pause();
+		break;
+	case BOOK_PUBLISHER:
+		cout << "Editing book publisher." << endl;
+		cout << "Enter new book publisher: ";
+		newString = getUserInputString();
+		inventoryDatabase->setBookPublisherByIsbn(foundBook.isbn, newString);
+		cout << "Book publisher successfully edited." << endl;
+		pause();
+		break;
+	case BOOK_DATE:
+		cout << "Editing book add date." << endl;
+		while (newString == string())
+		{
+			cout << "Enter new book add date: ";
+			newString = getUserInputString();
+			int month, day, year;
+			bool error = false;
+
+			if (newString.length() != 10)
+			{
+				error = true;
+			}
+			else
+			{
+				if (newString.substr(2, 1) != "/" || newString.substr(5, 1) != "/")
+				{
+					error = true;
+				}
+				else
+				{
+					try
+					{
+						month = stoi(newString.substr(0, 2));
+						day = stoi(newString.substr(3, 2));
+						year = stoi(newString.substr(6, 4));
+					}
+					catch (...)
+					{
+						error = true;
+					}
+				}
+				if (month < 1 || month > 12 || day < 1 || day > 31 || year < 0 || year > 9999)
+				{
+					error = true;
+				}
+			}
+			if (error)
+			{
+				cout << "ERROR: Date must be of form \"MM/DD/YYYY\"" << endl;
+				newString = string();
+			}
+		}
+		inventoryDatabase->setBookAddDateByIsbn(foundBook.isbn, newString);
+		cout << "Book add date successfully edited." << endl;
+		pause();
+		break;
+	case BOOK_QUANTITY:
+		cout << "Editing book quantity." << endl;
+		cout << "Enter new book quantity: ";
+		newInt = getUserInputInt(0);
+		inventoryDatabase->setBookQuantityByIsbn(foundBook.isbn, newInt);
+		cout << "Book quantity successfully edited." << endl;
+		pause();
+		break;
+	case BOOK_WHOLESALE:
+		cout << "Editing book wholesale price." << endl;
+		cout << "Enter new book wholesale price: ";
+		newDouble = getUserInputDouble(0);
+		inventoryDatabase->setBookWholesaleByIsbn(foundBook.isbn, newDouble);
+		cout << "Book wholesale price successfully edited." << endl;
+		pause();
+		break;
+	case BOOK_RETAIL:
+		cout << "Editing book retail price." << endl;
+		cout << "Enter new book retail price: ";
+		newDouble = getUserInputDouble(0);
+		inventoryDatabase->setBookRetailByIsbn(foundBook.isbn, newDouble);
+		cout << "Book retail price successfully edited." << endl;
+		pause();
+		break;
+	default:
+		break;
+	}
 
 	return;
 }
