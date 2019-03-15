@@ -72,7 +72,7 @@ int Cashier::findBook(std::string isbnNum){
 
 // Checks out books in cart by calculating the total price using sales tax 
 void Cashier::checkout(){ // Change this to return price of books in cart and create function to return price of each book
-    int price = 0, totalPrice = 0;
+    double price = 0, totalPrice = 0;
     for(int i = 0; i < cartSize; i++){
 		totalPrice += cart[i].quantity * cart[i].wholesale; // -$Olivier Get inv to be a pointer to InventoryDatabase and this should work
     }
