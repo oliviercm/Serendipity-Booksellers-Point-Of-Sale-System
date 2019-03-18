@@ -87,7 +87,7 @@ int main()
 	inventoryDatabase.buildInventoryArray(filePath);
 
 	//Cashier
-	Cashier cashier;
+	Cashier cashier(&inventoryDatabase);
 
 	//Display main menu, get user inputs
 	int inputMainMenu;
@@ -349,7 +349,7 @@ void addBooksToCart(InventoryDatabase *book) {
 				userIsbn = string();
 			}
 			else {
-				cashier.addBookToCart(addBook);
+				cashier.addBookToCart(addBook.isbn);
 				cout << "Book added to your cart." << endl << endl;
 
 			}
