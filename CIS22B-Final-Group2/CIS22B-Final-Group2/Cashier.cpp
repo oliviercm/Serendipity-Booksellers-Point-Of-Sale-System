@@ -17,49 +17,42 @@ void Cashier::addBookToCart(std::string isbnNum){
    int invCount = pInventoryDatabase->getInventoryArraySize();
 
     for(int i = 0; i < invCount; i++){
-        if((inv[i].isbn == isbnNum) && (inv[i].quantity > 0)){
+        if((inv[i].isbn == isbnNum) && (inv[i].quantity > 0)){ // Will move these checks to main 
             if(findBook(isbnNum) != -1){
-                cart[findBook(isbnNum)].quantity++;
-                //inv[i].quantity--; Only do this in checkout()
+                cart[findBook(isbnNum)].quantity++; 
+				// Inventory change number??
             }
             else {
                 cart[cartSize] = inv[i];
-                cart[cartSize].quantity = 0;
+                cart[cartSize].quantity = 0; // Check this 
                 cartSize++;
-                //inv[i].quantity--; Only do this in checkout()
             }
+			return;
         }
         else if(inv[i].isbn == isbnNum){
-            //std::cout << "There are no more books of this ISBN number availiable." << std::endl; // Create function for this 
-        }
-        else {
-            //std::cout << "Book not found." << std::endl;
+            // std::cout << "There are no more books of this ISBN number availiable in the inventory." << std::endl; // Create function for this 
+			return;
         }
     }
+	// std::cout << "Book not found in the inventory." << std::endl; // Create function for this 
 }
 
 // Removes book from cart by prompting the user for the ISBN number 
 void Cashier::removeBookFromCart(std::string isbnNum) {
-	std::unique_ptr<InventoryBook[]> inv = pInventoryDatabase->getInventoryArray();
-	int invSize = pInventoryDatabase->getInventoryArraySize();
-
-	for (int i = 0; i < invSize; i++) {
-		if ((inv[i].isbn == isbnNum) && (inv[i].quantity > 0)) {
-			if (findBook(isbnNum) != -1) {
-				cart[findBook(isbnNum)].quantity--;
-				inv[i].quantity++;
-			}
+	for (int i = 0; i < cartSize; i++) {
+		if (cart[i].isbn == isbnNum && cart[i].quantity > 0) { // Will move these checks to main 
+			cart[i].quantity--; 
+			return;
 		}
-		else if (inv[i].isbn == isbnNum) {
-			std::cout << "There are no more books of this ISBN number availiable." << std::endl; // Separate functions for this 
-		}
-		else {
-			std::cout << "Book not found." << std::endl;
+		else if (cart[i].isbn == isbnNum) {
+			// std::cout << "There are no more books of this ISBN number availiable in the cart." << std::endl;
+			return;
 		}
 	}
+	// std::cout << "Book not found in cart." << std::endl; 
 }
 
-// Returns -1 if the book is not in the array, else returns the index the book
+// Returns -1 if the book is not in the array (cart), else returns the index the book
 // is at
 int Cashier::findBook(std::string isbnNum){
     for(int i = 0; i < cartSize; i++){
@@ -70,18 +63,22 @@ int Cashier::findBook(std::string isbnNum){
     return -1;
 }
 
-// Returns price of a book 
-double bookPrice(std::string isbn) {
-	if (findBook(isbn) != -1) {
-		return 0; 
+// Returns price of a book including sales tax 
+double Cashier::bookPrice(std::string isbn) {
+	if (pInventoryDatabase->getBookIndexByIsbn != -1) {
+		std::cout << "A book of this isbn number is not in the inventory"; 
+		return -1; 
+	}
+	else {
+		return inv[pInventoryDatabase->getBookIndexByIsbn(isbn)].wholesale * SALES_TAX;
 	}
 }
 
 // Returns the total price of the books in the cart 
-double priceOfCart() {
+double Cashier::priceOfCart() {
 	double totalPrice = 0; 
 	for (int i = 0; i < cartSize; i++) {
-		totalPrice += cart[i].quantity * cart[i].wholesale; 
+		totalPrice += cart[i].quantity * cart[i].wholesale; // Check whether we use wholesale or retail 
 	}
 	return totalPrice * SALES_TAX; 
 }
@@ -89,9 +86,7 @@ double priceOfCart() {
 // Checks out books --> reduces quantity in inventory by the amount of books in the cart 
 void Cashier::checkout() {
 	for (int i = 0; i < cartSize; i++) {
-		if (findBook(cart[i].isbn) != -1) {
-			inv[findBook(cart[i].isbn)].quantity -= cart[i].quantity; 
-		}
+		inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity -= cart[i].quantity; 
 	}
 }
 

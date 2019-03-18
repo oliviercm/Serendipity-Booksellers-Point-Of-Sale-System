@@ -22,4 +22,5 @@ public:
 	void checkout();
 	int findBook(std::string isbnNum);
 	double bookPrice(std::string isbn);
+	double priceOfCart(); 
 };
