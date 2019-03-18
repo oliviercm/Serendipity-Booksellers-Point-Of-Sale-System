@@ -9,7 +9,7 @@ Cashier::Cashier(InventoryDatabase* pD)
 	pInventoryDatabase = pD;
 	cart = nullptr;
 	cartSize = 0;
-	inv = pInventoryDatabase->getInventoryArray;
+	inv = pInventoryDatabase->getInventoryArray();
 }
 
 // Adds book to cart by prompting the user for the ISBN number 
@@ -65,7 +65,7 @@ int Cashier::findBook(std::string isbnNum){
 
 // Returns price of a book including sales tax 
 double Cashier::bookPrice(std::string isbn) {
-	if (pInventoryDatabase->getBookIndexByIsbn != -1) {
+	if (pInventoryDatabase->getBookIndexByIsbn(isbn) != -1) {
 		std::cout << "A book of this isbn number is not in the inventory"; 
 		return -1; 
 	}
