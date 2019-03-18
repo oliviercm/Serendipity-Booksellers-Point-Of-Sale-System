@@ -262,10 +262,10 @@ void displayCashierModule() {
 void cashierSellBooks(InventoryDatabase* pD)
 {
 	Cashier cashier(pD);
-	bool stop = false;
+	//bool stop = false;
 
-	while (!stop)
-	{
+	//while (!stop)
+	//{
 		clearScreen(true);
 
 		const string bars = generateBars(UI::TERMINAL_WIDTH);
@@ -285,12 +285,14 @@ void cashierSellBooks(InventoryDatabase* pD)
 			<< setw(optionMargin + checkoutText.length()) << checkoutText << endl << endl
 			<< setw(optionMargin + cancelText.length()) << cancelText << endl << endl
 			<< bars << endl << endl;
-	}
+	//}
 
 	return;
 }
 
 void booksToCart(InventoryDatabase *book) {
+
+	clearScreen(true);
 
 	Cashier cashier(book);
 	string userIsbn = string();
@@ -308,6 +310,7 @@ void booksToCart(InventoryDatabase *book) {
 
 	do
 	{
+		cout << endl;
 		cout << "Please, enter the ISBN of the book you want to add to the cart: ";
 		userIsbn = getUserInputString();
 		cout << endl;
@@ -320,16 +323,18 @@ void booksToCart(InventoryDatabase *book) {
 
 		}
 
-		book->getBookByIsbn(userIsbn);
+		InventoryBook addBook;
+		addBook = book->getBookByIsbn(userIsbn);
+
 
 		for (int i = 0; i < numBooks; i++) {
 			if (userIsbn == books[i].isbn) {
-				cashier.addBookToCart(book->getBookByIsbn(userIsbn));
-				cout << "Book added to your cart." << endl << endl;
-			}
-			else {
 				cout << "ERROR: ISBN does not exist." << endl;
 				userIsbn = string();
+			}
+			else {
+				cashier.addBookToCart(addBook);
+				cout << "Book added to your cart." << endl << endl;
 
 			}
 		}
