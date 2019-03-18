@@ -17,26 +17,22 @@ void Cashier::addBookToCart(std::string isbnNum){
    int invCount = pInventoryDatabase->getInventoryArraySize();
 
     for(int i = 0; i < invCount; i++){
-        if((inv[i].isbn == isbnNum) && (inv[i].quantity > 0)){ // Will move these checks to main 
+        if(inv[i].isbn == isbnNum){
             if(findBook(isbnNum) != -1){
                 cart[findBook(isbnNum)].quantity++; 
-				inv[i].quantity--; // Inventory change number??
+				inv[i].quantity--; 
             }
             else {
                 cart[cartSize] = inv[i];
                 cart[cartSize].quantity = 0; 
 				cart[cartSize].quantity++; 
-				inv[i].quantity--; 
+				inv[i].quantity--;
                 cartSize++;
             }
-			return;
-        }
-        else if(inv[i].isbn == isbnNum){
-            // std::cout << "There are no more books of this ISBN number availiable in the inventory." << std::endl; // Create function for this 
+			printCart();
 			return;
         }
     }
-	// std::cout << "Book not found in the inventory." << std::endl; // Create function for this 
 }
 
 // Removes book from cart by prompting the user for the ISBN number 
@@ -44,11 +40,13 @@ void Cashier::removeBookFromCart(std::string isbnNum) {
 	for (int i = 0; i < cartSize; i++) {
 		if (cart[i].isbn == isbnNum && cart[i].quantity > 0) { // Will move these checks to main 
 			cart[i].quantity--; 
-			inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity++; 
+			inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity++;
+			pInventoryDatabase->setBookQuantityByIsbn(isbnNum, inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity);
+			std::cout << "The book has been removed." << std::endl << std::endl;
 			return;
 		}
 		else if (cart[i].isbn == isbnNum) {
-			// std::cout << "There are no more books of this ISBN number availiable in the cart." << std::endl;
+			std::cout << "There are no more books of this ISBN number availiable in the cart." << std::endl;
 			return;
 		}
 	}
@@ -113,4 +111,10 @@ std::unique_ptr<InventoryBook[]> Cashier::getCart() const
 	}
 
 	return copyCartArray;
+}
+
+void Cashier::printCart() {
+	for (int i = 0; i < cartSize; i++) {
+		std::cout << cart[i].isbn << std::endl; 
+	}
 }

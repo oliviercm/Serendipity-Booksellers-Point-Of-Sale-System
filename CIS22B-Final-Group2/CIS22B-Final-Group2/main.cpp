@@ -27,7 +27,7 @@ void displayMainMenu();
 
 void displayCashierModule();
 void cashierSellBooks(InventoryDatabase* pD);
-void addBooksToCart(InventoryDatabase *book);
+void addBooksToCart(InventoryDatabase *book, Cashier *cashier);
 void removedFromCart(Cashier *pD);
 void checkoutBook(InventoryDatabase *pD);
 
@@ -121,7 +121,7 @@ int main()
 					switch (inputMenuSub2)
 					{
 					case UI::SELL_OPTIONS::SELL_ADD_BOOK:
-						addBooksToCart(&inventoryDatabase);
+						addBooksToCart(&inventoryDatabase, &cashier);
 						break;
 					case UI::SELL_OPTIONS::SELL_REMOVE_BOOKS:
 						removedFromCart(&cashier);
@@ -309,11 +309,11 @@ void cashierSellBooks(InventoryDatabase* pD)
 	return;
 }
 
-void addBooksToCart(InventoryDatabase *book) {
+void addBooksToCart(InventoryDatabase *book, Cashier *cashier) {
 
 	clearScreen(true);
 
-	Cashier cashier(book);
+	// Cashier cashier(book);
 	string userIsbn = string();
 	int again;
 	unique_ptr<InventoryBook[]> books = book->getInventoryArray();
@@ -350,8 +350,8 @@ void addBooksToCart(InventoryDatabase *book) {
 					cout << "There are no more books of this ISBN number availiable in the inventory." << endl << endl;
 					break;
 				}
-				cashier.addBookToCart(addBook.isbn);
-				books[i].quantity--;
+				cashier->addBookToCart(userIsbn);
+				books[i].quantity--; 
 				cout << "Book added to your cart." << endl << endl;
 				break;
 			}
@@ -388,6 +388,8 @@ void removedFromCart(Cashier *pD) {
 	string userIsbn;
 	int another;
 
+	unique_ptr<InventoryBook[]> cart = pD->getCart();
+
 	do
 	{
 		cout << endl;
@@ -396,17 +398,20 @@ void removedFromCart(Cashier *pD) {
 		while (userIsbn.length() != 13)
 		{
 			cout << endl;
-			cout << "ERROR: ERROR: enter the 13 digits of the book's ISBN: ";
+			cout << "ERROR: enter the 13 digits of the book's ISBN: ";
 			userIsbn = getUserInputString();
 		}
 
 		int checkBook;
 
 		checkBook = pD->findBook(userIsbn);
+		cout << endl; 
+		pD->printCart(); 
+		cout << endl; 
 
 		if (checkBook == -1) {
 			cout << endl;
-			cout << "ERROR: Book was not found on the cart.";
+			cout << "ERROR: Book was not found on the cart. ";
 		}
 		else if (pD->getCart() == 0) {
 			cout << endl;
@@ -414,10 +419,9 @@ void removedFromCart(Cashier *pD) {
 		}
 		else {
 			pD->removeBookFromCart(userIsbn);
-			cout << "The book has been removed." << endl << endl;
 		}
 
-			cout << "Would you like to remove another book? [ 1 ] YES  [ 2 ] NO : ";
+		cout << "Would you like to remove another book? [ 1 ] YES  [ 2 ] NO : ";
 		another = getUserInputInt();
 		while (another != 1 && another != 2) {
 			cout << endl;
