@@ -346,9 +346,13 @@ void addBooksToCart(InventoryDatabase *book) {
 
 		for (int i = 0; i < numBooks; i++) {
 			if (userIsbn == books[i].isbn) {
+				if (books[i].quantity <= 0) {
+					cout << "There are no more books of this ISBN number availiable in the inventory." << endl << endl;
+					break;
+				}
 				cashier.addBookToCart(addBook.isbn);
+				books[i].quantity--;
 				cout << "Book added to your cart." << endl << endl;
-
 				break;
 			}
 			else if (i = numBooks - 1) {
