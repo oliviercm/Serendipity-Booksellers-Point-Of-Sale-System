@@ -11,7 +11,7 @@ private:
 	std::unique_ptr<InventoryBook[]> cart;
 	int cartSize;
 	const double SALES_TAX = 0.0725;
-	std::unique_ptr<InventoryBook[]> inv; 
+	std::unique_ptr<InventoryBook[]> inv;
 public:
 	// Constructor
 	Cashier(InventoryDatabase* pD);
@@ -22,6 +22,6 @@ public:
 	void checkout();
 	int findBook(std::string isbnNum);
 	double bookPrice(std::string isbn);
-	double priceOfCart(); 
+	double priceOfCart();
 	void printCart();
 };

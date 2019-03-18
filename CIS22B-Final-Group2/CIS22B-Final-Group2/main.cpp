@@ -313,7 +313,6 @@ void addBooksToCart(InventoryDatabase *book, Cashier *cashier) {
 
 	clearScreen(true);
 
-	// Cashier cashier(book);
 	string userIsbn = string();
 	int again;
 	unique_ptr<InventoryBook[]> books = book->getInventoryArray();
@@ -351,13 +350,13 @@ void addBooksToCart(InventoryDatabase *book, Cashier *cashier) {
 					break;
 				}
 				cashier->addBookToCart(userIsbn);
-				books[i].quantity--; 
+				books[i].quantity--;
 				cout << "Book added to your cart." << endl << endl;
 				break;
 			}
 			else if (i = numBooks - 1) {
-			cout << "ERROR: ISBN does not exist." << endl;
-			userIsbn = string();
+				cout << "ERROR: ISBN does not exist." << endl;
+				userIsbn = string();
 			}
 		}
 		cout << "Would you like to add another book? [ 1 ] YES  [ 2 ] NO : ";
@@ -414,8 +413,8 @@ void removedFromCart(Cashier *pD) {
 			cout << endl;
 			cout << "ERROR: There are no books in your cart." << endl;
 		}
-		else { 
-			cout << endl; 
+		else {
+			cout << endl;
 			pD->removeBookFromCart(userIsbn);
 		}
 
@@ -435,13 +434,15 @@ void checkoutBook(InventoryDatabase *pD, Cashier *cashier)
 {
 	clearScreen(true);
 
+	int userAnswer;
+
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
 	const string checkoutText = "[ CHECKOUT ]";
 	const string bookIsbnText = "ISBN:";
 	const string bookTitleText = "TITLE:";
 	const string bookQuantityText = "QUANTITY:";
 	const string bookPriceText = "PRICE:";
-	const string totalPriceText = "INVENTORY TOTAL WHOLESALE VALUE: $";
+	const string totalPriceText = "TOTAL PRICE: $";
 
 	const size_t columnSpacing = 3;
 
@@ -465,28 +466,65 @@ void checkoutBook(InventoryDatabase *pD, Cashier *cashier)
 		<< setw(titleColumnLength) << bookTitleText
 		<< setw(quantityColumnLength) << bookQuantityText
 		<< setw(bookPriceColumnLength) << bookPriceText
-		<< endl << endl;
+		<< endl << endl << bars << endl << endl;
 
-	// Cashier cashier(pD);
-
-	cout << endl;
-	std::unique_ptr<InventoryBook[]> copyCartArray = cashier->getCart();
-
-	for (int i = 0; i < 3 ; i++)
-	{
-		cout << left;
-		
-		cout << setw(isbnColumnLength) << copyCartArray[i].isbn
-			<< setw(titleColumnLength) << copyCartArray[i].title
-			<< setw(quantityColumnLength) << copyCartArray[i].quantity
-			<< setw(totalPriceColumnLength) << copyCartArray[i].wholesale
-			<< endl;
+	if (cashier->getCart() > 0) {
+		cashier->printCart();
+		cout << endl << endl << bars << endl << endl;
+		cout << "Press [ 1 ] to Checkout or [ 2 ] to cancel";
+		userAnswer = getUserInputInt();
+		if (userAnswer == 1) {
+			cashier->checkout();
+			cout << endl << endl;
+			pause();
+		}
+		else {
+			cout << endl << endl << "Transaction cancel..." << endl << endl;
+			pause();
+		}
 	}
+	else {
+		cout << setw(titleMargin) << "EMPTY CART" << endl << endl;
+		cout << "Your cart is empty, try adding some books." << endl << endl;
+		pause();
+	}
+	
+	
+	/*
+	std::unique_ptr<InventoryBook[]> copyCartArray = cashier->getCart();
+	if (cashier->getCart() > 0) {
 
-	cout << cashier->priceOfCart();
+		for (int i = 0; i < 3; i++)
+		{
+			cout << left;
+
+			cout << setw(isbnColumnLength) << copyCartArray[i].isbn
+				<< setw(titleColumnLength) << copyCartArray[i].title
+				<< setw(quantityColumnLength) << copyCartArray[i].quantity
+				<< setw(totalPriceColumnLength) << copyCartArray[i].wholesale
+				<< endl << endl;
+
+			cout << cashier->priceOfCart();
+		}
+	}
+	else
+		cout << setw(titleMargin) << "EMPTY CART" << endl << endl;
+		cout << "Your cart is empty, try adding some books." << endl;
+		*/
 
 	cout << "Press [ 1 ] to Checkout or [ 2 ] to cancel";
+
+
+	return;
+}
+
+void printReceipt() {
+
+	cout << endl << endl;
+
 	
+
+
 
 	return;
 }
