@@ -29,6 +29,7 @@ void displayCashierModule();
 void cashierSellBooks(InventoryDatabase* pD);
 void addBooksToCart(InventoryDatabase *book);
 void removedFromCart(Cashier *pD);
+void checkoutBook(InventoryDatabase *pD);
 
 void displayInventoryModule();
 void inventoryFindBookById(InventoryDatabase* inventoryDatabase);
@@ -71,7 +72,7 @@ namespace UI
 
 	enum MAIN_MENU_OPTIONS { MAIN_NONE, MAIN_CASHIER, MAIN_INVENTORY, MAIN_REPORT, MAIN_EXIT };
 	enum CASHIER_OPTIONS { CASHIER_NONE, CASHIER_SELL_BOOKS, CASHIER_BACK };
-	enum SELL_OPTIONS { SELL_NONE, SELL_ADD_BOOK, SELL_REMOVE_BOOKS, SELL_CHECKOUT, SELL_CANCEL};
+	enum SELL_OPTIONS { SELL_NONE, SELL_ADD_BOOK, SELL_REMOVE_BOOKS, SELL_CHECKOUT, SELL_CANCEL };
 	enum INVENTORY_OPTIONS { INVENTORY_NONE, INVENTORY_FIND_ID, INVENTORY_FIND_ISBN, INVENTORY_ADD_BOOK, INVENTORY_REMOVE_BOOK, INVENTORY_EDIT_BOOK, INVENTORY_BACK };
 	enum REPORT_OPTIONS { REPORT_NONE, REPORT_INVENTORY_LIST, REPORT_INVENTORY_WHOLESALE, REPORT_INVENTORY_RETAIL, REPORT_LIST_QUANTITY, REPORT_LIST_COST, REPORT_LIST_AGE, REPORT_BACK };
 }
@@ -126,6 +127,7 @@ int main()
 						removedFromCart(&cashier);
 						break;
 					case UI::SELL_OPTIONS::SELL_CHECKOUT:
+						checkoutBook(&inventoryDatabase);
 						break;
 					case UI::SELL_OPTIONS::SELL_CANCEL:
 						break;
@@ -283,25 +285,25 @@ void cashierSellBooks(InventoryDatabase* pD)
 
 	//while (!stop)
 	//{
-		clearScreen(true);
+	clearScreen(true);
 
-		const string bars = generateBars(UI::TERMINAL_WIDTH);
-		const string sellBooksText = "[ SELL BOOKS ]";
-		const string addBooksText = "[ 1 ] ADD BOOKS TO CART";
-		const string removeBooksText = "[ 2 ] REMOVE BOOKS FROM CART";
-		const string checkoutText = "[ 3 ] CHECKOUT CART";
-		const string cancelText = "[ 4 ] CANCEL";
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string sellBooksText = "[ SELL BOOKS ]";
+	const string addBooksText = "[ 1 ] ADD BOOKS TO CART";
+	const string removeBooksText = "[ 2 ] REMOVE BOOKS FROM CART";
+	const string checkoutText = "[ 3 ] CHECKOUT CART";
+	const string cancelText = "[ 4 ] CANCEL";
 
-		const size_t titleMargin = (UI::TERMINAL_WIDTH + sellBooksText.length()) / 2;
-		const size_t optionMargin = titleMargin - sellBooksText.length();
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + sellBooksText.length()) / 2;
+	const size_t optionMargin = titleMargin - sellBooksText.length();
 
-		cout << setw(titleMargin) << sellBooksText << endl << endl << bars << endl << endl;
+	cout << setw(titleMargin) << sellBooksText << endl << endl << bars << endl << endl;
 
-		cout << setw(optionMargin + addBooksText.length()) << addBooksText << endl << endl
-			<< setw(optionMargin + removeBooksText.length()) << removeBooksText << endl << endl
-			<< setw(optionMargin + checkoutText.length()) << checkoutText << endl << endl
-			<< setw(optionMargin + cancelText.length()) << cancelText << endl << endl
-			<< bars << endl << endl;
+	cout << setw(optionMargin + addBooksText.length()) << addBooksText << endl << endl
+		<< setw(optionMargin + removeBooksText.length()) << removeBooksText << endl << endl
+		<< setw(optionMargin + checkoutText.length()) << checkoutText << endl << endl
+		<< setw(optionMargin + cancelText.length()) << cancelText << endl << endl
+		<< bars << endl << endl;
 	//}
 
 	return;
@@ -341,17 +343,17 @@ void addBooksToCart(InventoryDatabase *book) {
 		}
 
 		InventoryBook addBook;
-		addBook = book->getBookByIsbn(userIsbn);
 
 		for (int i = 0; i < numBooks; i++) {
 			if (userIsbn == books[i].isbn) {
 				cashier.addBookToCart(addBook.isbn);
 				cout << "Book added to your cart." << endl << endl;
-				break; 
+
+				break;
 			}
-			else if(i = numBooks - 1) {
-				cout << "ERROR: ISBN does not exist." << endl; 
-				userIsbn = string();
+			else if (i = numBooks - 1) {
+			cout << "ERROR: ISBN does not exist." << endl;
+			userIsbn = string();
 			}
 		}
 		cout << "Would you like to add another book? [ 1 ] YES  [ 2 ] NO : ";
@@ -366,7 +368,6 @@ void addBooksToCart(InventoryDatabase *book) {
 
 	return;
 }
-
 
 void removedFromCart(Cashier *pD) {
 
@@ -388,24 +389,31 @@ void removedFromCart(Cashier *pD) {
 		cout << endl;
 		cout << "Please enter the book ISBN that you want to remove: ";
 		userIsbn = getUserInputString();
-			while (userIsbn.length() != 13)
-			{
-				cout << endl;
-				cout << "ERROR: ERROR: enter the 13 digits of the book's ISBN: ";
-				userIsbn = getUserInputString();
-			}
-			
-			int checkBook;
-			InventoryBook removeBook;
-			checkBook = pD->findBook(userIsbn);
-			if (checkBook == -1) {
-				cout << endl;
-				cout << "ERROR: Book was not found on the cart.";
-			}
-			else
-				//pD->getCart();
+		while (userIsbn.length() != 13)
+		{
+			cout << endl;
+			cout << "ERROR: ERROR: enter the 13 digits of the book's ISBN: ";
+			userIsbn = getUserInputString();
+		}
 
-		cout << "Would you like to remove another book? [ 1 ] YES  [ 2 ] NO : ";
+		int checkBook;
+
+		checkBook = pD->findBook(userIsbn);
+
+		if (checkBook == -1) {
+			cout << endl;
+			cout << "ERROR: Book was not found on the cart.";
+		}
+		else if (pD->getCart() == 0) {
+			cout << endl;
+			cout << "ERROR: There are no books in your cart." << endl;
+		}
+		else {
+			pD->removeBookFromCart(userIsbn);
+			cout << "The book has been removed." << endl << endl;
+		}
+
+			cout << "Would you like to remove another book? [ 1 ] YES  [ 2 ] NO : ";
 		another = getUserInputInt();
 		while (another != 1 && another != 2) {
 			cout << endl;
@@ -417,7 +425,7 @@ void removedFromCart(Cashier *pD) {
 	return;
 }
 
-void checkoutBook(InventoryDatabase *pD) 
+void checkoutBook(InventoryDatabase *pD)
 {
 	clearScreen(true);
 
@@ -425,22 +433,21 @@ void checkoutBook(InventoryDatabase *pD)
 	const string checkoutText = "[ CHECKOUT ]";
 	const string bookIsbnText = "ISBN:";
 	const string bookTitleText = "TITLE:";
-	const string bookQuantityText = "ON-HAND:";
-	const string bookWholesaleText = "INDIVIDUAL WHOLESALE:";
-	const string bookTotalWholesaleText = "COMBINED WHOLESALE:";
-	const string inventoryTotalWholesaleText = "INVENTORY TOTAL WHOLESALE VALUE: $";
+	const string bookQuantityText = "QUANTITY:";
+	const string bookPriceText = "PRICE:";
+	const string totalPriceText = "INVENTORY TOTAL WHOLESALE VALUE: $";
 
 	const size_t columnSpacing = 3;
 
 	const size_t isbnColumnLength = 13 + columnSpacing;
 	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
-	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
-	const size_t totalWholesaleColumnLength = bookTotalWholesaleText.length() + columnSpacing;
+	const size_t bookPriceColumnLength = bookPriceText.length() + columnSpacing;
+	const size_t totalPriceColumnLength = totalPriceText.length() + columnSpacing;
 
 	const size_t titleMargin = (UI::TERMINAL_WIDTH + checkoutText.length()) / 2;
 	const size_t optionMargin = titleMargin - checkoutText.length();
 
-	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - quantityColumnLength - wholesaleColumnLength - totalWholesaleColumnLength;
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - quantityColumnLength - totalPriceColumnLength - bookPriceColumnLength;
 
 	cout << right;
 
@@ -451,21 +458,29 @@ void checkoutBook(InventoryDatabase *pD)
 	cout << setw(isbnColumnLength) << bookIsbnText
 		<< setw(titleColumnLength) << bookTitleText
 		<< setw(quantityColumnLength) << bookQuantityText
-		<< setw(wholesaleColumnLength) << bookWholesaleText
-		<< setw(totalWholesaleColumnLength) << bookTotalWholesaleText
+		<< setw(bookPriceColumnLength) << bookPriceText
 		<< endl << endl;
 
 	Cashier cashier(pD);
 
-
-
 	cout << endl;
 	std::unique_ptr<InventoryBook[]> copyCartArray = cashier.getCart();
-	int cartSize = 0;
-	//std::unique_ptr<InventoryBook[]> copyCartArray = std::make_unique<InventoryBook[]>(cartSize);
 
+	for (int i = 0; i < 3 ; i++)
+	{
+		cout << left;
+		
+		cout << setw(isbnColumnLength) << copyCartArray[i].isbn
+			<< setw(titleColumnLength) << copyCartArray[i].title
+			<< setw(quantityColumnLength) << copyCartArray[i].quantity
+			<< setw(totalPriceColumnLength) << copyCartArray[i].wholesale
+			<< endl;
+	}
 
-	cout << "";
+	cout << cashier.priceOfCart();
+
+	cout << "Press [ 1 ] to Checkout or [ 2 ] to cancel";
+	
 
 	return;
 }
