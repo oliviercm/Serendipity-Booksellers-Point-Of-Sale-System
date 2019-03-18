@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "Cashier.h"
-#include "InventoryDatabase.h"
+#include <iostream>
 
 // Constructor 
 Cashier::Cashier(InventoryDatabase* pD)
@@ -9,27 +9,27 @@ Cashier::Cashier(InventoryDatabase* pD)
 	pInventoryDatabase = pD;
 	cart = nullptr;
 	cartSize = 0;
+	inv = pInventoryDatabase->getInventoryArray;
 }
 
 // Adds book to cart by prompting the user for the ISBN number 
-void Cashier::addBookToCart(InventoryBook book){
-   std::unique_ptr<InventoryBook[]> books = pInventoryDatabase->getInventoryArray();
-   int bookCount = pInventoryDatabase->getInventoryArraySize();
+void Cashier::addBookToCart(std::string isbnNum){
+   int invCount = pInventoryDatabase->getInventoryArraySize();
 
-    for(int i = 0; i < bookCount; i++){
-        if((books[i].isbn == book.isbn) && (books[i].quantity > 0)){
-            if(findBook(book.isbn) != -1){
-                cart[findBook(book.isbn)].quantity++;
+    for(int i = 0; i < invCount; i++){
+        if((inv[i].isbn == isbnNum) && (inv[i].quantity > 0)){
+            if(findBook(isbnNum) != -1){
+                cart[findBook(isbnNum)].quantity++;
                 //inv[i].quantity--; Only do this in checkout()
             }
             else {
-                cart[cartSize] = books[i];
+                cart[cartSize] = inv[i];
                 cart[cartSize].quantity = 0;
                 cartSize++;
                 //inv[i].quantity--; Only do this in checkout()
             }
         }
-        else if(books[i].isbn == book.isbn){
+        else if(inv[i].isbn == isbnNum){
             //std::cout << "There are no more books of this ISBN number availiable." << std::endl; // Create function for this 
         }
         else {
@@ -39,22 +39,22 @@ void Cashier::addBookToCart(InventoryBook book){
 }
 
 // Removes book from cart by prompting the user for the ISBN number 
-void Cashier::removeBookFromCart(InventoryBook book) {
-	std::unique_ptr<InventoryBook[]> books = pInventoryDatabase->getInventoryArray();
-	int bookCount = pInventoryDatabase->getInventoryArraySize();
+void Cashier::removeBookFromCart(std::string isbnNum) {
+	std::unique_ptr<InventoryBook[]> inv = pInventoryDatabase->getInventoryArray();
+	int invSize = pInventoryDatabase->getInventoryArraySize();
 
-	for (int i = 0; i < bookCount; i++) {
-		if ((books[i].isbn == book.isbn) && (books[i].quantity > 0)) {
-			if (findBook(book.isbn) != -1) {
-				cart[findBook(book.isbn)].quantity--;
-				books[i].quantity++;
+	for (int i = 0; i < invSize; i++) {
+		if ((inv[i].isbn == isbnNum) && (inv[i].quantity > 0)) {
+			if (findBook(isbnNum) != -1) {
+				cart[findBook(isbnNum)].quantity--;
+				inv[i].quantity++;
 			}
 		}
-		else if (books[i].isbn == book.isbn) {
-			//std::cout << "There are no more books of this ISBN number availiable." << std::endl;
+		else if (inv[i].isbn == isbnNum) {
+			std::cout << "There are no more books of this ISBN number availiable." << std::endl; // Separate functions for this 
 		}
 		else {
-			//std::cout << "Book not found." << std::endl;
+			std::cout << "Book not found." << std::endl;
 		}
 	}
 }
@@ -63,24 +63,37 @@ void Cashier::removeBookFromCart(InventoryBook book) {
 // is at
 int Cashier::findBook(std::string isbnNum){
     for(int i = 0; i < cartSize; i++){
-        if(cart[i].isbn == isbnNum){ // -$Olivier: You were using strcmp here, we are using string class and not C strings so we should use string functions and string operators.
+        if(cart[i].isbn == isbnNum){ 
             return i;
         }
     }
     return -1;
 }
 
-// Checks out books in cart by calculating the total price using sales tax 
-void Cashier::checkout(){ // Change this to return price of books in cart and create function to return price of each book
-    double price = 0, totalPrice = 0;
-    for(int i = 0; i < cartSize; i++){
-		totalPrice += cart[i].quantity * cart[i].wholesale; // -$Olivier Get inv to be a pointer to InventoryDatabase and this should work
-    }
-    //int totalPrice = return totalPrice * SALES_TAX; -$Olivier Can't have a return statement on the right side of assignment, re-written following this comment
-	return;
+// Returns price of a book 
+double bookPrice(std::string isbn) {
+	if (findBook(isbn) != -1) {
+		return 0; 
+	}
 }
 
-// Create function that checks out books, or reduce quantity by 1 
+// Returns the total price of the books in the cart 
+double priceOfCart() {
+	double totalPrice = 0; 
+	for (int i = 0; i < cartSize; i++) {
+		totalPrice += cart[i].quantity * cart[i].wholesale; 
+	}
+	return totalPrice * SALES_TAX; 
+}
+
+// Checks out books --> reduces quantity in inventory by the amount of books in the cart 
+void Cashier::checkout() {
+	for (int i = 0; i < cartSize; i++) {
+		if (findBook(cart[i].isbn) != -1) {
+			inv[findBook(cart[i].isbn)].quantity -= cart[i].quantity; 
+		}
+	}
+}
 
 std::unique_ptr<InventoryBook[]> Cashier::getCart() const
 {
