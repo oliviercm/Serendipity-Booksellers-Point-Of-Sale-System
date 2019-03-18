@@ -27,7 +27,8 @@ void displayMainMenu();
 
 void displayCashierModule();
 void cashierSellBooks(InventoryDatabase* pD);
-void booksToCart(InventoryDatabase *book);
+void addBooksToCart(InventoryDatabase *book);
+void removedFromCart(Cashier *pD);
 
 void displayInventoryModule();
 void inventoryFindBookById(InventoryDatabase* inventoryDatabase);
@@ -85,8 +86,12 @@ int main()
 	InventoryDatabase inventoryDatabase;
 	inventoryDatabase.buildInventoryArray(filePath);
 
+	//Cashier
+	Cashier cashier;
+
 	//Display main menu, get user inputs
 	int inputMainMenu;
+
 	do
 	{
 		displayMainMenu();
@@ -95,7 +100,8 @@ int main()
 
 		switch (inputMainMenu)
 		{
-			int inputSubMenu;
+			int inputSubMenu, inputMenuSub2;
+
 		case UI::MAIN_MENU_OPTIONS::MAIN_CASHIER:
 			do
 			{
@@ -106,12 +112,23 @@ int main()
 				switch (inputSubMenu)
 				{
 				case UI::CASHIER_OPTIONS::CASHIER_SELL_BOOKS:
+
 					cashierSellBooks(&inventoryDatabase);
-					inputSubMenu = getUserInputInt(UI::SELL_OPTIONS::SELL_ADD_BOOK, UI::SELL_OPTIONS::SELL_CANCEL);
-					switch (inputSubMenu)
+
+					inputMenuSub2 = getUserInputInt(UI::SELL_OPTIONS::SELL_ADD_BOOK, UI::SELL_OPTIONS::SELL_CANCEL);
+
+					switch (inputMenuSub2)
 					{
 					case UI::SELL_OPTIONS::SELL_ADD_BOOK:
-						booksToCart(&inventoryDatabase);
+						addBooksToCart(&inventoryDatabase);
+						break;
+					case UI::SELL_OPTIONS::SELL_REMOVE_BOOKS:
+						removedFromCart(&cashier);
+						break;
+					case UI::SELL_OPTIONS::SELL_CHECKOUT:
+						break;
+					case UI::SELL_OPTIONS::SELL_CANCEL:
+						break;
 					default:
 						break;
 					}
@@ -290,7 +307,7 @@ void cashierSellBooks(InventoryDatabase* pD)
 	return;
 }
 
-void booksToCart(InventoryDatabase *book) {
+void addBooksToCart(InventoryDatabase *book) {
 
 	clearScreen(true);
 
@@ -326,7 +343,6 @@ void booksToCart(InventoryDatabase *book) {
 		InventoryBook addBook;
 		addBook = book->getBookByIsbn(userIsbn);
 
-
 		for (int i = 0; i < numBooks; i++) {
 			if (userIsbn == books[i].isbn) {
 				cout << "ERROR: ISBN does not exist." << endl;
@@ -351,6 +367,108 @@ void booksToCart(InventoryDatabase *book) {
 	return;
 }
 
+
+void removedFromCart(Cashier *pD) {
+
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string removeText = "[ REMOVED BOOKS FROM CART ]";
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + removeText.length()) / 2;
+	const size_t optionMargin = titleMargin - removeText.length();
+
+	cout << setw(titleMargin) << removeText << endl << endl << endl << bars << endl << endl;
+
+	string userIsbn;
+	int another;
+
+	do
+	{
+		cout << endl;
+		cout << "Please enter the book ISBN that you want to remove: ";
+		userIsbn = getUserInputString();
+			while (userIsbn.length() != 13)
+			{
+				cout << endl;
+				cout << "ERROR: ERROR: enter the 13 digits of the book's ISBN: ";
+				userIsbn = getUserInputString();
+			}
+			
+			int checkBook;
+			InventoryBook removeBook;
+			checkBook = pD->findBook(userIsbn);
+			if (checkBook == -1) {
+				cout << endl;
+				cout << "ERROR: Book was not found on the cart.";
+			}
+			else
+				//pD->getCart();
+
+		cout << "Would you like to remove another book? [ 1 ] YES  [ 2 ] NO : ";
+		another = getUserInputInt();
+		while (another != 1 && another != 2) {
+			cout << endl;
+			cout << "ERROR: enter 1 or 2 : ";
+			another = getUserInputInt();
+		}
+	} while (another == 1);
+
+	return;
+}
+
+void checkoutBook(InventoryDatabase *pD) 
+{
+	clearScreen(true);
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string checkoutText = "[ CHECKOUT ]";
+	const string bookIsbnText = "ISBN:";
+	const string bookTitleText = "TITLE:";
+	const string bookQuantityText = "ON-HAND:";
+	const string bookWholesaleText = "INDIVIDUAL WHOLESALE:";
+	const string bookTotalWholesaleText = "COMBINED WHOLESALE:";
+	const string inventoryTotalWholesaleText = "INVENTORY TOTAL WHOLESALE VALUE: $";
+
+	const size_t columnSpacing = 3;
+
+	const size_t isbnColumnLength = 13 + columnSpacing;
+	const size_t quantityColumnLength = bookQuantityText.length() + columnSpacing;
+	const size_t wholesaleColumnLength = bookWholesaleText.length() + columnSpacing;
+	const size_t totalWholesaleColumnLength = bookTotalWholesaleText.length() + columnSpacing;
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + checkoutText.length()) / 2;
+	const size_t optionMargin = titleMargin - checkoutText.length();
+
+	const size_t titleColumnLength = UI::TERMINAL_WIDTH - isbnColumnLength - quantityColumnLength - wholesaleColumnLength - totalWholesaleColumnLength;
+
+	cout << right;
+
+	cout << setw(titleMargin) << checkoutText << endl << endl << bars << endl << endl;
+
+	cout << left;
+
+	cout << setw(isbnColumnLength) << bookIsbnText
+		<< setw(titleColumnLength) << bookTitleText
+		<< setw(quantityColumnLength) << bookQuantityText
+		<< setw(wholesaleColumnLength) << bookWholesaleText
+		<< setw(totalWholesaleColumnLength) << bookTotalWholesaleText
+		<< endl << endl;
+
+	Cashier cashier(pD);
+
+
+
+	cout << endl;
+	std::unique_ptr<InventoryBook[]> copyCartArray = cashier.getCart();
+	int cartSize = 0;
+	//std::unique_ptr<InventoryBook[]> copyCartArray = std::make_unique<InventoryBook[]>(cartSize);
+
+
+	cout << "";
+
+	return;
+}
 /***************************************************************************
 *********** INVENTORY MODULE
 ****************************************************************************/
