@@ -29,7 +29,7 @@ void displayCashierModule();
 void cashierSellBooks(InventoryDatabase* pD);
 void addBooksToCart(InventoryDatabase *book, Cashier *cashier);
 void removedFromCart(Cashier *pD);
-void checkoutBook(InventoryDatabase *pD);
+void checkoutBook(InventoryDatabase *pD, Cashier *cashier);
 
 void displayInventoryModule();
 void inventoryFindBookById(InventoryDatabase* inventoryDatabase);
@@ -127,7 +127,7 @@ int main()
 						removedFromCart(&cashier);
 						break;
 					case UI::SELL_OPTIONS::SELL_CHECKOUT:
-						checkoutBook(&inventoryDatabase);
+						checkoutBook(&inventoryDatabase, &cashier);
 						break;
 					case UI::SELL_OPTIONS::SELL_CANCEL:
 						break;
@@ -388,7 +388,7 @@ void removedFromCart(Cashier *pD) {
 	string userIsbn;
 	int another;
 
-	unique_ptr<InventoryBook[]> cart = pD->getCart();
+	// unique_ptr<InventoryBook[]> cart = pD->getCart();
 
 	do
 	{
@@ -405,9 +405,6 @@ void removedFromCart(Cashier *pD) {
 		int checkBook;
 
 		checkBook = pD->findBook(userIsbn);
-		cout << endl; 
-		pD->printCart(); 
-		cout << endl; 
 
 		if (checkBook == -1) {
 			cout << endl;
@@ -417,7 +414,8 @@ void removedFromCart(Cashier *pD) {
 			cout << endl;
 			cout << "ERROR: There are no books in your cart." << endl;
 		}
-		else {
+		else { 
+			cout << endl; 
 			pD->removeBookFromCart(userIsbn);
 		}
 
@@ -433,7 +431,7 @@ void removedFromCart(Cashier *pD) {
 	return;
 }
 
-void checkoutBook(InventoryDatabase *pD)
+void checkoutBook(InventoryDatabase *pD, Cashier *cashier)
 {
 	clearScreen(true);
 
@@ -469,10 +467,10 @@ void checkoutBook(InventoryDatabase *pD)
 		<< setw(bookPriceColumnLength) << bookPriceText
 		<< endl << endl;
 
-	Cashier cashier(pD);
+	// Cashier cashier(pD);
 
 	cout << endl;
-	std::unique_ptr<InventoryBook[]> copyCartArray = cashier.getCart();
+	std::unique_ptr<InventoryBook[]> copyCartArray = cashier->getCart();
 
 	for (int i = 0; i < 3 ; i++)
 	{
@@ -485,13 +483,14 @@ void checkoutBook(InventoryDatabase *pD)
 			<< endl;
 	}
 
-	cout << cashier.priceOfCart();
+	cout << cashier->priceOfCart();
 
 	cout << "Press [ 1 ] to Checkout or [ 2 ] to cancel";
 	
 
 	return;
 }
+
 /***************************************************************************
 *********** INVENTORY MODULE
 ****************************************************************************/

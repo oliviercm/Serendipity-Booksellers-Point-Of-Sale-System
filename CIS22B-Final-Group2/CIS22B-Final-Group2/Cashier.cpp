@@ -29,7 +29,6 @@ void Cashier::addBookToCart(std::string isbnNum){
 				inv[i].quantity--;
                 cartSize++;
             }
-			printCart();
 			return;
         }
     }
@@ -46,11 +45,10 @@ void Cashier::removeBookFromCart(std::string isbnNum) {
 			return;
 		}
 		else if (cart[i].isbn == isbnNum) {
-			std::cout << "There are no more books of this ISBN number availiable in the cart." << std::endl;
+			std::cout << "There are no more books of this ISBN number availiable in the cart." << std::endl << std::endl;
 			return;
 		}
 	}
-	// std::cout << "Book not found in cart." << std::endl; 
 }
 
 // Returns -1 if the book is not in the array (cart), else returns the index the book
@@ -87,12 +85,13 @@ double Cashier::priceOfCart() {
 	return totalPrice * SALES_TAX; 
 }
 
+/*
 // Checks out books --> reduces quantity in inventory by the amount of books in the cart 
 void Cashier::checkout() {
 	for (int i = 0; i < cartSize; i++) {
 		inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity -= cart[i].quantity; 
 	}
-}
+} */
 
 std::unique_ptr<InventoryBook[]> Cashier::getCart() const
 {
@@ -113,6 +112,7 @@ std::unique_ptr<InventoryBook[]> Cashier::getCart() const
 	return copyCartArray;
 }
 
+// For testing purposes 
 void Cashier::printCart() {
 	for (int i = 0; i < cartSize; i++) {
 		std::cout << cart[i].isbn << std::endl; 
