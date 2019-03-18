@@ -27,6 +27,7 @@ void displayMainMenu();
 
 void displayCashierModule();
 void cashierSellBooks(InventoryDatabase* pD);
+void booksToCart(InventoryDatabase *book);
 
 void displayInventoryModule();
 void inventoryFindBookById(InventoryDatabase* inventoryDatabase);
@@ -55,7 +56,7 @@ void displayGoodbye();
 
 namespace UI
 {
-	const int TERMINAL_WIDTH = 200;
+	const int TERMINAL_WIDTH = 130;
 	const int TERMINAL_HEIGHT = 60;
 
 	const string BARS_CHARACTER = "=";
@@ -69,6 +70,7 @@ namespace UI
 
 	enum MAIN_MENU_OPTIONS { MAIN_NONE, MAIN_CASHIER, MAIN_INVENTORY, MAIN_REPORT, MAIN_EXIT };
 	enum CASHIER_OPTIONS { CASHIER_NONE, CASHIER_SELL_BOOKS, CASHIER_BACK };
+	enum SELL_OPTIONS { SELL_NONE, SELL_ADD_BOOK, SELL_REMOVE_BOOKS, SELL_CHECKOUT, SELL_CANCEL};
 	enum INVENTORY_OPTIONS { INVENTORY_NONE, INVENTORY_FIND_ID, INVENTORY_FIND_ISBN, INVENTORY_ADD_BOOK, INVENTORY_REMOVE_BOOK, INVENTORY_EDIT_BOOK, INVENTORY_BACK };
 	enum REPORT_OPTIONS { REPORT_NONE, REPORT_INVENTORY_LIST, REPORT_INVENTORY_WHOLESALE, REPORT_INVENTORY_RETAIL, REPORT_LIST_QUANTITY, REPORT_LIST_COST, REPORT_LIST_AGE, REPORT_BACK };
 }
@@ -77,7 +79,7 @@ int main()
 {
 	//Resize terminal, format cout
 	initialize();
-	
+
 	//Setup InventoryDatabase
 	const string filePath = "books.txt";
 	InventoryDatabase inventoryDatabase;
@@ -104,6 +106,15 @@ int main()
 				switch (inputSubMenu)
 				{
 				case UI::CASHIER_OPTIONS::CASHIER_SELL_BOOKS:
+					cashierSellBooks(&inventoryDatabase);
+					inputSubMenu = getUserInputInt(UI::SELL_OPTIONS::SELL_ADD_BOOK, UI::SELL_OPTIONS::SELL_CANCEL);
+					switch (inputSubMenu)
+					{
+					case UI::SELL_OPTIONS::SELL_ADD_BOOK:
+						booksToCart(&inventoryDatabase);
+					default:
+						break;
+					}
 					break;
 				case UI::CASHIER_OPTIONS::CASHIER_BACK:
 					break;
@@ -118,7 +129,7 @@ int main()
 				displayInventoryModule();
 
 				inputSubMenu = getUserInputInt(UI::INVENTORY_OPTIONS::INVENTORY_FIND_ID, UI::INVENTORY_OPTIONS::INVENTORY_BACK);
-				
+
 				switch (inputSubMenu)
 				{
 				case UI::INVENTORY_OPTIONS::INVENTORY_FIND_ID:
@@ -275,6 +286,62 @@ void cashierSellBooks(InventoryDatabase* pD)
 			<< setw(optionMargin + cancelText.length()) << cancelText << endl << endl
 			<< bars << endl << endl;
 	}
+
+	return;
+}
+
+void booksToCart(InventoryDatabase *book) {
+
+	Cashier cashier(book);
+	string userIsbn = string();
+	int again;
+	unique_ptr<InventoryBook[]> books = book->getInventoryArray();
+	int numBooks = book->getInventoryArraySize();
+
+	const string bars = generateBars(UI::TERMINAL_WIDTH);
+	const string addBooksText = "[ ADD BOOKS TO CART ]";
+
+	const size_t titleMargin = (UI::TERMINAL_WIDTH + addBooksText.length()) / 2;
+	const size_t optionMargin = titleMargin - addBooksText.length();
+
+	cout << setw(titleMargin) << addBooksText << endl << endl << endl << bars << endl << endl;
+
+	do
+	{
+		cout << "Please, enter the ISBN of the book you want to add to the cart: ";
+		userIsbn = getUserInputString();
+		cout << endl;
+
+		while (userIsbn.length() != 13) {
+
+			cout << "ERROR: enter the 13 digits of the book's ISBN:";
+			userIsbn = getUserInputString();
+			cout << endl;
+
+		}
+
+		book->getBookByIsbn(userIsbn);
+
+		for (int i = 0; i < numBooks; i++) {
+			if (userIsbn == books[i].isbn) {
+				cashier.addBookToCart(book->getBookByIsbn(userIsbn));
+				cout << "Book added to your cart." << endl << endl;
+			}
+			else {
+				cout << "ERROR: ISBN does not exist." << endl;
+				userIsbn = string();
+
+			}
+		}
+		cout << "Would you like to add another book? [ 1 ] YES  [ 2 ] NO : ";
+		again = getUserInputInt();
+		while (again != 1 && again != 2) {
+			cout << endl;
+			cout << "ERROR: enter 1 or 2 : ";
+			again = getUserInputInt();
+		}
+
+	} while (again == 1);
 
 	return;
 }
@@ -763,8 +830,8 @@ void inventoryEditBookByIsbn(InventoryDatabase* inventoryDatabase)
 		<< setw(retailColumnLength) << books[foundIndex].retail
 		<< endl << endl << bars << endl << endl;
 
-	enum BOOK_ATTRIBUTES { NONE, BOOK_ISBN, BOOK_TITLE, BOOK_AUTHOR, BOOK_PUBLISHER, BOOK_DATE, BOOK_QUANTITY, BOOK_WHOLESALE, BOOK_RETAIL};
-	
+	enum BOOK_ATTRIBUTES { NONE, BOOK_ISBN, BOOK_TITLE, BOOK_AUTHOR, BOOK_PUBLISHER, BOOK_DATE, BOOK_QUANTITY, BOOK_WHOLESALE, BOOK_RETAIL };
+
 	cout << "Enter book attribute to edit (1-8): ";
 	int edit = getUserInputInt(BOOK_ISBN, BOOK_RETAIL);
 	string newString = string();
@@ -1525,9 +1592,6 @@ void displayGoodbye()
  |_____/   \___| |_|     \___| |_| |_|  \__,_| |_| | .__/  |_|  \__|  \__, |   |____/   \___/   \___/  |_|\_\ |___/  \___| |_| |_|  \___| |_|    |___/ (_)
                                                    | |                 __/ |                                                                              
                                                    |_|                |___/                                                                               
-
-
-
    ___                      _              _     _             _ 
   / __|  _ _   ___   __ _  | |_   ___   __| |   | |__   _  _  (_)
  | (__  | '_| / -_) / _` | |  _| / -_) / _` |   | '_ \ | || |  _ 
