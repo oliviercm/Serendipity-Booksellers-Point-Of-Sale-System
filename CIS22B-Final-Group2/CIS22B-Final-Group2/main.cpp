@@ -354,7 +354,7 @@ void addBooksToCart(InventoryDatabase *book, Cashier *cashier) {
 				cout << "Book added to your cart." << endl << endl;
 				break;
 			}
-			else if (i = numBooks - 1) {
+			else if (i == numBooks - 1) {
 				cout << "ERROR: ISBN does not exist." << endl;
 				userIsbn = string();
 			}
