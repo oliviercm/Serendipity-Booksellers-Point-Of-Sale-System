@@ -345,13 +345,13 @@ void addBooksToCart(InventoryDatabase *book) {
 
 		for (int i = 0; i < numBooks; i++) {
 			if (userIsbn == books[i].isbn) {
-				cout << "ERROR: ISBN does not exist." << endl;
-				userIsbn = string();
-			}
-			else {
 				cashier.addBookToCart(addBook.isbn);
 				cout << "Book added to your cart." << endl << endl;
-
+				break; 
+			}
+			else if(i = numBooks - 1) {
+				cout << "ERROR: ISBN does not exist." << endl; 
+				userIsbn = string();
 			}
 		}
 		cout << "Would you like to add another book? [ 1 ] YES  [ 2 ] NO : ";

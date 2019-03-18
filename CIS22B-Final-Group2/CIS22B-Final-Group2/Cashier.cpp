@@ -7,7 +7,7 @@
 Cashier::Cashier(InventoryDatabase* pD)
 {
 	pInventoryDatabase = pD;
-	cart = nullptr;
+	cart = std::make_unique<InventoryBook[]>(100); // Change this?
 	cartSize = 0;
 	inv = pInventoryDatabase->getInventoryArray();
 }
@@ -55,6 +55,9 @@ void Cashier::removeBookFromCart(std::string isbnNum) {
 // Returns -1 if the book is not in the array (cart), else returns the index the book
 // is at
 int Cashier::findBook(std::string isbnNum){
+	if (cart == nullptr) {
+		return -1; 
+	}
     for(int i = 0; i < cartSize; i++){
         if(cart[i].isbn == isbnNum){ 
             return i;
