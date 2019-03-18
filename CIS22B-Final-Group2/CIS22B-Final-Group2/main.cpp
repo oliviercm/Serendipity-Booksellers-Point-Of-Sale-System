@@ -336,7 +336,7 @@ void addBooksToCart(InventoryDatabase *book) {
 
 		while (userIsbn.length() != 13) {
 
-			cout << "ERROR: enter the 13 digits of the book's ISBN:";
+			cout << "ERROR: enter the 13 digits of the book's ISBN: ";
 			userIsbn = getUserInputString();
 			cout << endl;
 

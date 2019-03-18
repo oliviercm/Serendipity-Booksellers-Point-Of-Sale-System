@@ -20,11 +20,13 @@ void Cashier::addBookToCart(std::string isbnNum){
         if((inv[i].isbn == isbnNum) && (inv[i].quantity > 0)){ // Will move these checks to main 
             if(findBook(isbnNum) != -1){
                 cart[findBook(isbnNum)].quantity++; 
-				// Inventory change number??
+				inv[i].quantity--; // Inventory change number??
             }
             else {
                 cart[cartSize] = inv[i];
-                cart[cartSize].quantity = 0; // Check this 
+                cart[cartSize].quantity = 0; 
+				cart[cartSize].quantity++; 
+				inv[i].quantity--; 
                 cartSize++;
             }
 			return;
@@ -42,6 +44,7 @@ void Cashier::removeBookFromCart(std::string isbnNum) {
 	for (int i = 0; i < cartSize; i++) {
 		if (cart[i].isbn == isbnNum && cart[i].quantity > 0) { // Will move these checks to main 
 			cart[i].quantity--; 
+			inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity++; 
 			return;
 		}
 		else if (cart[i].isbn == isbnNum) {
