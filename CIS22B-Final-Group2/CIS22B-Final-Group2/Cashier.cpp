@@ -19,8 +19,8 @@ void Cashier::addBookToCart(std::string isbnNum) {
 
 	for (int i = 0; i < invCount; i++) {
 		if (inv[i].isbn == isbnNum) {
-			if (findBook(isbnNum) != -1) {
-				cart[findBook(isbnNum)].quantity++;
+			if (getBookCartIndex(isbnNum) != -1) {
+				cart[getBookCartIndex(isbnNum)].quantity++;
 				inv[i].quantity--;
 			}
 			else {
@@ -57,7 +57,7 @@ void Cashier::removeBookFromCart(std::string isbnNum) {
 
 // Returns -1 if the book is not in the array (cart), else returns the index the book
 // is at
-int Cashier::findBook(std::string isbnNum) {
+int Cashier::getBookCartIndex(std::string isbnNum) {
 	if (cart == nullptr) {
 		return -1;
 	}
@@ -166,7 +166,7 @@ void Cashier::printCartForReceipt() {
 	return;
 }
 
-void Cashier::erraseCart() {
+void Cashier::clearCart() {
 
 	for (int i = 0; i < cartSize; i++) {
 		if (getCart() > 0) {

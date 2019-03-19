@@ -20,10 +20,10 @@ public:
 	void removeBookFromCart(std::string isbnNum);
 	std::unique_ptr<InventoryBook[]> getCart() const;
 	void checkout();
-	int findBook(std::string isbnNum);
+	int getBookCartIndex(std::string isbnNum);
 	double bookPrice(std::string isbn);
 	double priceOfCart();
 	void printCart();
 	void printCartForReceipt();
-	void erraseCart();
+	void clearCart();
 };
