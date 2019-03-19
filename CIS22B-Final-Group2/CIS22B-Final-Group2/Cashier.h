@@ -22,7 +22,8 @@ public:
 	void checkout();
 	int getBookCartIndex(std::string isbnNum);
 	double bookPrice(std::string isbn);
-	double priceOfCart();
+	double totalPriceOfCart();
+	double subTotal();
 	void printCart();
 	void printCartForReceipt();
 	void clearCart();

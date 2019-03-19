@@ -81,18 +81,36 @@ double Cashier::bookPrice(std::string isbn) {
 	}
 }
 
-// Returns the total price of the books in the cart 
-double Cashier::priceOfCart() {
+// Returns the subtotal price of the books in the cart 
+double Cashier::subTotal() {
 	double totalPrice = 0;
-	double taxes;
+
 	for (int i = 0; i < cartSize; i++) {
-		totalPrice += cart[i].quantity * cart[i].retail; // Check whether we use wholesale or retail 
-		
+
+		totalPrice += (cart[i].quantity * cart[i].retail); // Check whether we use wholesale or retail 
+
 	}
-	taxes = totalPrice * SALES_TAX;
-	totalPrice += taxes;
 
 	return totalPrice;
+}
+
+// Returns the total price of the cart.
+double Cashier::totalPriceOfCart() {
+
+	double totalPriceOfCart = 0;
+	double salesTax;
+
+	for (int i = 0; i < cartSize; i++) {
+
+		totalPriceOfCart += (cart[i].quantity * cart[i].retail); // Check whether we use wholesale or retail 
+
+	}
+
+	salesTax = subTotal() * SALES_TAX;
+
+	totalPriceOfCart += salesTax;
+
+	return totalPriceOfCart;
 }
 
 
@@ -103,7 +121,7 @@ void Cashier::checkout() {
 		pInventoryDatabase->addToBookQuantityByIsbn(cart[i].isbn, -1);
 	}
 	clearCart();
-} 
+}
 
 std::unique_ptr<InventoryBook[]> Cashier::getCart() const
 {
@@ -126,7 +144,7 @@ std::unique_ptr<InventoryBook[]> Cashier::getCart() const
 
 // For testing purposes 
 namespace UI {
-	const int TERMINAL_WIDTH = 130;
+	const int TERMINAL_WIDTH = 200;
 }
 void Cashier::printCart() {
 	const std::string bookIsbnText = "ISBN:";
@@ -160,8 +178,9 @@ void Cashier::printCartForReceipt() {
 
 	for (int i = 0; i < cartSize; i++) {
 
-		std::cout << cart[i].isbn << " " << cart[i].title << " " << cart[i].retail << std::endl;
-			
+		std::cout << "\t" << cart[i].isbn << " " << cart[i].title;
+		std::cout << std::right << " " << cart[i].retail << std::endl;
+
 		//std::cout << cart[i].isbn << std::endl;
 	}
 
@@ -170,10 +189,6 @@ void Cashier::printCartForReceipt() {
 
 void Cashier::clearCart() {
 
-	for (int i = 0; i < cartSize; i++) {
-		if (getCart() > 0) {
-			removeBookFromCart(cart[i].isbn);
-		}
-	}
+	cart.reset();
 
 }

@@ -2,10 +2,10 @@
 CIS 22B
 Final: Serendipity Booksellers POS System
 Group 2:
-	Olivier Chan Sion Moy
-	Luis Guerrero
-	Samuel Ruiz Cervantes
-	Manasi Gowda
+Olivier Chan Sion Moy
+Luis Guerrero
+Samuel Ruiz Cervantes
+Manasi Gowda
 */
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -114,6 +114,8 @@ int main()
 			{
 				displayCashierModule();
 
+				cout << UI::PROMPT_OPTION;
+
 				inputSubMenu = getUserInputInt(UI::CASHIER_OPTIONS::CASHIER_SELL_BOOKS, UI::CASHIER_OPTIONS::CASHIER_BACK);
 
 				switch (inputSubMenu)
@@ -124,6 +126,8 @@ int main()
 					do
 					{
 						displayCashierSellBooks();
+
+						cout << UI::PROMPT_OPTION;
 
 						inputSubMenu2 = getUserInputInt(UI::SELL_OPTIONS::SELL_ADD_BOOK, UI::SELL_OPTIONS::SELL_CANCEL);
 
@@ -157,6 +161,8 @@ int main()
 			{
 				displayInventoryModule();
 
+				cout << UI::PROMPT_OPTION;
+
 				inputSubMenu = getUserInputInt(UI::INVENTORY_OPTIONS::INVENTORY_FIND_ID, UI::INVENTORY_OPTIONS::INVENTORY_BACK);
 
 				switch (inputSubMenu)
@@ -187,6 +193,8 @@ int main()
 			do
 			{
 				displayReportModule();
+
+				cout << UI::PROMPT_OPTION;
 
 				inputSubMenu = getUserInputInt(UI::REPORT_OPTIONS::REPORT_INVENTORY_LIST, UI::REPORT_OPTIONS::REPORT_BACK);
 
@@ -290,7 +298,7 @@ void displayCashierModule() {
 
 void displayCashierSellBooks()
 {
-	
+
 	clearScreen(true);
 
 	const string bars = generateBars(UI::TERMINAL_WIDTH);
@@ -479,7 +487,7 @@ void cashierCheckout(InventoryDatabase *pD, Cashier *cashier)
 
 		cashier->printCart();
 		cout << endl << endl;
-		cout << totalPriceText << cashier->priceOfCart();
+		cout << totalPriceText << cashier->totalPriceOfCart();
 		cout << endl << endl << bars << endl << endl;
 
 		cout << "Press [ 1 ] to Checkout or [ 2 ] to Cancel: ";
@@ -507,21 +515,31 @@ void cashierCheckout(InventoryDatabase *pD, Cashier *cashier)
 void cashierPrintReceipt(Cashier *cashier) {
 
 	cout << endl << endl;
-	const string bars = "\t================================================";
-	const string titleText = "Serendipity Booksellers";
-	const string address1 = "21250 Stevens Creek Blvd";
-	const string address2 = "Cupertino, CA 95014";
+	const string bars = "\t========================================================";
+	const string titleText = "\t\t\tSerendipity Booksellers";
+	const string address1 = "\t21250 Stevens Creek Blvd";
+	const string address2 = "\tCupertino, CA 95014";
+	const string subTotalText = "\t\t\t\t\t\tSUBTOTAL: ";
+	const string taxText = "\t\t\t\t\t\tTAX: ";
+	const string totalText = "\t\t\t\t\t\tTOTAL: $";
 	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
-	
-	const size_t titleMargin((bars.length() / 2) + 5);
 
-	cout << bars << endl;
+	const size_t titleMargin(bars.length() / 2);
+
+	cout << bars << endl << endl;
 	cout << setw(titleMargin) << titleText << endl << endl;
 	cout << setw(titleMargin) << address1 << endl;
-	cout << setw(titleMargin) << address2 << "\t" << ctime(&timenow) <<  endl;
+	cout << setw(titleMargin) << address2 << ctime(&timenow) << endl;
 	cout << bars << endl << endl;
-	
+
 	cashier->printCartForReceipt();
+	cout << endl << endl;
+	cout << subTotalText  << cashier->subTotal() << endl;
+	cout << taxText  << "7.25" << endl;
+	cout << totalText << cashier->totalPriceOfCart() << endl << endl;
+	cout << "\t\t\t||||||||||||||||||||||||||" << endl;
+	cout << "\t\t\t||||||||||||||||||||||||||" << endl;
+	cout << "\t\t\t||||||||||||||||||||||||||" << endl;
 	cout << endl << endl << bars << endl << endl;
 
 	return;
