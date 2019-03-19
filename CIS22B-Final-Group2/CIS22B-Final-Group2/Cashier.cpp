@@ -16,7 +16,6 @@ Cashier::Cashier(InventoryDatabase* pD)
 // Adds book to cart by prompting the user for the ISBN number 
 void Cashier::addBookToCart(std::string isbnNum) {
 	int invCount = pInventoryDatabase->getInventoryArraySize();
-	printCartTwo();
 
 	for (int i = 0; i < invCount; i++) {
 		if (inv[i].isbn == isbnNum) {
@@ -35,15 +34,18 @@ void Cashier::addBookToCart(std::string isbnNum) {
 		}
 	}
 }
-
 // Removes book from cart by prompting the user for the ISBN number 
 void Cashier::removeBookFromCart(std::string isbnNum) {
 	for (int i = 0; i < cartSize; i++) {
 		if (cart[i].isbn == isbnNum && cart[i].quantity > 0) { // Will move these checks to main 
 			cart[i].quantity--;
+			cart[i].title = "";
+			cart[i].isbn = "";
+			cart[i].retail = 0.0;
+
 			inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity++;
 			pInventoryDatabase->setBookQuantityByIsbn(isbnNum, inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity);
-			std::cout << "The book has been removed." << std::endl << std::endl;
+			//std::cout << "The book has been removed." << std::endl << std::endl;
 			return;
 		}
 		else if (cart[i].isbn == isbnNum) {
@@ -81,10 +83,15 @@ double Cashier::bookPrice(std::string isbn) {
 // Returns the total price of the books in the cart 
 double Cashier::priceOfCart() {
 	double totalPrice = 0;
+	double taxes;
 	for (int i = 0; i < cartSize; i++) {
-		totalPrice += cart[i].quantity * cart[i].wholesale; // Check whether we use wholesale or retail 
+		totalPrice += cart[i].quantity * cart[i].retail; // Check whether we use wholesale or retail 
+		
 	}
-	return totalPrice * SALES_TAX;
+	taxes = totalPrice * SALES_TAX;
+	totalPrice += taxes;
+
+	return totalPrice;
 }
 
 
@@ -92,6 +99,7 @@ double Cashier::priceOfCart() {
 void Cashier::checkout() {
 	for (int i = 0; i < cartSize; i++) {
 		inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity -= cart[i].quantity;
+		pInventoryDatabase->addToBookQuantityByIsbn(cart[i].isbn, -1);
 	}
 } 
 
@@ -140,15 +148,30 @@ void Cashier::printCart() {
 		std::cout << std::setw(isbnColumnLength) << cart[i].isbn
 			<< std::setw(titleColumnLength) << cart[i].title
 			<< std::setw(quantityColumnLength) << cart[i].quantity
-			<< std::setw(totalPriceColumnLength) << cart[i].wholesale
+			<< std::setw(totalPriceColumnLength) << cart[i].retail
 			<< std::endl << std::endl;
 		//std::cout << cart[i].isbn << std::endl;
 	}
 }
 
-// Testing 
-void Cashier::printCartTwo() {
+void Cashier::printCartForReceipt() {
+
 	for (int i = 0; i < cartSize; i++) {
-		std::cout << cart[i].isbn << std::endl; 
+
+		std::cout << cart[i].isbn << " " << cart[i].title << " " << cart[i].retail << std::endl;
+			
+		//std::cout << cart[i].isbn << std::endl;
 	}
+
+	return;
+}
+
+void Cashier::erraseCart() {
+
+	for (int i = 0; i < cartSize; i++) {
+		if (getCart() > 0) {
+			removeBookFromCart(cart[i].isbn);
+		}
+	}
+
 }

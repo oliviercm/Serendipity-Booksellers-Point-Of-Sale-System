@@ -24,6 +24,6 @@ public:
 	double bookPrice(std::string isbn);
 	double priceOfCart();
 	void printCart();
-	// Testing 
-	void printCartTwo();
+	void printCartForReceipt();
+	void erraseCart();
 };
