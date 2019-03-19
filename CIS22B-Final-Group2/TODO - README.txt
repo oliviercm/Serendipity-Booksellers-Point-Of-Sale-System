@@ -14,7 +14,12 @@ cashier cart: adding two of the same book then removing that book from cart twic
 		not only that but it doesnt set every attribute to 0 or empty, instead it only sets isbn, title, and retail
 
 		
+cashier: doing checkout multiple times on the same book can crash the program on exit!
+	>>this one is pretty serious and might get a lot of points taken off if the professor sees this one!
+		
+		
 reciept: bars arent long enough/dont line up properly, needs to display subtotal, tax, total
+		
 		
 cashier: adding and removing books from the cart actually edits the real inventory even though it shouldn't do this
 	until checkout

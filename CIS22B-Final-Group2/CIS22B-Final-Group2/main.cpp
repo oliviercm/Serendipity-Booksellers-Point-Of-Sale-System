@@ -486,13 +486,12 @@ void cashierCheckout(InventoryDatabase *pD, Cashier *cashier)
 		userAnswer = getUserInputInt();
 		cout << endl << endl;
 		if (userAnswer == 1) {
-			cashier->checkout();
 			cashierPrintReceipt(cashier);
+			cashier->checkout();
 			pause();
 		}
 		else {
 			cout << endl << endl << "Transaction canceled." << endl << endl;
-			cashier->clearCart();
 			pause();
 		}
 	}

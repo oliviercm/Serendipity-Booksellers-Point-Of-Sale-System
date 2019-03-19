@@ -46,6 +46,7 @@ void Cashier::removeBookFromCart(std::string isbnNum) {
 			inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity++;
 			pInventoryDatabase->setBookQuantityByIsbn(isbnNum, inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity);
 			//std::cout << "The book has been removed." << std::endl << std::endl;
+			cartSize--;
 			return;
 		}
 		else if (cart[i].isbn == isbnNum) {
@@ -101,6 +102,7 @@ void Cashier::checkout() {
 		inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity -= cart[i].quantity;
 		pInventoryDatabase->addToBookQuantityByIsbn(cart[i].isbn, -1);
 	}
+	clearCart();
 } 
 
 std::unique_ptr<InventoryBook[]> Cashier::getCart() const
