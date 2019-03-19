@@ -16,6 +16,7 @@ Cashier::Cashier(InventoryDatabase* pD)
 // Adds book to cart by prompting the user for the ISBN number 
 void Cashier::addBookToCart(std::string isbnNum) {
 	int invCount = pInventoryDatabase->getInventoryArraySize();
+	printCartTwo();
 
 	for (int i = 0; i < invCount; i++) {
 		if (inv[i].isbn == isbnNum) {
@@ -142,5 +143,12 @@ void Cashier::printCart() {
 			<< std::setw(totalPriceColumnLength) << cart[i].wholesale
 			<< std::endl << std::endl;
 		//std::cout << cart[i].isbn << std::endl;
+	}
+}
+
+// Testing 
+void Cashier::printCartTwo() {
+	for (int i = 0; i < cartSize; i++) {
+		std::cout << cart[i].isbn << std::endl; 
 	}
 }

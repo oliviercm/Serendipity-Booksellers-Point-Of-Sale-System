@@ -26,7 +26,7 @@ void initialize();
 void displayMainMenu();
 
 void displayCashierModule();
-void cashierSellBooks(InventoryDatabase* pD);
+void cashierSellBooks(Cashier *cashier);
 void addBooksToCart(InventoryDatabase *book, Cashier *cashier);
 void removedFromCart(Cashier *pD);
 void checkoutBook(InventoryDatabase *pD, Cashier *cashier);
@@ -114,7 +114,7 @@ int main()
 				{
 				case UI::CASHIER_OPTIONS::CASHIER_SELL_BOOKS:
 
-					cashierSellBooks(&inventoryDatabase);
+					cashierSellBooks(&cashier);
 
 					inputMenuSub2 = getUserInputInt(UI::SELL_OPTIONS::SELL_ADD_BOOK, UI::SELL_OPTIONS::SELL_CANCEL);
 
@@ -278,9 +278,9 @@ void displayCashierModule() {
 	return;
 }
 
-void cashierSellBooks(InventoryDatabase* pD)
+void cashierSellBooks(Cashier *cashier)
 {
-	Cashier cashier(pD);
+	// Cashier cashier(pD);
 	//bool stop = false;
 
 	//while (!stop)
@@ -351,6 +351,7 @@ void addBooksToCart(InventoryDatabase *book, Cashier *cashier) {
 				}
 				cashier->addBookToCart(userIsbn);
 				books[i].quantity--;
+				book->setBookQuantityByIsbn(userIsbn, books[i].quantity);
 				cout << "Book added to your cart." << endl << endl;
 				break;
 			}
