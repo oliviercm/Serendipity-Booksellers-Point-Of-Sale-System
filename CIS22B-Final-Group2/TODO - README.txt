@@ -9,7 +9,7 @@ checkout: book quantity gets set to some ridiculous value, seems to be around 40
 cashier cart: adding two of the same book then removing that book from cart twice displays an error for the second book
 
 
-cashier: doing checkout multiple times on the same book can crash the program on exit!
+cashier: doing checkout multiple times on the same book can crash the program on exit! heap corruption - cashier edited something out of bounds!
 	>>this one is pretty serious and might get a lot of points taken off if the professor sees this one!
 
 
