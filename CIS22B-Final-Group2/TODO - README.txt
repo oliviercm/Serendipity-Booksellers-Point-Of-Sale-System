@@ -3,24 +3,19 @@ ORDERED IN GENERAL PRIORITY
 ----------------------------
 
 
-checkout doesnt clear the cart properly, even after checking out there are ghost books left behind, which can be seen by going to checkout again
-	>>upon further study it seems as though removeBookFromCart is flawed and doesnt fully remove the book,
-			not only that but it doesnt set every attribute to 0 or empty, instead it only sets isbn, title, and retail
+checkout: book quantity gets set to some ridiculous value, seems to be around 4000.
 
 
 cashier cart: adding two of the same book then removing that book from cart twice displays an error for the second book
-	even though the book really does get removed in a way - there is a ghost book in checkout screen
-	>>upon further study it seems as though removeBookFromCart is flawed and doesnt fully remove the book,
-		not only that but it doesnt set every attribute to 0 or empty, instead it only sets isbn, title, and retail
 
-		
+
 cashier: doing checkout multiple times on the same book can crash the program on exit!
 	>>this one is pretty serious and might get a lot of points taken off if the professor sees this one!
-		
-		
+
+
 reciept: bars arent long enough/dont line up properly, needs to display subtotal, tax, total
-		
-		
+
+
 cashier: adding and removing books from the cart actually edits the real inventory even though it shouldn't do this
 	until checkout
 	
