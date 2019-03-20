@@ -21,7 +21,7 @@ void Cashier::addBookToCart(std::string isbnNum) {
 		if (inv[i].isbn == isbnNum) {
 			if (getBookCartIndex(isbnNum) != -1) {
 				cart[getBookCartIndex(isbnNum)].quantity++;
-				inv[i].quantity--;
+				inv[i].quantity--; 
 			}
 			else {
 				cart[cartSize] = inv[i];
@@ -41,6 +41,8 @@ void Cashier::removeBookFromCart(std::string isbnNum) {
 			cart[i].quantity--;
 			cart[i].title = "";
 			cart[i].isbn = "";
+			//cart[i].title.erase(0, cart[i].title.length());
+			//cart[i].isbn.erase(0, cart[i].isbn.length());
 			cart[i].retail = 0.0;
 
 			inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity++;
@@ -170,7 +172,6 @@ void Cashier::printCart() {
 			<< std::setw(quantityColumnLength) << cart[i].quantity
 			<< std::setw(totalPriceColumnLength) << cart[i].retail
 			<< std::endl << std::endl;
-		//std::cout << cart[i].isbn << std::endl;
 	}
 }
 
@@ -178,10 +179,9 @@ void Cashier::printCartForReceipt() {
 
 	for (int i = 0; i < cartSize; i++) {
 
-		std::cout << "\t" << cart[i].isbn << " " << cart[i].title;
+		std::cout << "\t" << cart[i].isbn << " " << cart[i].title.substr(0, 25) << "...";
 		std::cout << std::right << " " << cart[i].retail << std::endl;
 
-		//std::cout << cart[i].isbn << std::endl;
 	}
 
 	return;
@@ -190,5 +190,7 @@ void Cashier::printCartForReceipt() {
 void Cashier::clearCart() {
 
 	cart.reset();
+	cart = std::make_unique<InventoryBook[]>(100);
+	cartSize = 0;
 
 }
