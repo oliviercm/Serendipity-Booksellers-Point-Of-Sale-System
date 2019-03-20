@@ -190,13 +190,13 @@
 </book>
 <book>
 	<isbn>9780134565123</isbn>
-	<title>ほんです</title>
-	<author>日本人</author>
-	<publisher>JP Entertainment</publisher>
-	<adddate>01/17/2017</adddate>
-	<quantity>3</quantity>
-	<wholesale>4.41</wholesale>
-	<retail>9.99</retail>
+	<title>Easter Egg</title>
+	<author>Charles Babbage</author>
+	<publisher>Analytical Engine PC</publisher>
+	<adddate>01/17/1837</adddate>
+	<quantity>1</quantity>
+	<wholesale>10.12</wholesale>
+	<retail>19.40</retail>
 </book>
 <book>
 	<isbn>9788324144686</isbn>
