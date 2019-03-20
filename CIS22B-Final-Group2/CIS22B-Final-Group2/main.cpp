@@ -365,7 +365,7 @@ void cashierAddBookToCart(InventoryDatabase *book, Cashier *cashier) {
 				}
 				cashier->addBookToCart(userIsbn);
 				books[i].quantity--;
-				cout << "The Book has been added to your cart." << endl << endl;
+				cout << "Book added to cart." << endl << endl;
 				break;
 			}
 			else if (i == numBooks - 1) {
@@ -554,7 +554,7 @@ void cashierPrintReceipt(Cashier *cashier) {
 	cout << "\t\t\t||||||||||||||||||||||||||" << endl;
 	cout << endl << bars2 << endl << endl;
 	cout << "\t\t\tThank you for shopping at" << endl;
-	cout << "\t\t\tSerendepirity Bookseller" << endl << endl; 
+	cout << "\t\t\Serendipity Booksellers." << endl << endl; 
 	cout << endl << endl << bars << endl << endl;
 
 	
@@ -1298,7 +1298,7 @@ void displayReportInventoryList(unique_ptr<InventoryBook[]> books, int numBooks)
 			<< setw(quantityColumnLength) << books[i].quantity
 			<< setw(wholesaleColumnLength) << books[i].wholesale
 			<< setw(retailColumnLength) << books[i].retail
-			<< endl << endl;
+			<< endl;
 	}
 
 	cout << endl << bars << endl << endl;
@@ -1361,7 +1361,7 @@ void displayReportInventoryWholesaleValue(unique_ptr<InventoryBook[]> books, int
 			<< setw(quantityColumnLength) << books[i].quantity
 			<< setw(wholesaleColumnLength) << books[i].wholesale
 			<< setw(totalWholesaleColumnLength) << bookTotalWholesale
-			<< endl << endl;
+			<< endl;
 	}
 
 	cout << right;
@@ -1426,7 +1426,7 @@ void displayReportInventoryRetailValue(unique_ptr<InventoryBook[]> books, int nu
 			<< setw(quantityColumnLength) << books[i].quantity
 			<< setw(retailColumnLength) << books[i].retail
 			<< setw(totalRetailColumnLength) << bookTotalRetail
-			<< endl << endl;
+			<< endl;
 	}
 
 	cout << right;
@@ -1485,7 +1485,7 @@ void displayReportListByQuantity(unique_ptr<InventoryBook[]> books, int numBooks
 		cout << setw(isbnColumnLength) << copyBooks[i].isbn
 			<< setw(titleColumnLength) << copyBooks[i].title
 			<< setw(quantityColumnLength) << copyBooks[i].quantity
-			<< endl << endl;
+			<< endl;
 	}
 
 	cout << endl << bars << endl << endl;
@@ -1542,7 +1542,7 @@ void displayReportListByCost(unique_ptr<InventoryBook[]> books, int numBooks) {
 		cout << setw(isbnColumnLength) << copyBooks[i].isbn
 			<< setw(titleColumnLength) << copyBooks[i].title
 			<< setw(wholesaleColumnLength) << copyBooks[i].wholesale
-			<< endl << endl;
+			<< endl;
 	}
 
 	cout << endl << bars << endl << endl;
@@ -1599,7 +1599,7 @@ void displayReportListByAge(unique_ptr<InventoryBook[]> books, int numBooks) {
 		cout << setw(isbnColumnLength) << copyBooks[i].isbn
 			<< setw(titleColumnLength) << copyBooks[i].title
 			<< setw(dateColumnLength) << copyBooks[i].addDate
-			<< endl << endl;
+			<< endl;
 	}
 
 	cout << endl << bars << endl << endl;
