@@ -94,7 +94,7 @@
 	<author>Ken Kesey</author>
 	<publisher>Phantasy Press</publisher>
 	<adddate>10/24/2010</adddate>
-	<quantity>1</quantity>
+	<quantity>8</quantity>
 	<wholesale>4.65</wholesale>
 	<retail>9.99</retail>
 </book>
@@ -124,7 +124,7 @@
 	<author>Nadya Tolokonnikova</author>
 	<publisher>Phantasy Press</publisher>
 	<adddate>01/01/2000</adddate>
-	<quantity>2</quantity>
+	<quantity>6</quantity>
 	<wholesale>5.00</wholesale>
 	<retail>15.99</retail>
 </book>
@@ -174,7 +174,7 @@
 	<author>James Gerber</author>
 	<publisher>School Aztec Corp.</publisher>
 	<adddate>06/05/2015</adddate>
-	<quantity>1</quantity>
+	<quantity>3</quantity>
 	<wholesale>40.11</wholesale>
 	<retail>79.99</retail>
 </book>
