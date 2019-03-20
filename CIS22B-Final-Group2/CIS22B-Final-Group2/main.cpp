@@ -324,64 +324,64 @@ void displayCashierSellBooks()
 
 void cashierAddBookToCart(InventoryDatabase *book, Cashier *cashier) {
 
+	clearScreen(true);
+
+	string userIsbn = string();
+	int again;
+
+	unique_ptr<InventoryBook[]> books = book->getInventoryArray();
+	int numBooks = book->getInventoryArraySize();
+	do
+	{
 		clearScreen(true);
 
-		string userIsbn = string();
-		int again;
+		const string bars = generateBars(UI::TERMINAL_WIDTH);
+		const string addBooksText = "[ ADD BOOKS TO CART ]";
 
-		unique_ptr<InventoryBook[]> books = book->getInventoryArray();
-		int numBooks = book->getInventoryArraySize();
-		do
-		{
-			clearScreen(true);
+		const size_t titleMargin = (UI::TERMINAL_WIDTH + addBooksText.length()) / 2;
+		const size_t optionMargin = titleMargin - addBooksText.length();
 
-			const string bars = generateBars(UI::TERMINAL_WIDTH);
-			const string addBooksText = "[ ADD BOOKS TO CART ]";
+		cout << setw(titleMargin) << addBooksText << endl << endl << bars << endl << endl;
 
-			const size_t titleMargin = (UI::TERMINAL_WIDTH + addBooksText.length()) / 2;
-			const size_t optionMargin = titleMargin - addBooksText.length();
+		cout << "Enter the Book's ISBN you want to purchase: ";
+		userIsbn = getUserInputString();
+		cout << endl;
 
-			cout << setw(titleMargin) << addBooksText << endl << endl << bars << endl << endl;
+		while (userIsbn.length() != 13) {
 
-			cout << "Enter the Book's ISBN you want to purchase: ";
+			cout << "ERROR: Enter all 13 digits of the book's ISBN." << endl << endl;
+			cout << "Please try again: ";
 			userIsbn = getUserInputString();
 			cout << endl;
 
-			while (userIsbn.length() != 13) {
+		}
 
-				cout << "ERROR: Enter all 13 digits of the book's ISBN." << endl << endl;
-				cout << "Please try again: ";
-				userIsbn = getUserInputString();
-				cout << endl;
-
-			}
-
-			for (int i = 0; i < numBooks; i++) {
-				if (userIsbn == books[i].isbn) {
-					if (books[i].quantity <= 0) {
-						cout << endl;
-						cout << "ERROR: There are no more books of this ISBN number available in the inventory." << endl << endl;
-						break;
-					}
-					cashier->addBookToCart(userIsbn);
-					books[i].quantity--;
-					cout << "The Book has been added to your cart." << endl << endl;
+		for (int i = 0; i < numBooks; i++) {
+			if (userIsbn == books[i].isbn) {
+				if (books[i].quantity <= 0) {
+					cout << endl;
+					cout << "ERROR: There are no more books of this ISBN number available in the inventory." << endl << endl;
 					break;
 				}
-				else if (i == numBooks - 1) {
-					cout << "ERROR: ISBN does not exist in database." << endl << endl;
-					userIsbn = string();
-				}
+				cashier->addBookToCart(userIsbn);
+				books[i].quantity--;
+				cout << "The Book has been added to your cart." << endl << endl;
+				break;
 			}
-			cout << "Would you like to add another book? [ 1 ] YES  [ 2 ] NO : ";
+			else if (i == numBooks - 1) {
+				cout << "ERROR: ISBN does not exist in database." << endl << endl;
+				userIsbn = string();
+			}
+		}
+		cout << "Would you like to add another book? [ 1 ] YES  [ 2 ] NO : ";
+		again = getUserInputInt();
+		cout << endl;
+
+		while (again != 1 && again != 2) {
+			cout << "ERROR: Enter 1 or 2 : ";
 			again = getUserInputInt();
 			cout << endl;
-
-			while (again != 1 && again != 2) {
-				cout << "ERROR: Enter 1 or 2 : ";
-				again = getUserInputInt();
-				cout << endl;
-			}
+		}
 
 	} while (again == 1);
 
@@ -499,7 +499,7 @@ void cashierCheckout(InventoryDatabase *pD, Cashier *cashier)
 		userAnswer = getUserInputInt();
 		cout << endl << endl;
 		if (userAnswer == 1) {
-			 
+
 			clearScreen(true);
 			cashierPrintReceipt(cashier);
 			cashier->checkout();
@@ -524,49 +524,40 @@ void cashierPrintReceipt(Cashier *cashier) {
 
 	cout << endl << endl;
 	const string bars = "\t========================================================";
+	const string bars2 = "\t********************************************************";
 	const string titleText = "\t\t\tSerendipity Booksellers";
 	const string address1 = "\t21250 Stevens Creek Blvd";
 	const string address2 = "\tCupertino, CA 95014";
 	const string subTotalText = "\t\t\t\t\t\tSUBTOTAL: ";
 	const string taxText = "\t\t\t\t\t\tTAX: ";
 	const string totalText = "\t\t\t\t\t\tTOTAL: $";
+	double taxes;
 	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
 
 	const size_t titleMargin(bars.length() / 2);
 
 	cout << bars << endl << endl;
 	cout << setw(titleMargin) << titleText << endl << endl;
-	cout << setw(titleMargin) << address1 << endl;
-	cout << setw(titleMargin) << address2 << ctime(&timenow) << endl;
+	cout << address1 << endl;
+	cout << address2  << "\t" << ctime(&timenow) << endl;
 	cout << bars << endl << endl;
+
+	taxes = cashier->totalPriceOfCart() - cashier->subTotal();
 
 	cashier->printCartForReceipt();
 	cout << endl << endl;
-	cout << subTotalText  << cashier->subTotal() << endl;
-	cout << taxText  << "7.25" << endl;
+	cout << subTotalText << cashier->subTotal() << endl;
+	cout << taxText << taxes << endl;
 	cout << totalText << cashier->totalPriceOfCart() << endl << endl;
 	cout << "\t\t\t||||||||||||||||||||||||||" << endl;
 	cout << "\t\t\t||||||||||||||||||||||||||" << endl;
 	cout << "\t\t\t||||||||||||||||||||||||||" << endl;
+	cout << endl << bars2 << endl << endl;
+	cout << "\t\t\tThank you for shopping at" << endl;
+	cout << "\t\t\tSerendepirity Bookseller" << endl << endl; 
 	cout << endl << endl << bars << endl << endl;
 
-	cout << R"(                                                                                                                                            _
-  _______   _                       _                                   __                          _                            _                       _| |_ 
- |__   __| | |                     | |                                 / _|                        | |                          (_)                     |_   _|
-    | |    | |__     __ _   _ __   | | __    _   _    ___    _   _    | |_    ___    _ __     ___  | |__     ___   ___    ___    _  _ __    __ _     __ _ | |
-    | |    | '_ \   / _` | | '_ \  | |/ /   | | | |  / _ \  | | | |   |  _|  / _ \  | '__|   / __| |  _ \   / _ \ |  _ \ |  _ \ | || '_ \  / _" |   /  ' || |
-    | |    | | | | | (_| | | | | | |   <    | |_| | | (_) | | |_| |   | |   | (_) | | |      \__ \ | | | | | (_) || |_) || |_) || || | | || (_) |  | (_) || |
-    |_|    |_| |_|  \__,_| |_| |_| |_|\_\    \__, |  \___/   \__,_|   |_|    \___/  |_|      |___/ |_| |_|  \___/ | .__/ | .__/ |_||_| |_| \__, |   \__,_||_|
-                                              __/ |                                                               | |    | |                __/ |
-                                             |___/                                                                |_|    |_|               |___/
-   _____                                    _   _           _   _               ____                    _                   _   _                         
-  / ____|                                  | | (_)         (_) | |             |  _ \                  | |                 | | | |                        
- | (___     ___   _ __    ___   _ __     __| |  _   _ __    _  | |_   _   _    | |_) |   ___     ___   | | __  ___    ___  | | | |   ___   _ __   ___     
-  \___ \   / _ \ | '__|  / _ \ | '_ \   / _` | | | | '_ \  | | | __| | | | |   |  _ <   / _ \   / _ \  | |/ / / __|  / _ \ | | | |  / _ \ | '__| / __|    
-  ____) | |  __/ | |    |  __/ | | | | | (_| | | | | |_) | | | | |_  | |_| |   | |_) | | (_) | | (_) | |   <  \__ \ |  __/ | | | | |  __/ | |    \__ \  _ 
- |_____/   \___| |_|     \___| |_| |_|  \__,_| |_| | .__/  |_|  \__|  \__, |   |____/   \___/   \___/  |_|\_\ |___/  \___| |_| |_|  \___| |_|    |___/ (_)
-                                                   | |                 __/ |                                                                              
-                                                   |_|                |___/    )"<< endl << endl;
+	
 	return;
 }
 
@@ -1307,7 +1298,7 @@ void displayReportInventoryList(unique_ptr<InventoryBook[]> books, int numBooks)
 			<< setw(quantityColumnLength) << books[i].quantity
 			<< setw(wholesaleColumnLength) << books[i].wholesale
 			<< setw(retailColumnLength) << books[i].retail
-			<< endl;
+			<< endl << endl;
 	}
 
 	cout << endl << bars << endl << endl;
@@ -1370,7 +1361,7 @@ void displayReportInventoryWholesaleValue(unique_ptr<InventoryBook[]> books, int
 			<< setw(quantityColumnLength) << books[i].quantity
 			<< setw(wholesaleColumnLength) << books[i].wholesale
 			<< setw(totalWholesaleColumnLength) << bookTotalWholesale
-			<< endl;
+			<< endl << endl;
 	}
 
 	cout << right;
@@ -1435,7 +1426,7 @@ void displayReportInventoryRetailValue(unique_ptr<InventoryBook[]> books, int nu
 			<< setw(quantityColumnLength) << books[i].quantity
 			<< setw(retailColumnLength) << books[i].retail
 			<< setw(totalRetailColumnLength) << bookTotalRetail
-			<< endl;
+			<< endl << endl;
 	}
 
 	cout << right;
@@ -1494,7 +1485,7 @@ void displayReportListByQuantity(unique_ptr<InventoryBook[]> books, int numBooks
 		cout << setw(isbnColumnLength) << copyBooks[i].isbn
 			<< setw(titleColumnLength) << copyBooks[i].title
 			<< setw(quantityColumnLength) << copyBooks[i].quantity
-			<< endl;
+			<< endl << endl;
 	}
 
 	cout << endl << bars << endl << endl;
@@ -1551,7 +1542,7 @@ void displayReportListByCost(unique_ptr<InventoryBook[]> books, int numBooks) {
 		cout << setw(isbnColumnLength) << copyBooks[i].isbn
 			<< setw(titleColumnLength) << copyBooks[i].title
 			<< setw(wholesaleColumnLength) << copyBooks[i].wholesale
-			<< endl;
+			<< endl << endl;
 	}
 
 	cout << endl << bars << endl << endl;
@@ -1608,7 +1599,7 @@ void displayReportListByAge(unique_ptr<InventoryBook[]> books, int numBooks) {
 		cout << setw(isbnColumnLength) << copyBooks[i].isbn
 			<< setw(titleColumnLength) << copyBooks[i].title
 			<< setw(dateColumnLength) << copyBooks[i].addDate
-			<< endl;
+			<< endl << endl;
 	}
 
 	cout << endl << bars << endl << endl;
