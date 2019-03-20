@@ -39,16 +39,16 @@ void Cashier::removeBookFromCart(std::string isbnNum) {
 	for (int i = 0; i < cartSize; i++) {
 		if (cart[i].isbn == isbnNum && cart[i].quantity > 0) { // Will move these checks to main 
 			cart[i].quantity--;
-			cart[i].title = "";
-			cart[i].isbn = "";
-			//cart[i].title.erase(0, cart[i].title.length());
-			//cart[i].isbn.erase(0, cart[i].isbn.length());
-			cart[i].retail = 0.0;
-
-			inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity++;
-			pInventoryDatabase->setBookQuantityByIsbn(isbnNum, inv[pInventoryDatabase->getBookIndexByIsbn(cart[i].isbn)].quantity);
-			//std::cout << "The book has been removed." << std::endl << std::endl;
-			cartSize--;
+			inv[i].quantity++;
+			if (cart[i].quantity <= 0)
+			{
+				//Move all following books 1 space back
+				for (int j = i; j < cartSize; j++)
+				{
+					cart[j] = cart[j + 1];
+				}
+				cartSize--;
+			}
 			return;
 		}
 		else if (cart[i].isbn == isbnNum) {

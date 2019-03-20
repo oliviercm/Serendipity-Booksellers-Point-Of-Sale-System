@@ -331,59 +331,59 @@ void cashierAddBookToCart(InventoryDatabase *book, Cashier *cashier) {
 
 		unique_ptr<InventoryBook[]> books = book->getInventoryArray();
 		int numBooks = book->getInventoryArraySize();
-		 do
-		 {
-			 clearScreen(true);
-		const string bars = generateBars(UI::TERMINAL_WIDTH);
-		const string addBooksText = "[ ADD BOOKS TO CART ]";
+		do
+		{
+			clearScreen(true);
 
-		const size_t titleMargin = (UI::TERMINAL_WIDTH + addBooksText.length()) / 2;
-		const size_t optionMargin = titleMargin - addBooksText.length();
+			const string bars = generateBars(UI::TERMINAL_WIDTH);
+			const string addBooksText = "[ ADD BOOKS TO CART ]";
 
-		cout << setw(titleMargin) << addBooksText << endl << endl << bars << endl << endl;
+			const size_t titleMargin = (UI::TERMINAL_WIDTH + addBooksText.length()) / 2;
+			const size_t optionMargin = titleMargin - addBooksText.length();
 
-		cout << "Enter the Book's ISBN you want to purchase: ";
-		userIsbn = getUserInputString();
-		cout << endl;
+			cout << setw(titleMargin) << addBooksText << endl << endl << bars << endl << endl;
 
-		while (userIsbn.length() != 13) {
-
-			cout << "ERROR: Enter all 13 digits of the book's ISBN." << endl << endl;
-			cout << "Please try again: ";
+			cout << "Enter the Book's ISBN you want to purchase: ";
 			userIsbn = getUserInputString();
 			cout << endl;
 
-		}
+			while (userIsbn.length() != 13) {
 
-		for (int i = 0; i < numBooks; i++) {
-			if (userIsbn == books[i].isbn) {
-				if (books[i].quantity <= 0) {
-					cout << endl;
-					cout << "ERROR: There are no more books of this ISBN number available in the inventory." << endl << endl;
+				cout << "ERROR: Enter all 13 digits of the book's ISBN." << endl << endl;
+				cout << "Please try again: ";
+				userIsbn = getUserInputString();
+				cout << endl;
+
+			}
+
+			for (int i = 0; i < numBooks; i++) {
+				if (userIsbn == books[i].isbn) {
+					if (books[i].quantity <= 0) {
+						cout << endl;
+						cout << "ERROR: There are no more books of this ISBN number available in the inventory." << endl << endl;
+						break;
+					}
+					cashier->addBookToCart(userIsbn);
+					books[i].quantity--;
+					cout << "The Book has been added to your cart." << endl << endl;
 					break;
 				}
-				cashier->addBookToCart(userIsbn);
-				//books[i].quantity--;
-				//book->setBookQuantityByIsbn(books[i].isbn, books[i].quantity);
-				cout << "The Book has been added to your cart." << endl << endl;
-				break;
+				else if (i == numBooks - 1) {
+					cout << "ERROR: ISBN does not exist in database." << endl << endl;
+					userIsbn = string();
+				}
 			}
-			else if (i == numBooks - 1) {
-				cout << "ERROR: ISBN does not exist in database." << endl << endl;
-				userIsbn = string();
-			}
-		}
-		cout << "Would you like to add another book? [ 1 ] YES  [ 2 ] NO : ";
-		again = getUserInputInt();
-		cout << endl;
-
-		while (again != 1 && again != 2) {
-			cout << "ERROR: Enter 1 or 2 : ";
+			cout << "Would you like to add another book? [ 1 ] YES  [ 2 ] NO : ";
 			again = getUserInputInt();
 			cout << endl;
-		}
 
-	} while ( again == 1);
+			while (again != 1 && again != 2) {
+				cout << "ERROR: Enter 1 or 2 : ";
+				again = getUserInputInt();
+				cout << endl;
+			}
+
+	} while (again == 1);
 
 	return;
 }
@@ -441,6 +441,7 @@ void cashierRemoveBookFromCart(Cashier *cashier) {
 			another = getUserInputInt();
 			cout << endl;
 		}
+
 	} while (another == 1);
 
 	return;
