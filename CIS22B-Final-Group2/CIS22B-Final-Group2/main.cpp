@@ -528,18 +528,20 @@ void cashierPrintReceipt(Cashier *cashier) {
 	const string titleText = "\t\t\tSerendipity Booksellers";
 	const string address1 = "\t21250 Stevens Creek Blvd";
 	const string address2 = "\tCupertino, CA 95014";
-	const string subTotalText = "\t\t\t\t\t\tSUBTOTAL: ";
-	const string taxText = "\t\t\t\t\t\tTAX: ";
+	const string subTotalText = "\t\t\t\t\t\tSUBTOTAL: $";
+	const string taxText = "\t\t\t\t\t\tTAX: $";
 	const string totalText = "\t\t\t\t\t\tTOTAL: $";
 	double taxes;
 	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
 
 	const size_t titleMargin(bars.length() / 2);
 
+	cout << left;
+
 	cout << bars << endl << endl;
 	cout << setw(titleMargin) << titleText << endl << endl;
 	cout << address1 << endl;
-	cout << address2  << "\t" << ctime(&timenow) << endl;
+	cout << address2 << right << setw(38) << ctime(&timenow) << left << endl;
 	cout << bars << endl << endl;
 
 	taxes = cashier->totalPriceOfCart() - cashier->subTotal();
@@ -554,7 +556,7 @@ void cashierPrintReceipt(Cashier *cashier) {
 	cout << "\t\t\t||||||||||||||||||||||||||" << endl;
 	cout << endl << bars2 << endl << endl;
 	cout << "\t\t\tThank you for shopping at" << endl;
-	cout << "\t\t\Serendipity Booksellers." << endl << endl; 
+	cout << "\t\t\tSerendipity Booksellers." << endl;
 	cout << endl << endl << bars << endl << endl;
 
 	

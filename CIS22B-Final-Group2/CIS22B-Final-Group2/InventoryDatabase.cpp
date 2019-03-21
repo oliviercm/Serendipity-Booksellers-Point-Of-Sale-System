@@ -213,6 +213,25 @@ int InventoryDatabase::getNumBooksInString(std::string str) const
 	return count;
 }
 
+/****************************************
+* DATABASE FUNCTIONS
+*****************************************/
+
+/**
+* saveInventoryArrayToFile
+*
+* @brief Saves the contents of the inventory array into the file at the filepath inventoryFilePath.
+*/
+
+void InventoryDatabase::saveInventoryArrayToFile()
+{
+	std::ofstream out;
+
+	out.open(inventoryFilePath);
+	out << inventoryArrayToString();
+	out.close();
+}
+
 /***************************************************************************
 *********** PUBLIC FUNCTIONS
 ****************************************************************************/
@@ -333,9 +352,12 @@ void InventoryDatabase::setBookIsbnByIsbn(const std::string isbn, const std::str
 		if (inventoryArray[i].isbn == isbn)
 		{
 			inventoryArray[i].isbn = edit;
-			return;
+			break;
 		}
 	}
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -358,9 +380,12 @@ void InventoryDatabase::setBookTitleByIsbn(const std::string isbn, const std::st
 		if (inventoryArray[i].isbn == isbn)
 		{
 			inventoryArray[i].title = edit;
-			return;
+			break;
 		}
 	}
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -383,9 +408,12 @@ void InventoryDatabase::setBookAuthorByIsbn(const std::string isbn, const std::s
 		if (inventoryArray[i].isbn == isbn)
 		{
 			inventoryArray[i].author = edit;
-			return;
+			break;
 		}
 	}
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -408,9 +436,12 @@ void InventoryDatabase::setBookPublisherByIsbn(const std::string isbn, const std
 		if (inventoryArray[i].isbn == isbn)
 		{
 			inventoryArray[i].publisher = edit;
-			return;
+			break;
 		}
 	}
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -433,9 +464,12 @@ void InventoryDatabase::setBookAddDateByIsbn(const std::string isbn, const std::
 		if (inventoryArray[i].isbn == isbn)
 		{
 			inventoryArray[i].addDate = edit;
-			return;
+			break;
 		}
 	}
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -460,9 +494,12 @@ void InventoryDatabase::setBookQuantityByIsbn(const std::string isbn, const int 
 		if (inventoryArray[i].isbn == isbn)
 		{
 			inventoryArray[i].quantity = edit;
-			return;
+			break;
 		}
 	}
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -485,9 +522,12 @@ void InventoryDatabase::setBookWholesaleByIsbn(const std::string isbn, const dou
 		if (inventoryArray[i].isbn == isbn)
 		{
 			inventoryArray[i].wholesale = edit;
-			return;
+			break;
 		}
 	}
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -510,9 +550,12 @@ void InventoryDatabase::setBookRetailByIsbn(const std::string isbn, const double
 		if (inventoryArray[i].isbn == isbn)
 		{
 			inventoryArray[i].retail = edit;
-			return;
+			break;
 		}
 	}
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -537,9 +580,12 @@ void InventoryDatabase::addToBookQuantityByIsbn(const std::string isbn, const in
 		if (inventoryArray[i].isbn == isbn)
 		{
 			inventoryArray[i].quantity += edit;
-			return;
+			break;
 		}
 	}
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -615,6 +661,9 @@ void InventoryDatabase::addBookToArray(InventoryBook book)
 	//Swap the old array and the new array, then set the array size variable to the right value
 	inventoryArray.swap(newInventoryArray);
 	inventoryArraySize++;
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 	
 	return;
 }
@@ -648,6 +697,9 @@ void InventoryDatabase::removeBookFromArray(int index)
 	//Swap the old array and the new array, then set the array size variable to the right value
 	inventoryArray.swap(newInventoryArray);
 	inventoryArraySize--;
+
+	//Save changes to file
+	saveInventoryArrayToFile();
 
 	return;
 }
@@ -685,5 +737,5 @@ InventoryDatabase::InventoryDatabase(std::string path)
 
 InventoryDatabase::~InventoryDatabase()
 {
-	
+	saveInventoryArrayToFile();
 }

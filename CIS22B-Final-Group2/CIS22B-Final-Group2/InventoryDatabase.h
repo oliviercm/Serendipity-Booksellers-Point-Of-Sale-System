@@ -49,6 +49,8 @@ private:
 	std::string bookToString(InventoryBook book) const;
 	std::string inventoryArrayToString();
 	int getNumBooksInString(const std::string str) const;
+	//Database functions
+	void saveInventoryArrayToFile();
 
 public:
 	//Database functions

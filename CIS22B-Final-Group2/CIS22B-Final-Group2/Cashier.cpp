@@ -178,8 +178,8 @@ void Cashier::printCartForReceipt() {
 
 	for (int i = 0; i < cartSize; i++) {
 
-		std::cout << "\t" << cart[i].isbn << " " << cart[i].title.substr(0, 25) << "...";
-		std::cout << std::right << " "  << cart[i].quantity  << "x" << cart[i].retail << std::endl;
+		std::cout << std::left << "\t" << cart[i].isbn << "  " << std::setw(22) << ((cart[i].title.length() <= 20) ? cart[i].title : cart[i].title.substr(0, 17) + "...");
+		std::cout << std::right << std::setw(8) << std::to_string(cart[i].quantity) + "x" + std::to_string(cart[i].retail).substr(0, std::to_string(cart[i].retail).find(".") + 3) << " = " << std::setw(8) << cart[i].quantity * cart[i].retail << std::endl;
 
 	}
 
